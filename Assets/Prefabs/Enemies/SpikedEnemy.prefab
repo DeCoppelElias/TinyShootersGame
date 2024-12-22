@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5905215348312107559}
   - component: {fileID: 1874427657271165528}
   m_Layer: 0
-  m_Name: EnemySprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1934459445
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d5eed3d57575548448e5e6d81e1d6c96, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -92,10 +92,12 @@ GameObject:
   m_Component:
   - component: {fileID: 7631722809508302122}
   - component: {fileID: 2384372698144587208}
-  - component: {fileID: -3351932602788971751}
   - component: {fileID: 5001317743199309964}
   - component: {fileID: -5368096059388804715}
   - component: {fileID: 1929318733477689842}
+  - component: {fileID: 5503524318741855168}
+  - component: {fileID: 3583295328884798357}
+  - component: {fileID: 5807491530525137206}
   m_Layer: 0
   m_Name: SpikedEnemy
   m_TagString: Enemy
@@ -140,36 +142,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &-3351932602788971751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7528510141806377970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a891cea6f7405441b4a9f627abc7498, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 200
-  health: 200
-  damage: 10
-  moveSpeed: 3
-  contactDamage: 10
-  contactHitCooldown: 1
-  lastValidPosition: {x: 0, y: 0, z: 0}
-  updateValidPositionCooldown: 2
-  outOfBounds: 0
-  allowedOutOfBoundsDuration: 1
-  score: 0
-  onDeathScore: 100
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  dodingRange: 1
-  dodgingObstacle: 0
-  dodgeObstaclePath: []
-  player: {fileID: 0}
 --- !u!114 &5001317743199309964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,6 +178,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customSize: 0
+  size: 0
+  stepSize: 0.25
+  maxIterations: 1000
+  displayLineRenderer: {fileID: 0}
 --- !u!58 &1929318733477689842
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -222,6 +199,64 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.25
+--- !u!114 &5503524318741855168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7528510141806377970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5997db3c1447434eba712c0b87770b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 200
+  health: 200
+  damage: 10
+  moveSpeed: 3
+  contactDamage: 10
+  contactHitCooldown: 1
+  onDeathScore: 100
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
+  outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
+  bulletDirection: {x: 0, y: 0, z: 0}
+  bulletTrigger: 0
+  movementState: 0
+  player: {fileID: 0}
+  debug: 0
+--- !u!114 &3583295328884798357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7528510141806377970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4023a8ad54ac9134fb89862f0578d510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  movementBehaviourState: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  walkToPositionState: 0
+  pathFindingRefreshCooldown: 1
+  debug: 0
+--- !u!114 &5807491530525137206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7528510141806377970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc61acde870aa2a43b30375190c2a434, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3857555250952951470
 PrefabInstance:
   m_ObjectHideFlags: 0

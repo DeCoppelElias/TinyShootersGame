@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 1792532048598678429}
   - component: {fileID: 961663156331003162}
   m_Layer: 0
-  m_Name: EnemySprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,7 +100,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1934459445
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: cdccfe90ece2c8d44aa42c402e2bd87a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: -1174089322739075762}
   - component: {fileID: 6248534592847706498}
   - component: {fileID: 6934264998383511074}
+  - component: {fileID: -1315696155378778721}
   m_Layer: 0
   m_Name: ShotgunEnemy
   m_TagString: Enemy
@@ -189,17 +190,16 @@ MonoBehaviour:
   moveSpeed: 1
   contactDamage: 10
   contactHitCooldown: 1
+  onDeathScore: 100
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
-  onDeathScore: 100
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  dodingRange: 1
-  dodgingObstacle: 0
-  dodgeObstaclePath: []
+  movementState: 0
   player: {fileID: 0}
+  debug: 0
 --- !u!114 &-1174089322739075762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,6 +248,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customSize: 0
+  size: 0
+  stepSize: 0.25
+  maxIterations: 1000
+  displayLineRenderer: {fileID: 0}
 --- !u!58 &6934264998383511074
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -264,6 +269,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.333
+--- !u!114 &-1315696155378778721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883517242114259773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1485f5c01b6d6c44eae39c72df7b7366, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  movementBehaviourState: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  walkToPositionState: 0
+  pathFindingRefreshCooldown: 1
+  debug: 0
 --- !u!1001 &1089034100662352938
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7922260630837408262}
   - component: {fileID: 2652331889651506206}
   m_Layer: 0
-  m_Name: EnemySprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1934459445
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 84a2ffcbce7adc94fa1db728573fdb5f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -92,10 +92,12 @@ GameObject:
   m_Component:
   - component: {fileID: 5832053713546729937}
   - component: {fileID: 5814337397988561462}
-  - component: {fileID: 7369667255537305514}
   - component: {fileID: 1016313418591776582}
   - component: {fileID: -2557078845482434257}
   - component: {fileID: 2661872802162995546}
+  - component: {fileID: 7052203415476833862}
+  - component: {fileID: 8947136591138831557}
+  - component: {fileID: 5494964774439201206}
   m_Layer: 0
   m_Name: DodgeMeleeEnemy
   m_TagString: Enemy
@@ -141,36 +143,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &7369667255537305514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3907941987175580995}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1f6efe40d1d5bc41b26a0a73e98c279, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  health: 100
-  damage: 10
-  moveSpeed: 1
-  contactDamage: 10
-  contactHitCooldown: 1
-  lastValidPosition: {x: 0, y: 0, z: 0}
-  updateValidPositionCooldown: 2
-  outOfBounds: 0
-  allowedOutOfBoundsDuration: 1
-  score: 0
-  onDeathScore: 100
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  dodingRange: 1
-  dodgingObstacle: 0
-  dodgeObstaclePath: []
-  player: {fileID: 0}
 --- !u!114 &1016313418591776582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,6 +179,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customSize: 0
+  size: 0
+  stepSize: 0.25
+  maxIterations: 1000
+  displayLineRenderer: {fileID: 0}
 --- !u!58 &2661872802162995546
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -223,6 +200,67 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.333
+--- !u!114 &7052203415476833862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3907941987175580995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5997db3c1447434eba712c0b87770b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  health: 100
+  damage: 10
+  moveSpeed: 3
+  contactDamage: 10
+  contactHitCooldown: 1
+  onDeathScore: 100
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
+  outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
+  bulletDirection: {x: 0, y: 0, z: 0}
+  bulletTrigger: 0
+  movementState: 0
+  player: {fileID: 0}
+  debug: 0
+--- !u!114 &8947136591138831557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3907941987175580995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4023a8ad54ac9134fb89862f0578d510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  movementBehaviourState: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  walkToPositionState: 0
+  pathFindingRefreshCooldown: 1
+  debug: 0
+--- !u!114 &5494964774439201206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3907941987175580995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7194349875bbf34685033380eefdbae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dodgeAngle: 90
+  customBulletTrigger: 0
+  bulletTrigger: {fileID: 0}
 --- !u!1 &5954788887885259326
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,11 +270,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4060106782321664922}
-  - component: {fileID: 2397087660823422274}
   - component: {fileID: 2028795380286651477}
   - component: {fileID: 2197065151848040925}
   m_Layer: 0
-  m_Name: Dodge
+  m_Name: BulletTrigger
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -256,57 +293,6 @@ Transform:
   m_Father: {fileID: 5832053713546729937}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &2397087660823422274
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5954788887885259326}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1.92, y: 1.92}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!114 &2028795380286651477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -319,6 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c9184fc54eedf241b1719115fd0ad37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownerTag: 
 --- !u!58 &2197065151848040925
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -334,7 +321,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1
+  m_Radius: 1.5
 --- !u!1001 &5333682834055259486
 PrefabInstance:
   m_ObjectHideFlags: 0

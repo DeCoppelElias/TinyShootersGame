@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3121944324116960664}
   - component: {fileID: 9164710838572828471}
   m_Layer: 0
-  m_Name: EnemySprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1934459445
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 84a2ffcbce7adc94fa1db728573fdb5f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 1129325351206503047}
   - component: {fileID: -6131695965287517290}
   - component: {fileID: 3773596934133626727}
+  - component: {fileID: 5218863758776532670}
   m_Layer: 0
   m_Name: FastEnemy
   m_TagString: Enemy
@@ -136,16 +137,16 @@ MonoBehaviour:
   moveSpeed: 3.5
   contactDamage: 10
   contactHitCooldown: 1
-  lastValidPosition: {x: 0, y: 0, z: 0}
-  outOfBounds: 0
-  score: 0
   onDeathScore: 50
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
+  outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  dodingRange: 1
-  dodgingObstacle: 0
-  dodgeObstaclePath: []
+  movementState: 0
   player: {fileID: 0}
+  debug: 0
 --- !u!50 &1129325351206503047
 Rigidbody2D:
   serializedVersion: 4
@@ -179,7 +180,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 0}
+  customSize: 0
+  size: 0
+  stepSize: 0.25
+  maxIterations: 1000
+  displayLineRenderer: {fileID: 0}
 --- !u!58 &3773596934133626727
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -196,6 +201,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.333
+--- !u!114 &5218863758776532670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7577107269600286194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4023a8ad54ac9134fb89862f0578d510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  movementBehaviourState: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  walkToPositionState: 0
+  pathFindingRefreshCooldown: 1
+  debug: 0
 --- !u!1001 &1520398244718786031
 PrefabInstance:
   m_ObjectHideFlags: 0

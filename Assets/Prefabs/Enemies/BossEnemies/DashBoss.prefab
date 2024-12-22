@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5876297018407923699}
   - component: {fileID: 2356237167180187132}
   m_Layer: 0
-  m_Name: EnemySprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1934459445
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d5eed3d57575548448e5e6d81e1d6c96, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
@@ -92,10 +92,12 @@ GameObject:
   m_Component:
   - component: {fileID: 6399981644141511510}
   - component: {fileID: 1166115946899862452}
-  - component: {fileID: 6936551810976462181}
   - component: {fileID: -4507895737508089046}
   - component: {fileID: -2866914268876374352}
   - component: {fileID: 2360086585545811613}
+  - component: {fileID: 6835732925968103330}
+  - component: {fileID: 1343247316381960363}
+  - component: {fileID: -1451981258528948742}
   m_Layer: 0
   m_Name: DashBoss
   m_TagString: Enemy
@@ -140,35 +142,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &6936551810976462181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6431907754560271758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a891cea6f7405441b4a9f627abc7498, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 1000
-  health: 1000
-  damage: 20
-  moveSpeed: 3
-  contactDamage: 15
-  contactHitCooldown: 1
-  lastValidPosition: {x: 0, y: 0, z: 0}
-  updateValidPositionCooldown: 2
-  outOfBounds: 0
-  allowedOutOfBoundsDuration: 1
-  onDeathScore: 1000
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  dodingRange: 1
-  dodgingObstacle: 0
-  dodgeObstaclePath: []
-  player: {fileID: 0}
 --- !u!114 &-4507895737508089046
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dashingState: 0
   dashCooldown: 4
-  dashDuration: 0.7
+  dashDuration: 0.5
   chargeDuration: 0.5
   dashSpeed: 5
   contactDamageIncrease: 2
@@ -205,6 +178,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customSize: 0
+  size: 0
+  stepSize: 0.25
+  maxIterations: 1000
+  displayLineRenderer: {fileID: 0}
 --- !u!58 &2360086585545811613
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -221,6 +199,64 @@ CircleCollider2D:
   m_Offset: {x: -0.003707528, y: 0}
   serializedVersion: 2
   m_Radius: 0.41365469
+--- !u!114 &6835732925968103330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431907754560271758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5997db3c1447434eba712c0b87770b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1000
+  health: 1000
+  damage: 20
+  moveSpeed: 3
+  contactDamage: 15
+  contactHitCooldown: 1
+  onDeathScore: 1000
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
+  outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
+  bulletDirection: {x: 0, y: 0, z: 0}
+  bulletTrigger: 0
+  movementState: 0
+  player: {fileID: 0}
+  debug: 0
+--- !u!114 &1343247316381960363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431907754560271758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4023a8ad54ac9134fb89862f0578d510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  movementBehaviourState: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  walkToPositionState: 0
+  pathFindingRefreshCooldown: 1
+  debug: 0
+--- !u!114 &-1451981258528948742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431907754560271758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc61acde870aa2a43b30375190c2a434, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6880396768053390786
 PrefabInstance:
   m_ObjectHideFlags: 0

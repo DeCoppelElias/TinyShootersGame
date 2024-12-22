@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -7073006898407734445}
   - component: {fileID: -4786226812440007271}
   - component: {fileID: 8495340496082140125}
+  - component: {fileID: 7367118025594707282}
   m_Layer: 0
   m_Name: RangedEnemy
   m_TagString: Enemy
@@ -76,16 +77,16 @@ MonoBehaviour:
   moveSpeed: 1
   contactDamage: 0
   contactHitCooldown: 1
-  lastValidPosition: {x: 0, y: 0, z: 0}
-  outOfBounds: 0
-  score: 0
   onDeathScore: 50
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
+  outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  dodingRange: 1
-  dodgingObstacle: 0
-  dodgeObstaclePath: []
+  movementState: 0
   player: {fileID: 0}
+  debug: 0
 --- !u!114 &-7073006898407734445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,6 +120,9 @@ MonoBehaviour:
   firePoint: {fileID: 5543419163702194736}
   owner: {fileID: 0}
   damage: 0
+  onShoot:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &-4786226812440007271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,7 +135,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 0}
+  customSize: 0
+  size: 0
+  stepSize: 0.25
+  maxIterations: 1000
+  displayLineRenderer: {fileID: 0}
 --- !u!58 &8495340496082140125
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -148,6 +156,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.333
+--- !u!114 &7367118025594707282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258903064125615812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1485f5c01b6d6c44eae39c72df7b7366, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  movementBehaviourState: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  walkToPositionState: 0
+  pathFindingRefreshCooldown: 1
+  debug: 0
 --- !u!1 &872839163576665265
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,7 +185,7 @@ GameObject:
   - component: {fileID: 6172025854671109888}
   - component: {fileID: 4466081522076862}
   m_Layer: 0
-  m_Name: EnemySprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -218,7 +244,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1934459445
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 6c4464aabe943ec43b079e4972787f69, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
