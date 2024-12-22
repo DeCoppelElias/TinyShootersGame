@@ -1,18 +1,21 @@
-Add features:
+Done:
+- Charging a dash now move the entity back a little
+- Movement now comes in movement behaviors
+- Added other behaviors to dodge bullets, charge at player, etc.
+- Now the only enemies used are Melee and Ranged Enemies
 - Add A* path finding
+- fix bug where spam clicking removes the movement debuff when shooting
+
+TODO:
 - Add more decorative tiles
-- Add pits (can't move over them but can shoot over them)
+- Add pits (can't move over them but can shoot over them) CHECK
 - Add interactive objects (exploding barrels maybe)
 - Add more enemy types
 - Add new levels
-
-Update pvp:
 - Update pvp screen so player can choose the number of rounds
 - Create multiple arenas that the players can either choose or just randomly
 
 Either:
 - keep old campaign and leaderboard and create a new campaign and leaderboard so the player can choose what to play
 - delete old campaign and leaderboard and replace with new one.
-
-Bug fixes:
-- fix bug where spam clicking removes the movement debuff when shooting
+- Create new leaderboards for all time, weekly, daily
