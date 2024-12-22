@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(ShootingAbility))]
 public class RangedEnemy : Enemy
 {
     private float range;
     private SpriteRenderer enemySprite;
+    private ShootingAbility shootingAbility;
 
     private bool playerInRange = false;
     private float startPlayerInRange = 0;
@@ -14,8 +16,9 @@ public class RangedEnemy : Enemy
     {
         base.StartEntity();
 
-        range = GetComponent<ShootingAbility>().range;
-        enemySprite = transform.Find("EnemySprite").GetComponent<SpriteRenderer>();
+        shootingAbility = GetComponent<ShootingAbility>();
+        range = shootingAbility.range;
+        enemySprite = transform.Find("Sprite").GetComponent<SpriteRenderer>();
     }
 
     private void LookAtPlayer()
@@ -30,23 +33,12 @@ public class RangedEnemy : Enemy
 
         LookAtPlayer();
 
-        // Walk to player
-        Vector3 raycastDirection = player.transform.position - transform.position;
-        RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
-        if (Vector2.Distance(gameObject.transform.position, player.transform.position) > range || RaycastContainsObstacle(rays))
-        {
-            WalkToPlayerUpdate();
-        }
-
         // Shoot at player
-        else if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= range)
+        if (IsPlayerShootable())
         {
             if (playerInRange && Time.time - startPlayerInRange > aimingDuration)
             {
-                if (!RaycastContainsObstacle(rays))
-                {
-                    GetComponent<ShootingAbility>().TryShootOnce();
-                }
+                shootingAbility.TryShootOnce();
             }
             else if (!playerInRange)
             {
@@ -63,5 +55,46 @@ public class RangedEnemy : Enemy
     public float GetRange()
     {
         return range;
+    }
+
+    public bool IsPlayerShootable()
+    {
+        if (player == null) return false;
+        if (Vector3.Distance(this.transform.position, player.transform.position) > range) return false;
+
+        Vector3 to = player.transform.position;
+        Vector3 from = this.transform.position;
+
+        Vector3 raycastDirection = (to - from).normalized;
+        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, Vector3.Distance(from, to));
+        if (RaycastContainsWall(rays)) return false;
+
+        // Perpendicular vectors
+        Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
+        Vector3 perpendicular2 = new Vector3(raycastDirection.y, -raycastDirection.x, raycastDirection.z);
+
+        Vector3 newFrom1 = from + (0.2f * size * perpendicular1);
+        raycastDirection = (to - newFrom1).normalized;
+        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, Vector3.Distance(newFrom1, to));
+        if (RaycastContainsWall(rays)) return false;
+
+        Vector3 newFrom2 = from + (0.2f * size * perpendicular2);
+        raycastDirection = (to - newFrom2).normalized;
+        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, Vector3.Distance(newFrom2, to));
+        if (RaycastContainsWall(rays)) return false;
+
+        return true;
+    }
+
+    protected bool RaycastContainsWall(RaycastHit2D[] rays)
+    {
+        foreach (RaycastHit2D ray in rays)
+        {
+            if (ray.transform.CompareTag("Wall"))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

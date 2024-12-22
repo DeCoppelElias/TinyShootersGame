@@ -2,25 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public class ReflectShield : MonoBehaviour
 {
-    public Sprite bulletSprite;
-    public Entity owner;
+    [Header("Reflect Shield Settings")]
+    [SerializeField] private Sprite bulletSprite;
+    [SerializeField] private string ownerTag;
+
+    private void Start()
+    {
+        Entity entity = GetComponentInParent<Entity>();
+        if (entity != null) ownerTag = entity.tag;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (owner == null) return;
-
-        if (collision.GetComponent<Bullet>() && !collision.GetComponent<Bullet>().hit)
+        Bullet oldBullet = collision.GetComponent<Bullet>();
+        if (oldBullet != null && !oldBullet.hit)
         {
-            Bullet oldBullet = collision.GetComponent<Bullet>();
-            if (oldBullet.owner == null || !oldBullet.owner.CompareTag(owner.tag))
+            if (oldBullet.ownerTag != ownerTag)
             {
                 Rigidbody2D rbOld = oldBullet.GetComponent<Rigidbody2D>();
 
                 GameObject newBulletGameObject;
 
-                newBulletGameObject = collision.GetComponent<Bullet>().CreateCopy(owner);
+                newBulletGameObject = oldBullet.CreateCopyWithNewOwner(ownerTag);
                 newBulletGameObject.GetComponent<SpriteRenderer>().sprite = bulletSprite;
 
                 Bullet newBullet = newBulletGameObject.GetComponent<Bullet>();

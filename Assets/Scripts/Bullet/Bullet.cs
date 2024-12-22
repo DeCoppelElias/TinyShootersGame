@@ -20,7 +20,7 @@ public class Bullet : MonoBehaviour
 
     public bool reflected = false;
 
-    public Entity owner;
+    public string ownerTag;
 
     private void Update()
     {
@@ -38,9 +38,9 @@ public class Bullet : MonoBehaviour
         }
 
         Entity entity = collision.GetComponent<Entity>();
-        if (entity != null && owner != null && owner.tag != collision.tag && entity.health > 0)
+        if (entity != null && ownerTag != collision.tag && entity.health > 0)
         {
-            entity.TakeDamage(damage, owner, Entity.DamageType.Ranged);
+            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged);
             pierce--;
             if (pierce == 0)
             {
@@ -86,7 +86,7 @@ public class Bullet : MonoBehaviour
 
         bullet.GetComponent<Bullet>().pierce = 1;
         bullet.GetComponent<Bullet>().damage = damage * splitDamagePercentage;
-        bullet.GetComponent<Bullet>().owner = owner;
+        bullet.GetComponent<Bullet>().ownerTag = ownerTag;
         bullet.GetComponent<Bullet>().airTime = splitRange / splitBulletSpeed;
         bullet.GetComponent<Bullet>().createTime = Time.time;
 
@@ -97,11 +97,11 @@ public class Bullet : MonoBehaviour
         rb.AddForce(vector * splitBulletSpeed, ForceMode2D.Impulse);
     }
 
-    public GameObject CreateCopy(Entity owner)
+    public GameObject CreateCopyWithNewOwner(string ownerTag)
     {
         GameObject newBulletGameObject = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
         newBulletGameObject.GetComponent<Bullet>().createTime = Time.time;
-        newBulletGameObject.GetComponent<Bullet>().owner = owner;
+        newBulletGameObject.GetComponent<Bullet>().ownerTag = ownerTag;
         newBulletGameObject.GetComponent<Bullet>().reflected = reflected;
 
         return newBulletGameObject;

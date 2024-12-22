@@ -5,16 +5,15 @@ using UnityEngine.Events;
 
 public class DashAbility : MonoBehaviour
 {
-    public enum DashingState { Ready, Charging, Dashing, Cooldown };
-    public DashingState dashingState = DashingState.Ready;
+    [Header("Dash Ability Settings")]
+    [SerializeField] private DashingState dashingState = DashingState.Ready;
+    private enum DashingState { Ready, Charging, Dashing, Cooldown };
 
-    public int dashCooldown = 2;
-    public float dashDuration = 0.1f;
-    public float chargeDuration = 0f;
-    public float dashSpeed = 20;
-    public float contactDamageIncrease = 5;
-
-    private float currentDashSpeed = 0;
+    [SerializeField] private int dashCooldown = 2;
+    [SerializeField] private float dashDuration = 0.1f;
+    [SerializeField] private float chargeDuration = 0f;
+    [SerializeField] private float dashSpeed = 20;
+    [SerializeField] private float contactDamageIncrease = 5;
 
     private float dashStart = 0;
     private float chargeStart = 0;
@@ -29,31 +28,28 @@ public class DashAbility : MonoBehaviour
     public UnityEvent onPerformed;
     public UnityEvent onReady;
 
+    private System.Action onComplete;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
         entity = GetComponent<Entity>();
     }
-    public void Dash(Vector2 direction)
+    public void Dash(Vector2 direction, System.Action action = null)
     {
         if (dashingState != DashingState.Ready) return;
         if (direction == Vector2.zero) return;
 
+        this.onComplete = action;
         dashingState = DashingState.Charging;
         this.dashDirection = direction;
         chargeStart = Time.time;
     }
 
-    public bool TryDash(Vector2 direction)
+    public bool Ready()
     {
-        if (dashingState != DashingState.Ready) return false;
-        if (direction == Vector2.zero) return false;
-
-        dashingState = DashingState.Charging;
-        this.dashDirection = direction;
-        chargeStart = Time.time;
-        return true;
+        return dashingState == DashingState.Ready;
     }
 
     private void Update()
@@ -75,8 +71,7 @@ public class DashAbility : MonoBehaviour
             if (Time.time - chargeStart > chargeDuration)
             {
                 dashingState = DashingState.Dashing;
-                currentDashSpeed = dashSpeed;
-                rb.velocity = dashDirection * currentDashSpeed;
+                rb.velocity = dashDirection * dashSpeed;
                 dashStart = Time.time;
 
                 // Increase contact damage
@@ -84,6 +79,10 @@ public class DashAbility : MonoBehaviour
                 {
                     entity.contactDamage *= contactDamageIncrease;
                 }
+            }
+            else
+            {
+                rb.velocity = 0.1f * dashSpeed * -dashDirection;
             }
         }
         else if (dashingState == DashingState.Dashing)
@@ -97,6 +96,7 @@ public class DashAbility : MonoBehaviour
                 {
                     onPerformed.Invoke();
                 }
+                onComplete?.Invoke();
 
                 // Decrease contact damage again
                 if (entity != null)
@@ -106,7 +106,7 @@ public class DashAbility : MonoBehaviour
             }
             else
             {
-                rb.velocity = dashDirection * currentDashSpeed;
+                rb.velocity = dashDirection * dashSpeed;
             }
         }
     }
@@ -114,5 +114,31 @@ public class DashAbility : MonoBehaviour
     public float GetDashingDistance()
     {
         return dashSpeed * dashDuration;
+    }
+
+    public int GetDashCooldown()
+    {
+        return this.dashCooldown;
+    }
+
+    public void ApplyClass(Class playerClass) 
+    { 
+        if (playerClass.hasDashAbility)
+        {
+            dashCooldown = playerClass.dashCooldown;
+            dashDuration = playerClass.dashDuration;
+            chargeDuration = playerClass.chargeDuration;
+            dashSpeed = playerClass.dashSpeed;
+        }
+    }
+
+    public bool Dashing()
+    {
+        return this.dashingState == DashingState.Dashing;
+    }
+
+    public bool Charging()
+    {
+        return this.dashingState == DashingState.Charging;
     }
 }

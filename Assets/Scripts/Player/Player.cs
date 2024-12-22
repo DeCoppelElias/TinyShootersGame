@@ -136,20 +136,14 @@ public class Player : Entity
         }
 
         DashAbility dashAbility = GetComponent<DashAbility>();
-        if (dashAbility != null)
-        {
-            dashAbility.dashCooldown = playerClass.dashCooldown;
-            dashAbility.dashDuration = playerClass.dashDuration;
-            dashAbility.chargeDuration = playerClass.chargeDuration;
-            dashAbility.dashSpeed = playerClass.dashSpeed;
-        }
+        if (dashAbility != null) dashAbility.ApplyClass(playerClass);
     }
 
-    public override void TakeDamage(float amount, Entity source, DamageType damageType)
+    public override void TakeDamage(float amount, string sourceTag, DamageType damageType)
     {
         if (amount <= 0) return;
         if (Time.time - invulnerableStart < invulnerableDuration) return;
-        if (dashAbility != null && dashAbility.dashingState == DashAbility.DashingState.Dashing) return;
+        if (dashAbility != null && dashAbility.Dashing()) return;
 
         this.health -= amount;
 

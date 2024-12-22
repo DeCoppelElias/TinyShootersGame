@@ -147,7 +147,7 @@ public class ShootingAbility : MonoBehaviour
 
         bullet.GetComponent<Bullet>().pierce = pierce;
         bullet.GetComponent<Bullet>().damage = damage;
-        bullet.GetComponent<Bullet>().owner = owner;
+        bullet.GetComponent<Bullet>().ownerTag = owner.tag;
         bullet.GetComponent<Bullet>().airTime = airTime;
         bullet.GetComponent<Bullet>().createTime = Time.time;
 

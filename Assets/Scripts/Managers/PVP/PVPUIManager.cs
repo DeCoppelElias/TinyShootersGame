@@ -127,7 +127,7 @@ public class PVPUIManager : MonoBehaviour
         SetDashAbilityEnabled(player, false);
 
         DashAbility dashAbility = player.GetComponent<DashAbility>();
-        int cooldown = dashAbility.dashCooldown;
+        int cooldown = dashAbility.GetDashCooldown();
 
         Image image = ui.GetComponent<Image>();
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
@@ -157,7 +157,7 @@ public class PVPUIManager : MonoBehaviour
         SetReflectAbilityEnabled(player, false);
 
         ReflectShieldAbility reflectAbility = player.GetComponent<ReflectShieldAbility>();
-        int cooldown = reflectAbility.reflectShieldCooldown;
+        int cooldown = reflectAbility.GetReflectShieldCooldown();
 
         Image image = ui.GetComponent<Image>();
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);

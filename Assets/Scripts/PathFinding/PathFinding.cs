@@ -22,11 +22,9 @@ public class PathFinding : MonoBehaviour
         // Initialise size
         if (!customSize)
         {
-            Collider2D collider = GetComponentInChildren<Collider2D>();
-            if (collider != null)
-            {
-                size = collider.bounds.size.x;
-            }
+            Collider2D collider = GetComponent<Collider2D>();
+            if (collider == null) throw new Exception("Cannot find size because collider is missing");
+            size = collider.bounds.size.x;
         }
     }
 
@@ -139,7 +137,7 @@ public class PathFinding : MonoBehaviour
             GridTile current = openSet.Dequeue();
 
             // If we've reached the target, reconstruct the path
-            if (Vector3.Distance(current.location, target) < stepSize)
+            if (Vector3.Distance(current.location, target) < size)
             {
                 return ReconstructPath(current);
             }
@@ -262,10 +260,12 @@ public class PathFinding : MonoBehaviour
     /// <param name="from"></param>
     /// <param name="to"></param>
     /// <returns></returns>
-    public bool IsObstacleInBetween(Vector3 from, Vector3 to)
+    public bool IsObstacleInBetween(Vector3 from, Vector3 to, float distance = -1)
     {
+        if (distance <= 0) distance = Vector3.Distance(from, to);
+
         Vector3 raycastDirection = (to - from).normalized;
-        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, Vector3.Distance(from, to));
+        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, distance);
         if (RaycastHitsObstacle(rays)) return true;
 
         // Perpendicular vectors
@@ -274,12 +274,12 @@ public class PathFinding : MonoBehaviour
 
         Vector3 newFrom1 = from + (size * perpendicular1);
         raycastDirection = (to - newFrom1).normalized;
-        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, Vector3.Distance(newFrom1, to));
+        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, distance);
         if (RaycastHitsObstacle(rays)) return true;
 
         Vector3 newFrom2 = from + (size * perpendicular2);
         raycastDirection = (to - newFrom2).normalized;
-        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, Vector3.Distance(newFrom2, to));
+        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, distance);
         if (RaycastHitsObstacle(rays)) return true;
 
         return false;
@@ -300,6 +300,11 @@ public class PathFinding : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public float GetSize()
+    {
+        return this.size;
     }
 }
 

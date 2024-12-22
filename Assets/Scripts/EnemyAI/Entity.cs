@@ -29,7 +29,7 @@ public abstract class Entity : MonoBehaviour
 
     public enum DamageType { Ranged, Melee }
     private DamageType lastDamageType;
-    private Entity lastDamageSource;
+    private string lastDamageSourceTag;
 
     protected AudioManager audioManager;
     private WaveManager waveManager;
@@ -79,7 +79,7 @@ public abstract class Entity : MonoBehaviour
     public virtual void OnDeath()
     {
         // Give on death score to last damage source
-        if (lastDamageSource is Player)
+        if (lastDamageSourceTag == "Player")
         {
             GameObject scoreManagerObj = GameObject.Find("ScoreManager");
             if (scoreManagerObj != null)
@@ -106,13 +106,13 @@ public abstract class Entity : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(float amount, Entity source, DamageType damageType)
+    public virtual void TakeDamage(float amount, string sourceTag, DamageType damageType)
     {
         if (amount <= 0) return;
 
         this.health -= amount;
 
-        lastDamageSource = source;
+        lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
     }
 
@@ -128,7 +128,7 @@ public abstract class Entity : MonoBehaviour
         {
             lastContactHit = Time.time;
 
-            entity.TakeDamage(contactDamage, this, DamageType.Melee);
+            entity.TakeDamage(contactDamage, this.tag, DamageType.Melee);
         }
     }
 

@@ -13,13 +13,14 @@ public class Enemy : Entity
     private List<Vector3> dodgeObstaclePath;
     private float lastPathFindingRefresh = 0;
     private float pathFindingCooldown = 3f;
-    private float size = 0;
+    protected float size = 0;
 
     public Player player;
 
     private float refreshPlayerTargetCooldown = 2;
     private float lastPlayerRefresh = 0;
 
+    [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
 
     public override void StartEntity()
@@ -104,7 +105,7 @@ public class Enemy : Entity
         else if (movementState == MovementState.DodgingObstacle)
         {
             // If path is empty or there are no obstacles to the player, then return no normal state
-            if (dodgeObstaclePath.Count == 0 || IsPlayerDirectlyReachable(transform.position, targetPosition))
+            if (dodgeObstaclePath.Count == 0 || IsPositionDirectlyReachable(transform.position, targetPosition))
             {
                 dodgeObstaclePath.Clear();
                 movementState = MovementState.Normal;
@@ -142,7 +143,7 @@ public class Enemy : Entity
         {
             if (Time.time - lastPathFindingRefresh > pathFindingCooldown)
             {
-                if (IsPlayerDirectlyReachable(transform.position, targetPosition))
+                if (IsPositionDirectlyReachable(transform.position, targetPosition))
                 {
                     dodgeObstaclePath.Clear();
                     movementState = MovementState.Normal;
@@ -175,7 +176,7 @@ public class Enemy : Entity
         return false;
     }
 
-    public bool IsPlayerDirectlyReachable(Vector3 from, Vector3 to)
+    public bool IsPositionDirectlyReachable(Vector3 from, Vector3 to)
     {
         Vector3 raycastDirection = (to - from).normalized;
         RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, Vector3.Distance(from, to));
@@ -198,7 +199,7 @@ public class Enemy : Entity
         return true;
     }
 
-    public bool IsObstacleInDistance(Vector3 from, Vector3 to, float distance = 1)
+    private bool IsObstacleInDistance(Vector3 from, Vector3 to, float distance = 1)
     {
         Vector3 raycastDirection = (to - from).normalized;
         RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, distance);

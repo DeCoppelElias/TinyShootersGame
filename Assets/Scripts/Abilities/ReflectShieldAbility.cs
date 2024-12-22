@@ -8,55 +8,47 @@ public class ReflectShieldAbility : MonoBehaviour
     public GameObject playerReflectShield;
     public GameObject enemyReflectShield;
 
-    public enum ReflectShieldState { Ready, Reflecting, Cooldown}
-    [SerializeField]
-    public ReflectShieldState reflectShieldState;
+    [Header("Reflect Shield Settings")]
+    [SerializeField] private ReflectShieldState reflectShieldState;
+    private enum ReflectShieldState { Ready, Reflecting, Cooldown }
 
-    [SerializeField]
-    private float reflectShieldDuration = 0.2f;
-    public int reflectShieldCooldown = 3;
+    [SerializeField] private float reflectShieldDuration = 0.2f;
+    [SerializeField] private int reflectShieldCooldown = 3;
     private float reflectShieldStart = 0;
-    private float lastReflectShield;
-
-    private GameObject currentShield;
+    private float lastReflectShieldUse;
+    [SerializeField] private Sprite reflectBulletSprite;
 
     public UnityEvent onPerformed;
     public UnityEvent onReady;
+    private System.Action onComplete;
 
-    public Sprite relfectingBulletSprite;
+    private GameObject reflectShieldObject;
+
 
     private void Start()
     {
-        GameObject reflectShield = playerReflectShield;
-        if (GetComponent<Enemy>())
-        {
-            reflectShield = enemyReflectShield;
-        }
-        currentShield = Instantiate(reflectShield, transform.position, Quaternion.identity);
-        currentShield.transform.SetParent(transform);
-        currentShield.transform.localScale = new Vector3(1, 1, 1);
+        ReflectShield reflectShield = GetComponentInChildren<ReflectShield>();
+        if (reflectShield == null) throw new System.Exception("Reflect Shield is missing.");
 
-        currentShield.GetComponent<ReflectShield>().bulletSprite = relfectingBulletSprite;
-        currentShield.GetComponent<ReflectShield>().owner = GetComponent<Entity>();
-
-        currentShield.SetActive(false);
+        reflectShieldObject = reflectShield.gameObject;
+        reflectShieldObject.SetActive(false);
     }
 
-    public void EnableReflectShield()
+    public void EnableReflectShield(System.Action action = null)
     {
-        if (reflectShieldState == ReflectShieldState.Ready)
-        {
-            currentShield.SetActive(true);
-            reflectShieldState = ReflectShieldState.Reflecting;
-            reflectShieldStart = Time.time;
-        }
+        if (reflectShieldState != ReflectShieldState.Ready) return;
+
+        if (action != null) onComplete = action;
+        reflectShieldObject.SetActive(true);
+        reflectShieldState = ReflectShieldState.Reflecting;
+        reflectShieldStart = Time.time;
     }
 
     private void Update()
     {
         if (reflectShieldState == ReflectShieldState.Cooldown)
         {
-            if (Time.time - lastReflectShield > reflectShieldCooldown)
+            if (Time.time - lastReflectShieldUse > reflectShieldCooldown)
             {
                 reflectShieldState = ReflectShieldState.Ready;
 
@@ -71,14 +63,25 @@ public class ReflectShieldAbility : MonoBehaviour
             if (Time.time - reflectShieldStart > reflectShieldDuration)
             {
                 reflectShieldState = ReflectShieldState.Cooldown;
-                currentShield.SetActive(false);
-                lastReflectShield = Time.time;
+                reflectShieldObject.SetActive(false);
+                lastReflectShieldUse = Time.time;
 
                 if (onPerformed != null)
                 {
                     onPerformed.Invoke();
                 }
+                onComplete?.Invoke();
             }
         }
+    }
+
+    public int GetReflectShieldCooldown()
+    {
+        return this.reflectShieldCooldown;
+    }
+
+    public bool IsReflecting()
+    {
+        return this.reflectShieldState == ReflectShieldState.Reflecting;
     }
 }

@@ -8,7 +8,8 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Parameters")]
-    [SerializeField] private float targetVelocity;
+    [SerializeField] private float currentVelocity;
+    [SerializeField] private float acceleration = 5;
     private enum MovementState { Normal, Knockback, Reduced, }
     [SerializeField] private MovementState movementState = MovementState.Normal;
 
@@ -43,9 +44,9 @@ public class PlayerMovement : MonoBehaviour
         this.dashAbility = this.GetComponent<DashAbility>();
         this.shootAbility = this.GetComponent<ShootingAbility>();
 
-        this.targetVelocity = player.moveSpeed;
+        this.currentVelocity = player.moveSpeed;
 
-        this.spriteRenderer = transform.Find("PlayerSprite").GetComponent<SpriteRenderer>();
+        this.spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -58,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         // Don't move if dashing
-        if (dashAbility != null && (dashAbility.dashingState == DashAbility.DashingState.Dashing || dashAbility.dashingState == DashAbility.DashingState.Charging)) return;
+        if (dashAbility != null && (dashAbility.Dashing() || dashAbility.Charging())) return;
 
         // If knockback, move in knockback direction
         if (this.movementState == MovementState.Knockback)
@@ -73,24 +74,22 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (this.movementState == MovementState.Normal)
         {
-            playerRB.velocity = currentMoveDirection * player.moveSpeed;
+            currentVelocity = Mathf.Min(currentVelocity + (acceleration * Time.deltaTime), player.moveSpeed);
+            playerRB.velocity = currentMoveDirection * currentVelocity;
 
             // Slow down if shooting
             if (shootAbility != null && shootAbility.shooting)
             {
                 this.movementState = MovementState.Reduced;
+                currentVelocity = shootAbility.shootingMoveSpeed;
             }
         }
         else if (this.movementState == MovementState.Reduced)
         {
-            playerRB.velocity = currentMoveDirection * shootAbility.shootingMoveSpeed;
+            playerRB.velocity = currentMoveDirection * currentVelocity;
 
-            // If shooting is done, return to normal movement after delay
-            if (shootAbility != null && shootAbility.shooting)
-            {
-                lastShot = Time.time;
-            }
-            else if (Time.time - lastShot > 0.2f)
+            // If shooting is done, accelerate to normal movespeed
+            if (shootAbility != null && !shootAbility.shooting)
             {
                 this.movementState = MovementState.Normal;
             }

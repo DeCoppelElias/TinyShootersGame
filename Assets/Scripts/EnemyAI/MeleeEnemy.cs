@@ -8,6 +8,6 @@ public class MeleeEnemy : Enemy
     {
         base.UpdateEntity();
 
-        WalkToPlayerUpdate();
+        //WalkToPlayerUpdate();
     }
 }

@@ -77,7 +77,7 @@ public class TutorialManager : MonoBehaviour
         }
         else if (tutorialState == TutorialState.Dash)
         {
-            if (player.GetComponent<DashAbility>().dashingState == DashAbility.DashingState.Dashing)
+            if (player.GetComponent<DashAbility>().Dashing())
             {
                 tutorialState = TutorialState.Pause;
                 doneText.text = "Done!";
@@ -90,7 +90,7 @@ public class TutorialManager : MonoBehaviour
         }
         else if (tutorialState == TutorialState.Reflect)
         {
-            if (player.GetComponent<ReflectShieldAbility>().reflectShieldState == ReflectShieldAbility.ReflectShieldState.Reflecting)
+            if (player.GetComponent<ReflectShieldAbility>().IsReflecting())
             {
                 tutorialState = TutorialState.Pause;
                 doneText.text = "Done!";

@@ -20,7 +20,7 @@ public class ChargingMeleeEnemy : Enemy
 
         Vector3 raycastDirection = player.transform.position - transform.position;
         RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
-        if (Vector2.Distance(gameObject.transform.position, player.transform.position) < dashAbility.GetDashingDistance() && !RaycastContainsObstacle(rays) && dashAbility.dashingState == DashAbility.DashingState.Ready)
+        /*if (Vector2.Distance(gameObject.transform.position, player.transform.position) < dashAbility.GetDashingDistance() && !RaycastContainsObstacle(rays) && dashAbility.dashingState == DashAbility.DashingState.Ready)
         {
             Vector3 dashDirection = player.transform.position - transform.position;
             dashAbility.Dash(dashDirection);
@@ -29,6 +29,6 @@ public class ChargingMeleeEnemy : Enemy
         {
             float step = moveSpeed * Time.deltaTime;
             transform.position = Vector2.MoveTowards(transform.position, player.transform.position, step);
-        }
+        }*/
     }
 }

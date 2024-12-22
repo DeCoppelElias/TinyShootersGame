@@ -194,7 +194,7 @@ public class UIManager : MonoBehaviour
         dashAbilityEnabled = false;
 
         DashAbility dashAbility = player.GetComponent<DashAbility>();
-        int cooldown = dashAbility.dashCooldown;
+        int cooldown = dashAbility.GetDashCooldown();
 
         Image image = dashAbilityUI.GetComponent<Image>();
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
@@ -222,7 +222,7 @@ public class UIManager : MonoBehaviour
         reflectAbilityEnabled = false;
 
         ReflectShieldAbility reflectAbility = player.GetComponent<ReflectShieldAbility>();
-        int cooldown = reflectAbility.reflectShieldCooldown;
+        int cooldown = reflectAbility.GetReflectShieldCooldown();
 
         Image image = reflectAbilityUI.GetComponent<Image>();
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
