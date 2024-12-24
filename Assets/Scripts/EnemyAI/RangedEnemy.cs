@@ -23,7 +23,7 @@ public class RangedEnemy : Enemy
 
     private void LookAtPlayer()
     {
-        Vector2 lookDir = (player.transform.position - gameObject.transform.position).normalized;
+        Vector2 lookDir = (targetPlayer.transform.position - gameObject.transform.position).normalized;
         enemySprite.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDir);
     }
 
@@ -59,10 +59,10 @@ public class RangedEnemy : Enemy
 
     public bool IsPlayerShootable()
     {
-        if (player == null) return false;
-        if (Vector3.Distance(this.transform.position, player.transform.position) > range) return false;
+        if (targetPlayer == null) return false;
+        if (Vector3.Distance(this.transform.position, targetPlayer.transform.position) > range) return false;
 
-        Vector3 to = player.transform.position;
+        Vector3 to = targetPlayer.transform.position;
         Vector3 from = this.transform.position;
 
         Vector3 raycastDirection = (to - from).normalized;
@@ -73,12 +73,12 @@ public class RangedEnemy : Enemy
         Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
         Vector3 perpendicular2 = new Vector3(raycastDirection.y, -raycastDirection.x, raycastDirection.z);
 
-        Vector3 newFrom1 = from + (0.2f * size * perpendicular1);
+        Vector3 newFrom1 = from + (size * perpendicular1);
         raycastDirection = (to - newFrom1).normalized;
         rays = Physics2D.RaycastAll(newFrom1, raycastDirection, Vector3.Distance(newFrom1, to));
         if (RaycastContainsWall(rays)) return false;
 
-        Vector3 newFrom2 = from + (0.2f * size * perpendicular2);
+        Vector3 newFrom2 = from + (size * perpendicular2);
         raycastDirection = (to - newFrom2).normalized;
         rays = Physics2D.RaycastAll(newFrom2, raycastDirection, Vector3.Distance(newFrom2, to));
         if (RaycastContainsWall(rays)) return false;

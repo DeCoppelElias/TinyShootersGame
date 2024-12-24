@@ -4,21 +4,22 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
-    public Vector3 bulletDirection;
-    public bool bulletTrigger;
+    [Header("Target Player Settings")]
+    [SerializeField] protected Player targetPlayer;
+    [SerializeField] private float refreshPlayerTargetCooldown = 2;
+    private float lastPlayerRefresh = 0;
 
-    private enum MovementState { Normal, DodgingObstacle, NoPathToPosition}
-    [SerializeField] private MovementState movementState = MovementState.Normal;
-    private PathFinding pathFinder;
-    private List<Vector3> dodgeObstaclePath;
-    private float lastPathFindingRefresh = 0;
-    private float pathFindingCooldown = 3f;
+    [Header("Collider Size")]
     protected float size = 0;
 
-    public Player player;
-
-    private float refreshPlayerTargetCooldown = 2;
-    private float lastPlayerRefresh = 0;
+    [Header("On-Hit Color Change")]
+    [SerializeField] private Color damageColor = Color.red;
+    [SerializeField] private float colorChangeDuration = 1f;
+    [SerializeField] private ColorChangeState colorChangeState = ColorChangeState.Nothing;
+    private enum ColorChangeState { Nothing, ToDamageColor, ToOriginalColor }
+    private SpriteRenderer spriteRenderer;
+    private float startColorChange = 0;
+    private Color originalColor;
 
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
@@ -27,14 +28,13 @@ public class Enemy : Entity
     {
         base.StartEntity();
 
-        player = FindClosestPlayer();
-        pathFinder = GetComponent<PathFinding>();
+        spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
 
-        Collider2D collider = GetComponentInChildren<Collider2D>();
-        if (collider != null)
-        {
-            size = collider.bounds.size.x;
-        }
+        targetPlayer = FindClosestPlayer();
+
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider == null) throw new System.Exception("Cannot find size because collider is missing");
+        size = collider.bounds.size.x;
     }
 
     private Player FindClosestPlayer()
@@ -62,163 +62,59 @@ public class Enemy : Entity
     {
         base.UpdateEntity();
 
+        RefreshPlayerUpdate();
+        ColorUpdate();
+    }
+
+    private void RefreshPlayerUpdate()
+    {
         if (Time.time - lastPlayerRefresh > refreshPlayerTargetCooldown)
         {
-            this.player = FindClosestPlayer();
+            this.targetPlayer = FindClosestPlayer();
         }
     }
 
-    public void WalkToPlayerUpdate()
+    private void ColorUpdate()
     {
-        if (player == null) return;
-        WalkToPositionUpdate(player.transform.position);
-    }
-
-    public void WalkToPositionUpdate(Vector3 targetPosition)
-    {
-        float step = moveSpeed * Time.deltaTime;
-        // If there are no obstacles between enemy and player, move towards player
-        if (movementState == MovementState.Normal)
+        if (colorChangeState == ColorChangeState.ToDamageColor)
         {
-            transform.position = Vector2.MoveTowards(transform.position, targetPosition, step);
+            float p = Mathf.Clamp((Time.time - startColorChange) / (0.5f * colorChangeDuration), 0, 1);
+            spriteRenderer.color = Color.Lerp(originalColor, damageColor, p);
 
-            // If there is an obstacle blocking the way, try to find a path to player and change state
-            if (IsObstacleInDistance(transform.position, targetPosition))
+            if (p == 1)
             {
-                dodgeObstaclePath = pathFinder.FindShortestPath(transform.position, targetPosition);
-                lastPathFindingRefresh = Time.time;
-
-                // There is an existing path
-                if (dodgeObstaclePath.Count > 0)
-                {
-                    dodgeObstaclePath = pathFinder.SmoothRoute(dodgeObstaclePath);
-                    if (debug) pathFinder.DisplayRoute(dodgeObstaclePath);
-                    movementState = MovementState.DodgingObstacle;
-                }
-                // There exists no path
-                else
-                {
-                    movementState = MovementState.NoPathToPosition;
-                }
+                startColorChange = Time.time;
+                colorChangeState = ColorChangeState.ToOriginalColor;
             }
         }
-        else if (movementState == MovementState.DodgingObstacle)
+        else if (colorChangeState == ColorChangeState.ToOriginalColor)
         {
-            // If path is empty or there are no obstacles to the player, then return no normal state
-            if (dodgeObstaclePath.Count == 0 || IsPositionDirectlyReachable(transform.position, targetPosition))
-            {
-                dodgeObstaclePath.Clear();
-                movementState = MovementState.Normal;
-            }
-            // Otherwise, move to next point in route
-            else
-            {
-                transform.position = Vector2.MoveTowards(transform.position, dodgeObstaclePath[0], step);
-                if (Vector3.Distance(transform.position, dodgeObstaclePath[0]) <= 0.2f * size)
-                {
-                    dodgeObstaclePath.RemoveAt(0);
-                }
+            float p = Mathf.Clamp((Time.time - startColorChange) / (0.5f * colorChangeDuration), 0, 1);
+            spriteRenderer.color = Color.Lerp(damageColor, originalColor, p);
 
-                // Refresh route every few seconds
-                if (Time.time - lastPathFindingRefresh > pathFindingCooldown)
-                {
-                    dodgeObstaclePath = pathFinder.FindShortestPath(transform.position, targetPosition);
-                    lastPathFindingRefresh = Time.time;
-
-                    // There is an existing path
-                    if (dodgeObstaclePath.Count > 0)
-                    {
-                        dodgeObstaclePath = pathFinder.SmoothRoute(dodgeObstaclePath);
-                        if (debug) pathFinder.DisplayRoute(dodgeObstaclePath);
-                    }
-                    // There exists no path
-                    else
-                    {
-                        movementState = MovementState.NoPathToPosition;
-                    }
-                }
-            }
-        }
-        else if (movementState == MovementState.NoPathToPosition)
-        {
-            if (Time.time - lastPathFindingRefresh > pathFindingCooldown)
+            if (p == 1)
             {
-                if (IsPositionDirectlyReachable(transform.position, targetPosition))
-                {
-                    dodgeObstaclePath.Clear();
-                    movementState = MovementState.Normal;
-                }
-                else
-                {
-                    dodgeObstaclePath = pathFinder.FindShortestPath(transform.position, targetPosition);
-                    lastPathFindingRefresh = Time.time;
-
-                    // There is an existing path
-                    if (dodgeObstaclePath.Count > 0)
-                    {
-                        dodgeObstaclePath = pathFinder.SmoothRoute(dodgeObstaclePath);
-                        if (debug) pathFinder.DisplayRoute(dodgeObstaclePath);
-                    }
-                }
+                colorChangeState = ColorChangeState.Nothing;
             }
         }
     }
 
-    public bool RaycastContainsObstacle(RaycastHit2D[] rays)
+    private void StartColorChange()
     {
-        foreach (RaycastHit2D ray in rays)
-        {
-            if (ray.transform.CompareTag("Wall") || ray.transform.CompareTag("Pit"))
-            {
-                return true;
-            }
-        }
-        return false;
+        if (colorChangeState == ColorChangeState.Nothing) originalColor = spriteRenderer.color;
+        startColorChange = Time.time;
+        colorChangeState = ColorChangeState.ToDamageColor;
     }
 
-    public bool IsPositionDirectlyReachable(Vector3 from, Vector3 to)
+    public override void TakeDamage(float amount, string sourceTag, DamageType damageType)
     {
-        Vector3 raycastDirection = (to - from).normalized;
-        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, Vector3.Distance(from, to));
-        if (RaycastContainsObstacle(rays)) return false;
+        base.TakeDamage(amount, sourceTag, damageType);
 
-        // Perpendicular vectors
-        Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
-        Vector3 perpendicular2 = new Vector3(raycastDirection.y, -raycastDirection.x, raycastDirection.z);
-
-        Vector3 newFrom1 = from + (0.2f * size * perpendicular1);
-        raycastDirection = (to - newFrom1).normalized;
-        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, Vector3.Distance(newFrom1, to));
-        if (RaycastContainsObstacle(rays)) return false;
-
-        Vector3 newFrom2 = from + (0.2f * size * perpendicular2);
-        raycastDirection = (to - newFrom2).normalized;
-        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, Vector3.Distance(newFrom2, to));
-        if (RaycastContainsObstacle(rays)) return false;
-
-        return true;
+        StartColorChange();
     }
 
-    private bool IsObstacleInDistance(Vector3 from, Vector3 to, float distance = 1)
+    public Player GetTargetPlayer()
     {
-        Vector3 raycastDirection = (to - from).normalized;
-        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, distance);
-        if (RaycastContainsObstacle(rays)) return true;
-
-        // Perpendicular vectors
-        Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
-        Vector3 perpendicular2 = new Vector3(raycastDirection.y, -raycastDirection.x, raycastDirection.z);
-
-        Vector3 newFrom1 = from + (0.2f * size * perpendicular1);
-        raycastDirection = (to - newFrom1).normalized;
-        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, distance);
-        if (RaycastContainsObstacle(rays)) return true;
-
-        Vector3 newFrom2 = from + (0.2f * size * perpendicular2);
-        raycastDirection = (to - newFrom2).normalized;
-        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, distance);
-        if (RaycastContainsObstacle(rays)) return true;
-
-        return false;
+        return this.targetPlayer;
     }
 }
