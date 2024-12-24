@@ -341,13 +341,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cef1dd1f90f86744b811a990fc4971f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  health: 100
+  maxHealth: 200
+  health: 200
   damage: 10
   moveSpeed: 3
   contactDamage: 10
   contactHitCooldown: 1
-  onDeathScore: 100
+  onDeathScore: 200
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
   outOfBounds: 0
