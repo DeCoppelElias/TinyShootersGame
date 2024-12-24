@@ -23,9 +23,6 @@ public class BulletTrigger : MonoBehaviour
         {
             Vector3 bulletDirection = collision.GetComponent<Rigidbody2D>().velocity.normalized;
             triggerAction(bulletDirection);
-
-            gameObject.GetComponentInParent<Enemy>().bulletTrigger = true;
-            gameObject.GetComponentInParent<Enemy>().bulletDirection = bulletDirection;
         }
     }
 

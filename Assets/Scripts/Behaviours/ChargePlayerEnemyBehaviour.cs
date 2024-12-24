@@ -2,27 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Enemy), typeof(DashAbility))]
+[RequireComponent(typeof(Enemy), typeof(DashAbility), typeof(PathFinding))]
 public class ChargePlayerEnemyBehaviour : MonoBehaviour
 {
     private Enemy owner;
     private DashAbility dashAbility;
     private MovementBehaviour movementBehaviour;
+    private PathFinding pathFinding;
 
     private void Start()
     {
         owner = GetComponent<Enemy>();
         dashAbility = GetComponent<DashAbility>();
+        pathFinding = GetComponent<PathFinding>();
         movementBehaviour = GetComponent<MovementBehaviour>();
     }
 
     private void Update()
     {
-        if (owner.player != null)
+        if (owner.GetTargetPlayer() != null)
         {
-            Vector3 dashDirection = owner.player.transform.position - transform.position;
-            if (Vector3.Distance(owner.player.transform.position, this.transform.position) < dashAbility.GetDashingDistance() &&
-                owner.IsPositionDirectlyReachable(this.transform.position, owner.player.transform.position) && dashAbility.Ready())
+            Vector3 dashDirection = owner.GetTargetPlayer().transform.position - transform.position;
+            if (Vector3.Distance(owner.GetTargetPlayer().transform.position, this.transform.position) < dashAbility.GetDashingDistance() &&
+                !pathFinding.IsObstacleInBetween(this.transform.position, owner.GetTargetPlayer().transform.position) && dashAbility.Ready())
             {
                 if (movementBehaviour != null) movementBehaviour.EnableMovement(false);
                 dashAbility.Dash(dashDirection, () => {

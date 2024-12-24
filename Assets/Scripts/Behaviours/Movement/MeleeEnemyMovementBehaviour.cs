@@ -19,6 +19,6 @@ public class MeleeEnemyMovementBehaviour : MovementBehaviour
     {
         base.Update();
 
-        if (owner != null && owner.player != null) WalkToPosition(owner.player.transform.position);
+        if (owner != null && owner.GetTargetPlayer() != null) WalkToPosition(owner.GetTargetPlayer().transform.position);
     }
 }

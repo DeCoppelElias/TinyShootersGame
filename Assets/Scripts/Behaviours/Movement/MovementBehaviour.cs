@@ -6,7 +6,8 @@ using UnityEngine;
 public abstract class MovementBehaviour : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 3;
+    [SerializeField] private float moveSpeed = 2;
+    [SerializeField] private float currentMoveSpeed;
     private enum MovementBehaviourState { Enabled, WalkingToPosition, Disabled}
     [SerializeField] private MovementBehaviourState movementBehaviourState = MovementBehaviourState.Enabled;
 
@@ -26,6 +27,7 @@ public abstract class MovementBehaviour : MonoBehaviour
     protected virtual void Start()
     {
         pathFinder = GetComponent<PathFinding>();
+        currentMoveSpeed = moveSpeed;
     }
 
     // Update is called once per frame
@@ -37,8 +39,14 @@ public abstract class MovementBehaviour : MonoBehaviour
         }
     }
 
-    public void WalkToPosition(Vector3 position)
+    public void WalkToPosition(Vector3 position, float customMoveSpeedPercentage = -1)
     {
+        if (customMoveSpeedPercentage < 0) currentMoveSpeed = moveSpeed;
+        else
+        {
+            currentMoveSpeed = moveSpeed * customMoveSpeedPercentage;
+        }
+
         if (movementBehaviourState == MovementBehaviourState.Enabled)
         {
             walkToPositionState = WalkToPositionState.Normal;
@@ -72,7 +80,7 @@ public abstract class MovementBehaviour : MonoBehaviour
 
     private void WalkToPositionUpdate(Vector3 position)
     {
-        float step = moveSpeed * Time.deltaTime;
+        float step = currentMoveSpeed * Time.deltaTime;
         // If there are no obstacles between enemy and player, move towards player
         if (walkToPositionState == WalkToPositionState.Normal)
         {
