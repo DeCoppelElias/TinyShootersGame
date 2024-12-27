@@ -8,12 +8,18 @@ Done:
 - Add pits (can't move over them but can shoot over them)
 - Add more enemy types
 - Make ranged enemies move towards a closer range while shooting at reduced speed. This will also make them follow when the player moves.
-
-TODO:
 - Shadow renderers toevoegen aan alle enemies
 - Ranged enemies movement behavior testen + parameters doen bij alle enemies.
-- Add more decorative tiles
 - Hit visual when enemies are hit
+- Bullets disappear cleanly when max range is reached
+- Make Shooting Animations.
+- Check if alternative sprites still work
+
+TODO:
+- Set Pause on the tab button, change the button to change skin.
+- If you leave the game in the pause menu, save score if max score.
+- Add shooting sound or sound when enemies are hit
+- Add more decorative tiles
 - Shooting animation
 - Update pvp screen so player can choose the number of rounds
 - Create multiple pvp arenas that the players can either choose or just randomly

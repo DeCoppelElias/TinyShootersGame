@@ -55,17 +55,11 @@ TagManager:
   - name: Ground
     uniqueID: 2774863399
     locked: 0
-  - name: Wall
+  - name: Bullet
     uniqueID: 3068475531
     locked: 0
-  - name: Pit
-    uniqueID: 2084432647
-    locked: 0
-  - name: Entitiy
+  - name: Play Area
     uniqueID: 1934459445
-    locked: 0
-  - name: Player
-    uniqueID: 3138839355
     locked: 0
   - name: Debug
     uniqueID: 3309737535
