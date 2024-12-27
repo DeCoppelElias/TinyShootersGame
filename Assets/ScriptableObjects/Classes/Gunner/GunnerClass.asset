@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: GunnerClass
   m_EditorClassIdentifier: 
   className: Gunner
-  blueSprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
-  alternativeSprites:
-  - {fileID: 21300000, guid: df7bdee88f54a7c4b9003cc6656f7457, type: 3}
-  - {fileID: 21300000, guid: 03c18aa859647ad4d9dc500b4a919ca2, type: 3}
+  animatorController: {fileID: 9100000, guid: e37d3cc0182d00348beaafbfa2d332be, type: 2}
+  UISprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
   maxHealth: 150
   pvpMaxHealth: 200
   health: 100

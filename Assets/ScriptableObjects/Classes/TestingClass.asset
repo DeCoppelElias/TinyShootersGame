@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TestingClass
   m_EditorClassIdentifier: 
   className: Testing
-  blueSprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
-  redSprite: {fileID: 21300000, guid: 6c4464aabe943ec43b079e4972787f69, type: 3}
+  animatorController: {fileID: 9100000, guid: e0a729f45a778f44f9703b2abee46df7, type: 2}
+  UISprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
   maxHealth: 100
   pvpMaxHealth: 100
   health: 100
