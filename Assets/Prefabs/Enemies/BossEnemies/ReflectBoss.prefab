@@ -137,7 +137,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -284,10 +284,11 @@ MonoBehaviour:
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  movementState: 0
-  player: {fileID: 0}
+  targetPlayer: {fileID: 0}
+  refreshPlayerTargetCooldown: 2
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 1
+  colorChangeState: 0
   debug: 0
 --- !u!114 &4410656640601244863
 MonoBehaviour:
@@ -301,11 +302,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4023a8ad54ac9134fb89862f0578d510, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  moveSpeed: 2.5
+  currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
   walkToPositionState: 0
-  pathFindingRefreshCooldown: 1
   debug: 0
 --- !u!1001 &65894237822582570
 PrefabInstance:
@@ -384,6 +385,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ReflectShield
       objectReference: {fileID: 0}
+    - target: {fileID: 3286964448592694954, guid: 857c962a268e9334da8fd2366430cf18, type: 3}
+      propertyPath: bulletSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 527fac237c2d6e040b5d78b91144a2bf, type: 3}
     - target: {fileID: 3286964448592694955, guid: 857c962a268e9334da8fd2366430cf18, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

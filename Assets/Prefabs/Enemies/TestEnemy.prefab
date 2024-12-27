@@ -196,10 +196,11 @@ MonoBehaviour:
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  movementState: 0
-  player: {fileID: 0}
+  targetPlayer: {fileID: 0}
+  refreshPlayerTargetCooldown: 2
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 1
+  colorChangeState: 0
   debug: 1
 --- !u!114 &-3134140967621000427
 MonoBehaviour:
@@ -213,11 +214,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4023a8ad54ac9134fb89862f0578d510, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  moveSpeed: 2
+  currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
   walkToPositionState: 0
-  pathFindingRefreshCooldown: 1
   debug: 0
 --- !u!1 &762498617282380404
 GameObject:

@@ -250,6 +250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullets: {fileID: 0}
+  damage: 25
   attackCooldown: 2
   range: 10
   pierce: 1
@@ -269,7 +270,6 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3904042468818896706, guid: 7709d2fb16adc5b44aa98577c92a9be6, type: 3}
   firePoint: {fileID: 1108159613198680592}
   owner: {fileID: 0}
-  damage: 0
   onShoot:
     m_PersistentCalls:
       m_Calls: []
@@ -353,10 +353,11 @@ MonoBehaviour:
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  movementState: 0
-  player: {fileID: 0}
+  targetPlayer: {fileID: 0}
+  refreshPlayerTargetCooldown: 2
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 1
+  colorChangeState: 0
   debug: 0
 --- !u!114 &-2126329393386220075
 MonoBehaviour:
@@ -370,12 +371,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1485f5c01b6d6c44eae39c72df7b7366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  moveSpeed: 2
+  currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
   walkToPositionState: 0
-  pathFindingRefreshCooldown: 1
   debug: 0
+  shootingMoveSpeedReduction: 0.8
+  movementTargetDistance: 0.8
 --- !u!114 &8935053601394649553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,6 +470,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ReflectShield
       objectReference: {fileID: 0}
+    - target: {fileID: 3286964448592694954, guid: 857c962a268e9334da8fd2366430cf18, type: 3}
+      propertyPath: bulletSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 527fac237c2d6e040b5d78b91144a2bf, type: 3}
     - target: {fileID: 3286964448592694955, guid: 857c962a268e9334da8fd2366430cf18, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

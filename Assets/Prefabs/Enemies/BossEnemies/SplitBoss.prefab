@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2331074960454545683}
   - component: {fileID: 2946369932668950615}
   m_Layer: 0
-  m_Name: EnemySprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,7 +113,7 @@ Transform:
   m_GameObject: {fileID: 7786780218830473604}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4, y: 4, z: 4}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_Children:
   - {fileID: 3345260247145614668}
   - {fileID: 2331074960454545683}
@@ -176,10 +176,11 @@ MonoBehaviour:
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  movementState: 0
-  player: {fileID: 0}
+  targetPlayer: {fileID: 0}
+  refreshPlayerTargetCooldown: 2
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 1
+  colorChangeState: 0
   debug: 0
   splitAmount: 0
 --- !u!114 &-6738169185948307475
@@ -214,7 +215,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.25
 --- !u!114 &8105387792493017650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,11 +228,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4023a8ad54ac9134fb89862f0578d510, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  moveSpeed: 2
+  currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
   walkToPositionState: 0
-  pathFindingRefreshCooldown: 1
   debug: 0
 --- !u!1001 &6231425947270612647
 PrefabInstance:
