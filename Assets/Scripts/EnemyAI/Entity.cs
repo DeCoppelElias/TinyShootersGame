@@ -9,8 +9,6 @@ public abstract class Entity : MonoBehaviour
     [Header("Basic Entity Stats")]
     public float maxHealth = 100;
     public float health = 100;
-    public float damage = 10;
-    public float moveSpeed = 3;
 
     public float contactDamage = 10;
     public float contactHitCooldown = 1f;

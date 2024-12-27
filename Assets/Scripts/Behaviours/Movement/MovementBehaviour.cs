@@ -16,9 +16,9 @@ public abstract class MovementBehaviour : MonoBehaviour
     private enum WalkToPositionState { Normal, DodgingObstacle, NoPathToPosition }
     [SerializeField] private WalkToPositionState walkToPositionState = WalkToPositionState.Normal;
     private PathFinding pathFinder;
-    private List<Vector3> dodgeObstaclePath;
+    private List<Vector3> currentPath;
     private float lastPathFindingRefresh = 0;
-    [SerializeField] private float pathFindingRefreshCooldown = 1f;
+    private float pathFindingRefreshCooldown = 3f;
 
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
@@ -28,6 +28,8 @@ public abstract class MovementBehaviour : MonoBehaviour
     {
         pathFinder = GetComponent<PathFinding>();
         currentMoveSpeed = moveSpeed;
+
+        walkToPositionState = WalkToPositionState.Normal;
     }
 
     // Update is called once per frame
@@ -89,14 +91,14 @@ public abstract class MovementBehaviour : MonoBehaviour
             // If there is an obstacle blocking the way, try to find a path to player and change state
             if (pathFinder.IsObstacleInBetween(transform.position, position, 1))
             {
-                dodgeObstaclePath = pathFinder.FindShortestPath(transform.position, position);
+                currentPath = pathFinder.FindShortestPath(transform.position, position);
                 lastPathFindingRefresh = Time.time;
 
                 // There is an existing path
-                if (dodgeObstaclePath.Count > 0)
+                if (currentPath.Count > 0)
                 {
-                    dodgeObstaclePath = pathFinder.SmoothRoute(dodgeObstaclePath);
-                    if (debug) pathFinder.DisplayRoute(dodgeObstaclePath);
+                    currentPath = pathFinder.SmoothRoute(currentPath);
+                    if (debug) pathFinder.DisplayRoute(currentPath);
                     walkToPositionState = WalkToPositionState.DodgingObstacle;
                 }
                 // There exists no path
@@ -109,31 +111,31 @@ public abstract class MovementBehaviour : MonoBehaviour
         else if (walkToPositionState == WalkToPositionState.DodgingObstacle)
         {
             // If path is empty or there are no obstacles to the player, then return no normal state
-            if (dodgeObstaclePath.Count == 0 || !pathFinder.IsObstacleInBetween(transform.position, position))
+            if (currentPath.Count == 0 || !pathFinder.IsObstacleInBetween(transform.position, position))
             {
-                dodgeObstaclePath.Clear();
+                currentPath.Clear();
                 walkToPositionState = WalkToPositionState.Normal;
             }
             // Otherwise, move to next point in route
             else
             {
-                transform.position = Vector2.MoveTowards(transform.position, dodgeObstaclePath[0], step);
-                if (Vector3.Distance(transform.position, dodgeObstaclePath[0]) <= 0.1f * pathFinder.GetSize())
+                transform.position = Vector2.MoveTowards(transform.position, currentPath[0], step);
+                if (Vector3.Distance(transform.position, currentPath[0]) <= 0.1f * pathFinder.GetSize())
                 {
-                    dodgeObstaclePath.RemoveAt(0);
+                    currentPath.RemoveAt(0);
                 }
 
                 // Refresh route every few seconds
                 if (Time.time - lastPathFindingRefresh > pathFindingRefreshCooldown)
                 {
-                    dodgeObstaclePath = pathFinder.FindShortestPath(transform.position, position);
+                    currentPath = pathFinder.FindShortestPath(transform.position, position);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path
-                    if (dodgeObstaclePath.Count > 0)
+                    if (currentPath.Count > 0)
                     {
-                        dodgeObstaclePath = pathFinder.SmoothRoute(dodgeObstaclePath);
-                        if (debug) pathFinder.DisplayRoute(dodgeObstaclePath);
+                        currentPath = pathFinder.SmoothRoute(currentPath);
+                        if (debug) pathFinder.DisplayRoute(currentPath);
                     }
                     // There exists no path
                     else
@@ -149,19 +151,19 @@ public abstract class MovementBehaviour : MonoBehaviour
             {
                 if (!pathFinder.IsObstacleInBetween(transform.position, position))
                 {
-                    dodgeObstaclePath.Clear();
+                    currentPath.Clear();
                     walkToPositionState = WalkToPositionState.Normal;
                 }
                 else
                 {
-                    dodgeObstaclePath = pathFinder.FindShortestPath(transform.position, position);
+                    currentPath = pathFinder.FindShortestPath(transform.position, position);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path
-                    if (dodgeObstaclePath.Count > 0)
+                    if (currentPath.Count > 0)
                     {
-                        dodgeObstaclePath = pathFinder.SmoothRoute(dodgeObstaclePath);
-                        if (debug) pathFinder.DisplayRoute(dodgeObstaclePath);
+                        currentPath = pathFinder.SmoothRoute(currentPath);
+                        if (debug) pathFinder.DisplayRoute(currentPath);
 
                         walkToPositionState = WalkToPositionState.DodgingObstacle;
                     }

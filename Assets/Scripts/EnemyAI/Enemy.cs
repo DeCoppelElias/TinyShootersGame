@@ -35,6 +35,8 @@ public class Enemy : Entity
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null) throw new System.Exception("Cannot find size because collider is missing");
         size = collider.bounds.size.x;
+
+        colorChangeState = ColorChangeState.Nothing;
     }
 
     private Player FindClosestPlayer()

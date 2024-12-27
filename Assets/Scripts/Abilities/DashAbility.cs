@@ -122,14 +122,14 @@ public class DashAbility : MonoBehaviour
     }
 
     public void ApplyClass(Class playerClass) 
-    { 
-        if (playerClass.hasDashAbility)
-        {
-            dashCooldown = playerClass.dashCooldown;
-            dashDuration = playerClass.dashDuration;
-            chargeDuration = playerClass.chargeDuration;
-            dashSpeed = playerClass.dashSpeed;
-        }
+    {
+        if (playerClass == null) return;
+        if (!playerClass.hasDashAbility) return;
+
+        dashCooldown = playerClass.dashCooldown;
+        dashDuration = playerClass.dashDuration;
+        chargeDuration = playerClass.chargeDuration;
+        dashSpeed = playerClass.dashSpeed;
     }
 
     public bool Dashing()

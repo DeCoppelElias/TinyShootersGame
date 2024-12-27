@@ -22,7 +22,7 @@ public class LittleGunner : MonoBehaviour
     {
         owner = entity;
         shootingAbility = this.GetComponent<ShootingAbility>();
-        shootingAbility.damage = entity.damage / 2;
+        shootingAbility.damage = entity.GetComponent<ShootingAbility>().damage / 2;
         shootingAbility.owner = owner;
     }
 

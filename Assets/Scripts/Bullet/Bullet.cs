@@ -8,7 +8,7 @@ public class Bullet : MonoBehaviour
     public float pierce;
     public float damage;
     public float airTime;
-    public float createTime;
+    private float createTime;
     public bool hit = false;
 
     public bool splitOnHit = false;
@@ -22,12 +22,25 @@ public class Bullet : MonoBehaviour
 
     public string ownerTag;
 
+    private SpriteRenderer spriteRenderer;
+
+    private void Start()
+    {
+        createTime = Time.time;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     private void Update()
     {
-        if(!hit && Time.time > createTime + airTime)
+        if(!hit && Time.time - createTime > airTime)
         {
             BulletMiss();
         }
+
+        float p = Mathf.Clamp((Time.time - createTime - (0.8f * airTime)) / (0.2f * airTime), 0, 1);
+        Color originalColor = spriteRenderer.color;
+        originalColor.a = 1f - p;
+        spriteRenderer.color = originalColor;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -78,7 +91,8 @@ public class Bullet : MonoBehaviour
             }
         }
     }
-    public void CreateSplitBullet(float currentAngle)
+
+    private void CreateSplitBullet(float currentAngle)
     {
         Vector3 vector = Quaternion.Euler(0, 0, currentAngle) * Vector3.up;
         GameObject bullet = Instantiate(gameObject, transform.position + vector/3, Quaternion.identity,transform.parent);
@@ -88,7 +102,6 @@ public class Bullet : MonoBehaviour
         bullet.GetComponent<Bullet>().damage = damage * splitDamagePercentage;
         bullet.GetComponent<Bullet>().ownerTag = ownerTag;
         bullet.GetComponent<Bullet>().airTime = splitRange / splitBulletSpeed;
-        bullet.GetComponent<Bullet>().createTime = Time.time;
 
         bullet.GetComponent<Bullet>().splitAmount = 0;
 
@@ -100,7 +113,6 @@ public class Bullet : MonoBehaviour
     public GameObject CreateCopyWithNewOwner(string ownerTag)
     {
         GameObject newBulletGameObject = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
-        newBulletGameObject.GetComponent<Bullet>().createTime = Time.time;
         newBulletGameObject.GetComponent<Bullet>().ownerTag = ownerTag;
         newBulletGameObject.GetComponent<Bullet>().reflected = reflected;
 

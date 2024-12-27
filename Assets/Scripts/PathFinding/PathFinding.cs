@@ -150,7 +150,7 @@ public class PathFinding : MonoBehaviour
             // Explore neighbors
             foreach (Vector3 neighbor in GetNeighbors(current.location))
             {
-                if (visited.Contains(neighbor) || CheckValidPosition(neighbor))
+                if (visited.Contains(neighbor) || InvalidPosition(neighbor))
                     continue;
 
                 float newPriority = Vector3.Distance(neighbor, target);
@@ -169,9 +169,9 @@ public class PathFinding : MonoBehaviour
     /// </summary>
     /// <param name="location"></param>
     /// <returns></returns>
-    public bool CheckValidPosition(Vector3 location)
+    public bool InvalidPosition(Vector3 location)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(location, 0.35f * size);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(location, 0.5f * size);
         foreach (Collider2D collider in colliders)
         {
             if (collider.CompareTag("Wall") || collider.CompareTag("Pit")) return true;
@@ -305,6 +305,18 @@ public class PathFinding : MonoBehaviour
     public float GetSize()
     {
         return this.size;
+    }
+
+    public float GetPathDistance(List<Vector3> path)
+    {
+        float totalDistance = 0;
+
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            totalDistance += Vector3.Distance(path[i], path[i + 1]);
+        }
+
+        return totalDistance;
     }
 }
 

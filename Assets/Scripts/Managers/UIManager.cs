@@ -131,7 +131,7 @@ public class UIManager : MonoBehaviour
         LowerMusicVolume();
 
         Class playerClass = player.playerClass;
-        if (playerClass.upgrades.Count == 0) return;
+        if (playerClass == null || playerClass.upgrades.Count == 0) return;
 
         gameStateManager.ToPaused();
 
@@ -165,7 +165,7 @@ public class UIManager : MonoBehaviour
             text.text = currentPlayerClass.className;
 
             Image image = buttonTransform.Find("Sprite").GetComponent<Image>();
-            image.sprite = currentPlayerClass.blueSprite;
+            image.sprite = currentPlayerClass.UISprite;
 
             Button button = buttonTransform.GetComponent<Button>();
             button.onClick.RemoveAllListeners();

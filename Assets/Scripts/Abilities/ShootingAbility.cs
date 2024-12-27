@@ -7,6 +7,7 @@ public class ShootingAbility : MonoBehaviour
 {
     public GameObject bullets;
 
+    public float damage;
     public float attackCooldown = 0.5f;
     private float lastAttack;
     private float lastAttackRealTime;
@@ -36,20 +37,12 @@ public class ShootingAbility : MonoBehaviour
 
     public Entity owner;
 
-    public float damage;
-
     public UnityEvent onShoot;
 
     private void Start()
     {
         bullets = GameObject.Find("Bullets");
-
-        Entity entity = GetComponent<Entity>();
-        if (entity != null)
-        {
-            owner = entity;
-            damage = entity.damage;
-        }
+        owner = GetComponent<Entity>();
     }
 
     private void Update()
@@ -103,6 +96,8 @@ public class ShootingAbility : MonoBehaviour
             }
         }
 
+        PlayShootAnimation();
+
         if (onShoot != null) onShoot.Invoke();
     }
     public void CreateBulletGroup(float split, float airTime, float bulletSpeed, float bulletSize, float pierce, float damage, float rotation)
@@ -149,7 +144,6 @@ public class ShootingAbility : MonoBehaviour
         bullet.GetComponent<Bullet>().damage = damage;
         bullet.GetComponent<Bullet>().ownerTag = owner.tag;
         bullet.GetComponent<Bullet>().airTime = airTime;
-        bullet.GetComponent<Bullet>().createTime = Time.time;
 
         bullet.GetComponent<Bullet>().splitOnHit = splitOnHit;
         bullet.GetComponent<Bullet>().splitAmount = splitAmount;
@@ -168,5 +162,50 @@ public class ShootingAbility : MonoBehaviour
     public void ShootBullet(float range, float bulletSpeed, float bulletSize, float pierce, float damage)
     {
         CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
+    }
+
+    public void ApplyClass(Class playerClass)
+    {
+        if (playerClass == null) return;
+        if (!playerClass.hasShootAbility) return;
+
+        damage = playerClass.damage;
+        attackCooldown = playerClass.attackCooldown;
+
+        range = playerClass.range;
+        pierce = playerClass.pierce;
+        totalSplit = playerClass.totalSplit;
+        totalFan = playerClass.totalFan;
+        bulletSize = playerClass.bulletSize;
+        bulletSpeed = playerClass.bulletSpeed;
+
+        splitOnHit = playerClass.splitOnHit;
+        splitAmount = playerClass.splitAmount;
+        splitRange = playerClass.splitRange;
+        splitBulletSize = playerClass.splitBulletSize;
+        splitBulletSpeed = playerClass.splitBulletSpeed;
+        splitDamagePercentage = playerClass.splitDamagePercentage;
+
+        shootingMoveSpeed = playerClass.shootingMoveSpeed;
+    }
+
+    private void PlayShootAnimation()
+    {
+        Animator animator = GetComponentInChildren<Animator>();
+        if (animator == null) return;
+
+        animator.speed = 1 / attackCooldown;
+        animator.SetBool("Shooting", true);
+
+        StartCoroutine(ResetShootingAnimation(animator, 0.2f * attackCooldown));
+    }
+
+    private IEnumerator ResetShootingAnimation(Animator animator, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (animator != null)
+        {
+            animator.SetBool("Shooting", false);
+        }
     }
 }

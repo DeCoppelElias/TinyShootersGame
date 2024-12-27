@@ -17,8 +17,6 @@ public class Player : Entity
     private ShootingAbility shootingAbility;
     private DashAbility dashAbility;
 
-    public GameObject bulletWall;
-
     public UnityEvent onHitEvent;
     public UnityEvent onDeath;
 
@@ -27,6 +25,7 @@ public class Player : Entity
     private PlayerController playerController;
 
     [SerializeField] private List<Sprite> alternativeSprites = new List<Sprite>();
+    private int alternativeSpriteIndex = 0;
 
     public override void StartEntity()
     {
@@ -45,34 +44,32 @@ public class Player : Entity
     {
         base.UpdateEntity();
 
-        if (playerClass == null) return;
-
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            SpriteRenderer renderer = this.GetComponentInChildren<SpriteRenderer>();
+            Debug.Log("lol1");
+            alternativeSpriteIndex++;
+            SpriteRenderer renderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
             if (renderer != null)
             {
-                if (renderer.sprite == playerClass.blueSprite)
+                Debug.Log("lol2");
+                if (alternativeSpriteIndex == alternativeSprites.Count + 1)
                 {
-                    renderer.sprite = alternativeSprites[0];
+
+                    Debug.Log("lol3");
+                    alternativeSpriteIndex = 0;
+
+                    Animator animator = transform.Find("Sprite").GetComponent<Animator>();
+                    animator.enabled = true;
                 }
                 else
                 {
-                    for (int i = 0; i < alternativeSprites.Count; i++)
+                    Debug.Log("lol4");
+                    if (alternativeSpriteIndex == 1)
                     {
-                        if (renderer.sprite == alternativeSprites[i])
-                        {
-                            if (i == alternativeSprites.Count - 1)
-                            {
-                                renderer.sprite = playerClass.blueSprite;
-                            }
-                            else
-                            {
-                                renderer.sprite = alternativeSprites[i + 1];
-                            }
-                            return;
-                        }
+                        Animator animator = transform.Find("Sprite").GetComponent<Animator>();
+                        animator.enabled = false;
                     }
+                    renderer.sprite = alternativeSprites[alternativeSpriteIndex - 1];
                 }
             }
         }
@@ -80,12 +77,13 @@ public class Player : Entity
 
     public void ApplyClass(Class playerClass)
     {
+        if (playerClass == null) return;
         this.playerClass = playerClass;
 
-        SpriteRenderer renderer = this.GetComponentInChildren<SpriteRenderer>();
-        if (renderer != null)
+        Animator animator = transform.Find("Sprite").GetComponent<Animator>();
+        if (animator != null)
         {
-            renderer.sprite = playerClass.blueSprite;
+            animator.runtimeAnimatorController = playerClass.animatorController;
         }
 
         if (!isPVP) this.maxHealth = playerClass.maxHealth;
@@ -95,10 +93,6 @@ public class Player : Entity
         healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
 
         this.health = this.maxHealth;
-
-        this.damage = playerClass.damage;
-
-        this.moveSpeed = playerClass.normalMoveSpeed;
 
         if (!isPVP) this.invulnerableDuration = playerClass.invulnerableDuration;
 
@@ -112,30 +106,9 @@ public class Player : Entity
             playerController.classAbility = abilityBehaviour.UseAbility;
         }
 
-        if (shootingAbility != null)
-        {
-            shootingAbility.attackCooldown = playerClass.attackCooldown;
-
-            shootingAbility.range = playerClass.range;
-            shootingAbility.pierce = playerClass.pierce;
-            shootingAbility.totalSplit = playerClass.totalSplit;
-            shootingAbility.totalFan = playerClass.totalFan;
-            shootingAbility.bulletSize = playerClass.bulletSize;
-            shootingAbility.bulletSpeed = playerClass.bulletSpeed;
-
-            shootingAbility.splitOnHit = playerClass.splitOnHit;
-            shootingAbility.splitAmount = playerClass.splitAmount;
-            shootingAbility.splitRange = playerClass.splitRange;
-            shootingAbility.splitBulletSize = playerClass.splitBulletSize;
-            shootingAbility.splitBulletSpeed = playerClass.splitBulletSpeed;
-            shootingAbility.splitDamagePercentage = playerClass.splitDamagePercentage;
-
-            shootingAbility.shootingMoveSpeed = playerClass.shootingMoveSpeed;
-
-            shootingAbility.damage = damage;
-        }
-
-        DashAbility dashAbility = GetComponent<DashAbility>();
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null) playerMovement.ApplyClass(playerClass);
+        if (shootingAbility != null) shootingAbility.ApplyClass(playerClass);
         if (dashAbility != null) dashAbility.ApplyClass(playerClass);
     }
 

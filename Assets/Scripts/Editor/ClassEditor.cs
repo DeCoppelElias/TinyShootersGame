@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Animations;
 
 [CustomEditor(typeof(Class))]
 public class ClassEditor : Editor
@@ -16,7 +17,8 @@ public class ClassEditor : Editor
         // Draw default fields for general settings
         EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
         playerClass.className = EditorGUILayout.TextField("Class Name", playerClass.className);
-        playerClass.blueSprite = (Sprite)EditorGUILayout.ObjectField("Blue sprite", playerClass.blueSprite, typeof(Sprite), false);
+        playerClass.animatorController = (AnimatorController)EditorGUILayout.ObjectField("Animation Controller", playerClass.animatorController, typeof(AnimatorController), false);
+        playerClass.UISprite = (Sprite)EditorGUILayout.ObjectField("UI sprite", playerClass.UISprite, typeof(Sprite), false);
         playerClass.maxHealth = EditorGUILayout.FloatField("Max Health", playerClass.maxHealth);
         playerClass.pvpMaxHealth = EditorGUILayout.FloatField("PVP Max Health", playerClass.pvpMaxHealth);
         playerClass.health = EditorGUILayout.FloatField("Health", playerClass.health);

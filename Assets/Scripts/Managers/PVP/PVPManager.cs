@@ -285,7 +285,7 @@ public class PVPManager : MonoBehaviour
             text.text = currentPlayerClass.className;
 
             Image image = buttonTransform.Find("Sprite").GetComponent<Image>();
-            image.sprite = currentPlayerClass.blueSprite;
+            image.sprite = currentPlayerClass.UISprite;
 
             Button button = buttonTransform.GetComponent<Button>();
             button.onClick.RemoveAllListeners();

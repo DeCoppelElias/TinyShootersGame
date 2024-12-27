@@ -10,7 +10,7 @@ public class HeavyAbility : ClassAbility
     private CameraManager cameraManager;
     public override void PerformAbility(Player player)
     {
-        shootingAbility.ShootBullet(10, 2, 5, 10, player.damage * 2);
+        shootingAbility.ShootBullet(10, 2, 5, 10, shootingAbility.damage * 2);
 
         // Add knockback after shooting
         Vector3 knockbackDirection = (player.transform.position - shootingAbility.firePoint.position).normalized;

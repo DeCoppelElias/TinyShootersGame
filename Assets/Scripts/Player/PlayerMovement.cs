@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Parameters")]
+    [SerializeField] private float moveSpeed = 4;
     [SerializeField] private float currentVelocity;
     [SerializeField] private float acceleration = 5;
     private enum MovementState { Normal, Knockback, Reduced, }
@@ -44,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
         this.dashAbility = this.GetComponent<DashAbility>();
         this.shootAbility = this.GetComponent<ShootingAbility>();
 
-        this.currentVelocity = player.moveSpeed;
+        this.currentVelocity = moveSpeed;
 
         this.spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
     }
@@ -74,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (this.movementState == MovementState.Normal)
         {
-            currentVelocity = Mathf.Min(currentVelocity + (acceleration * Time.deltaTime), player.moveSpeed);
+            currentVelocity = Mathf.Min(currentVelocity + (acceleration * Time.deltaTime), moveSpeed);
             playerRB.velocity = currentMoveDirection * currentVelocity;
 
             // Slow down if shooting
@@ -94,13 +95,6 @@ public class PlayerMovement : MonoBehaviour
                 this.movementState = MovementState.Normal;
             }
         }
-    }
-
-    private IEnumerator PerformActionAfterDelay(float delay, Action action)
-    {
-        yield return new WaitForSeconds(delay);
-
-        action();
     }
 
     public void Look()
@@ -136,5 +130,12 @@ public class PlayerMovement : MonoBehaviour
         this.knockbackStart = Time.time;
         playerRB.velocity = knockbackDirection * knockbackSpeed;
         this.movementState = MovementState.Knockback;
+    }
+
+    public void ApplyClass(Class playerClass)
+    {
+        if (playerClass == null) return;
+
+        moveSpeed = playerClass.normalMoveSpeed;
     }
 }
