@@ -173,7 +173,7 @@ MonoBehaviour:
   - {x: -0.5, y: 0, z: 0}
   m_ShapePathHash: -300134306
   m_Mesh: {fileID: 0}
-  m_InstanceId: 47060
+  m_InstanceId: 33664
 --- !u!1 &7203808740960474199
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,20 +349,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cef1dd1f90f86744b811a990fc4971f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityState: 0
   maxHealth: 150
-  health: 100
+  health: 150
   contactDamage: 0
   contactHitCooldown: 1
   onDeathScore: 100
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 1
+  colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
-  damageColor: {r: 1, g: 0, b: 0, a: 1}
-  colorChangeDuration: 1
-  colorChangeState: 0
+  bodyDuration: 1
   debug: 0
 --- !u!114 &8228712908524213173
 MonoBehaviour:

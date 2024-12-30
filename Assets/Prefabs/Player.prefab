@@ -212,11 +212,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c95530cc2e80cae4ca22187d3abae50e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityState: 0
   maxHealth: 100
   health: 100
   contactDamage: 10
   contactHitCooldown: 1
   onDeathScore: 100
+  damageColor: {r: 0, g: 0, b: 1, a: 1}
+  colorChangeDuration: 1
+  colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 0.5
   outOfBounds: 0
@@ -850,7 +854,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_InstanceId
-      value: -65382
+      value: -73392
       objectReference: {fileID: 0}
     - target: {fileID: 8478164273474325271, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_Name

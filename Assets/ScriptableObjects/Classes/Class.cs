@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewPlayerClass", menuName = "Player/PlayerClass")]
@@ -8,7 +7,7 @@ public class Class : ScriptableObject
 {
     // General Settings
     public string className;
-    public AnimatorController animatorController;
+    public RuntimeAnimatorController animatorController;
     public Sprite UISprite;
 
     public float maxHealth = 100;

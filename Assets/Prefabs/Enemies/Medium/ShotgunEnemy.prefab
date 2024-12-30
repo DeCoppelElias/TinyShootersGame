@@ -205,22 +205,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cef1dd1f90f86744b811a990fc4971f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityState: 0
   maxHealth: 200
   health: 200
-  damage: 10
-  moveSpeed: 1
   contactDamage: 10
   contactHitCooldown: 1
   onDeathScore: 100
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 1
+  colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
-  damageColor: {r: 1, g: 0, b: 0, a: 1}
-  colorChangeDuration: 1
-  colorChangeState: 0
+  bodyDuration: 1
   debug: 0
 --- !u!114 &-1174089322739075762
 MonoBehaviour:
@@ -303,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1485f5c01b6d6c44eae39c72df7b7366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
+  moveSpeed: 1.5
   currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
@@ -430,7 +430,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_InstanceId
-      value: -56454
+      value: -34260
       objectReference: {fileID: 0}
     - target: {fileID: 8478164273474325271, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_Name
