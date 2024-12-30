@@ -7,13 +7,15 @@ using UnityEngine.UI;
 
 public class TutorialManager : MonoBehaviour
 {
-    private enum TutorialState {Explanation, Movement, Shoot, Dash, Reflect, Combat, Upgrading, ClassAbility, Endless, Pause}
-    private TutorialState tutorialState = TutorialState.Explanation;
+    private enum TutorialState { Explanation, Movement, Shoot, Dash, Reflect, Combat, Upgrading, ClassAbility, Endless, Pause }
+    [Header("Tutorial Settings")]
+    [SerializeField] private TutorialState tutorialState = TutorialState.Explanation;
+    [SerializeField] private float tutorialStepDelay = 5f;
+    [SerializeField] private List<GameObject> tutorialEnemies;
+    [SerializeField] private Tilemap warningTilemap;
+    [SerializeField] private Tile warningTile;
 
     private Player player;
-
-    [SerializeField] private float tutorialStepDelay = 5f;
-    [SerializeField] private GameObject enemyPrefab;
     private GameObject enemy;
     private float startTime = 0;
 
@@ -21,9 +23,6 @@ public class TutorialManager : MonoBehaviour
     private Text explanationTitle;
     private Text doneText;
     private Text explanationSubTitle;
-
-    [SerializeField] private Tilemap warningTilemap;
-    [SerializeField] private Tile warningTile;
 
     private TutorialUIManager tutorialUIManager;
 
@@ -129,7 +128,7 @@ public class TutorialManager : MonoBehaviour
         }
         else if (tutorialState == TutorialState.ClassAbility)
         {
-            if (enemy == null && Time.time - startTime > 3)
+            if (player.GetComponent<AbilityBehaviour>().OnCooldown())
             {
                 tutorialState = TutorialState.Pause;
                 doneText.text = "Done!";
@@ -139,12 +138,17 @@ public class TutorialManager : MonoBehaviour
                     ToEndless();
                 }));
             }
+            else if (enemy == null && Time.time - startTime > 3)
+            {
+                CreateRandomEnemyForTutorial();
+                startTime = Time.time;
+            }
         }
         else if (tutorialState == TutorialState.Endless)
         {
             if (enemy == null && Time.time - startTime > 3)
             {
-                CreateEnemy(enemyPrefab, new Vector3(3.5f, 0.5f, 0));
+                CreateRandomEnemyForTutorial();
                 startTime = Time.time;
             }
         }
@@ -200,7 +204,7 @@ public class TutorialManager : MonoBehaviour
             "When enemies hit your character (either melee or with bullets), your character will lose health.\n" +
             "If your health reaches zero, you lose!";
 
-        CreateEnemy(enemyPrefab, new Vector3(3.5f,0.5f,0));
+        CreateRandomEnemyForTutorial();
         startTime = Time.time;
     }
     private void ToUpgrade()
@@ -213,7 +217,7 @@ public class TutorialManager : MonoBehaviour
 
         tutorialUIManager.EnableUpgradeUI();
 
-        CreateEnemy(enemyPrefab, new Vector3(3.5f, 0.5f, 0));
+        CreateRandomEnemyForTutorial();
         startTime = Time.time;
     }
 
@@ -226,7 +230,7 @@ public class TutorialManager : MonoBehaviour
             "You can use this class ability by pressing the right mouse button (Keyboard)\n" +
             "or by using the right shoulder (Gamepad).";
 
-        CreateEnemy(enemyPrefab, new Vector3(3.5f, 0.5f, 0));
+        CreateRandomEnemyForTutorial();
         startTime = Time.time;
     }
 
@@ -245,6 +249,14 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         action();
+    }
+
+    private void CreateRandomEnemyForTutorial()
+    {
+        int index = UnityEngine.Random.Range(0, tutorialEnemies.Count);
+        GameObject enemyPrefab = tutorialEnemies[index];
+
+        CreateEnemy(enemyPrefab, new Vector3(3.5f, 0.5f, 0));
     }
 
     private void CreateEnemy(GameObject prefab, Vector3 spawnLocation)

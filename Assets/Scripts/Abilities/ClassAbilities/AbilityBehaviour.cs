@@ -52,4 +52,9 @@ public class AbilityBehaviour : MonoBehaviour
             onPerformed.Invoke();
         }
     }
+
+    public bool OnCooldown()
+    {
+        return this.state == AbilityState.Cooldown;
+    }
 }

@@ -7,6 +7,9 @@ using UnityEngine.Tilemaps;
 public abstract class Entity : MonoBehaviour
 {
     [Header("Basic Entity Stats")]
+    [SerializeField] protected EntityState entityState = EntityState.Alive;
+    protected enum EntityState { Alive, Dead}
+
     public float maxHealth = 100;
     public float health = 100;
 
@@ -16,6 +19,15 @@ public abstract class Entity : MonoBehaviour
 
     public int onDeathScore = 100;
 
+    [Header("On-Hit Color Change Settings")]
+    [SerializeField] private Color damageColor = Color.red;
+    [SerializeField] private float colorChangeDuration = 1f;
+    [SerializeField] private ColorChangeState colorChangeState = ColorChangeState.Nothing;
+    private enum ColorChangeState { Nothing, ToDamageColor, ToOriginalColor }
+    protected SpriteRenderer spriteRenderer;
+    private float startColorChange = 0;
+    protected Color originalColor;
+
     [Header("Out Of Bounds Settings")]
     public Vector3 lastValidPosition;
     [SerializeField] private float updateValidPositionCooldown = 2f;
@@ -24,10 +36,10 @@ public abstract class Entity : MonoBehaviour
     [SerializeField] private float allowedOutOfBoundsDuration = 1f;
     private float outOfBoundsStart = 0;
     private int outOfBoundsCounter = 0;
-
+    
     public enum DamageType { Ranged, Melee }
-    private DamageType lastDamageType;
-    private string lastDamageSourceTag;
+    protected DamageType lastDamageType;
+    protected string lastDamageSourceTag;
 
     protected AudioManager audioManager;
     private WaveManager waveManager;
@@ -40,13 +52,17 @@ public abstract class Entity : MonoBehaviour
 
     private void Start()
     {
-        walls = GameObject.Find("Walls").GetComponent<Tilemap>();
-        pits = GameObject.Find("Pits").GetComponent<Tilemap>();
-        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
-        waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
+        walls = GameObject.Find("Walls")?.GetComponent<Tilemap>();
+        pits = GameObject.Find("Pits")?.GetComponent<Tilemap>();
+        audioManager = GameObject.Find("AudioManager")?.GetComponent<AudioManager>();
+        waveManager = GameObject.Find("WaveManager")?.GetComponent<WaveManager>();
+        spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
 
         emptyHealthBar = transform.Find("EmptyHealthBar");
         healthBar = emptyHealthBar.GetChild(0);
+
+        entityState = EntityState.Alive;
+        colorChangeState = ColorChangeState.Nothing;
 
         if (CheckOutOfBounds()) lastValidPosition = this.transform.position;
 
@@ -54,6 +70,8 @@ public abstract class Entity : MonoBehaviour
     }
     private void Update()
     {
+        if (entityState == EntityState.Dead) return;
+
         if (health <= 0)
         {
             OnDeath();
@@ -61,8 +79,8 @@ public abstract class Entity : MonoBehaviour
         }
 
         UpdateHealthBar();
-
         EnforceValidPosition();
+        ColorUpdate();
 
         UpdateEntity();
     }
@@ -76,22 +94,7 @@ public abstract class Entity : MonoBehaviour
 
     public virtual void OnDeath()
     {
-        // Give on death score to last damage source
-        if (lastDamageSourceTag == "Player")
-        {
-            GameObject scoreManagerObj = GameObject.Find("ScoreManager");
-            if (scoreManagerObj != null)
-            {
-                ScoreManager scoreManager = scoreManagerObj.GetComponent<ScoreManager>();
-                scoreManager.AddScore(ScoreManager.ScoreReason.EnemyKill, this.onDeathScore);
-                if (lastDamageType == DamageType.Melee) scoreManager.AddScore(ScoreManager.ScoreReason.MeleeKill, this.onDeathScore * 2);
-            }
-        }
-
-        // Play death sound
-        audioManager.PlayDieSound();
-
-        Destroy(this.gameObject);
+        this.entityState = EntityState.Dead;
     }
 
     public virtual void UpdateEntity()
@@ -112,6 +115,8 @@ public abstract class Entity : MonoBehaviour
 
         lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
+
+        StartColorChange();
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -183,5 +188,37 @@ public abstract class Entity : MonoBehaviour
                 lastValidPositionUpdate = Time.time;
             }
         }
+    }
+
+    private void ColorUpdate()
+    {
+        if (colorChangeState == ColorChangeState.ToDamageColor)
+        {
+            float p = Mathf.Clamp((Time.time - startColorChange) / (0.5f * colorChangeDuration), 0, 1);
+            spriteRenderer.color = Color.Lerp(originalColor, damageColor, p);
+
+            if (p == 1)
+            {
+                startColorChange = Time.time;
+                colorChangeState = ColorChangeState.ToOriginalColor;
+            }
+        }
+        else if (colorChangeState == ColorChangeState.ToOriginalColor)
+        {
+            float p = Mathf.Clamp((Time.time - startColorChange) / (0.5f * colorChangeDuration), 0, 1);
+            spriteRenderer.color = Color.Lerp(damageColor, originalColor, p);
+
+            if (p == 1)
+            {
+                colorChangeState = ColorChangeState.Nothing;
+            }
+        }
+    }
+
+    protected void StartColorChange()
+    {
+        if (colorChangeState == ColorChangeState.Nothing) originalColor = spriteRenderer.color;
+        startColorChange = Time.time;
+        colorChangeState = ColorChangeState.ToDamageColor;
     }
 }

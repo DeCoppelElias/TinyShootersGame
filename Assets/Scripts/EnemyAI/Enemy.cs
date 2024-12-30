@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,14 +13,9 @@ public class Enemy : Entity
     [Header("Collider Size")]
     protected float size = 0;
 
-    [Header("On-Hit Color Change")]
-    [SerializeField] private Color damageColor = Color.red;
-    [SerializeField] private float colorChangeDuration = 1f;
-    [SerializeField] private ColorChangeState colorChangeState = ColorChangeState.Nothing;
-    private enum ColorChangeState { Nothing, ToDamageColor, ToOriginalColor }
-    private SpriteRenderer spriteRenderer;
-    private float startColorChange = 0;
-    private Color originalColor;
+    [Header("On-Death Body Settings")]
+    [SerializeField] private float bodyDuration = 1;
+    [SerializeField] protected bool spawnBody = true;
 
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
@@ -28,21 +24,17 @@ public class Enemy : Entity
     {
         base.StartEntity();
 
-        spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
-
         targetPlayer = FindClosestPlayer();
 
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null) throw new System.Exception("Cannot find size because collider is missing");
         size = collider.bounds.size.x;
-
-        colorChangeState = ColorChangeState.Nothing;
     }
 
     private Player FindClosestPlayer()
     {
         lastPlayerRefresh = Time.time;
-        Player[] players = Object.FindObjectsOfType<Player>();
+        Player[] players = UnityEngine.Object.FindObjectsOfType<Player>();
 
         Player closestPlayer = null;
         float closestDistance = float.MaxValue;
@@ -65,7 +57,6 @@ public class Enemy : Entity
         base.UpdateEntity();
 
         RefreshPlayerUpdate();
-        ColorUpdate();
     }
 
     private void RefreshPlayerUpdate()
@@ -76,47 +67,41 @@ public class Enemy : Entity
         }
     }
 
-    private void ColorUpdate()
-    {
-        if (colorChangeState == ColorChangeState.ToDamageColor)
-        {
-            float p = Mathf.Clamp((Time.time - startColorChange) / (0.5f * colorChangeDuration), 0, 1);
-            spriteRenderer.color = Color.Lerp(originalColor, damageColor, p);
-
-            if (p == 1)
-            {
-                startColorChange = Time.time;
-                colorChangeState = ColorChangeState.ToOriginalColor;
-            }
-        }
-        else if (colorChangeState == ColorChangeState.ToOriginalColor)
-        {
-            float p = Mathf.Clamp((Time.time - startColorChange) / (0.5f * colorChangeDuration), 0, 1);
-            spriteRenderer.color = Color.Lerp(damageColor, originalColor, p);
-
-            if (p == 1)
-            {
-                colorChangeState = ColorChangeState.Nothing;
-            }
-        }
-    }
-
-    private void StartColorChange()
-    {
-        if (colorChangeState == ColorChangeState.Nothing) originalColor = spriteRenderer.color;
-        startColorChange = Time.time;
-        colorChangeState = ColorChangeState.ToDamageColor;
-    }
-
-    public override void TakeDamage(float amount, string sourceTag, DamageType damageType)
-    {
-        base.TakeDamage(amount, sourceTag, damageType);
-
-        StartColorChange();
-    }
-
     public Player GetTargetPlayer()
     {
         return this.targetPlayer;
+    }
+
+    public override void OnDeath()
+    {
+        base.OnDeath();
+
+        // Give on death score to last damage source
+        if (lastDamageSourceTag == "Player")
+        {
+            GameObject scoreManagerObj = GameObject.Find("ScoreManager");
+            if (scoreManagerObj != null)
+            {
+                ScoreManager scoreManager = scoreManagerObj.GetComponent<ScoreManager>();
+                scoreManager.AddScore(ScoreManager.ScoreReason.EnemyKill, this.onDeathScore);
+                if (lastDamageType == DamageType.Melee) scoreManager.AddScore(ScoreManager.ScoreReason.MeleeKill, this.onDeathScore * 2);
+            }
+        }
+
+        // Play death sound
+        audioManager.PlayDieSound();
+
+        // Spawn Body
+        if (spawnBody)
+        {
+            Transform spriteTransform = transform.Find("Sprite");
+            spriteRenderer.color = this.originalColor;
+            spriteRenderer.sortingOrder = -1;
+            spriteTransform.SetParent(transform.parent);
+            DeadBodyBehaviour deadBody = spriteTransform.gameObject.AddComponent<DeadBodyBehaviour>();
+            deadBody.Initialise(bodyDuration);
+        }
+
+        Destroy(this.gameObject);
     }
 }

@@ -120,6 +120,8 @@ public class Player : Entity
 
         this.health -= amount;
 
+        StartColorChange();
+
         invulnerableStart = Time.time;
 
         if (onHitEvent != null) onHitEvent.Invoke();
@@ -127,8 +129,9 @@ public class Player : Entity
 
     public override void OnDeath()
     {
+        base.OnDeath();
+
         audioManager.PlayDieSound();
-        this.health = 1;
         onDeath.Invoke();
     }
 }

@@ -17,13 +17,18 @@ public class WaveManager : MonoBehaviour
     private Dictionary<int,Level> levels = new Dictionary<int,Level>();
 
     [Header("Enemy Prefabs")]
-    [SerializeField] private GameObject meleeEnemy;
-    [SerializeField] private GameObject rangedEnemy;
-    [SerializeField] private GameObject fastEnemy;
-    [SerializeField] private GameObject shotgunEnemy;
-    [SerializeField] private GameObject chargeMeleeEnemy;
-    [SerializeField] private GameObject dodgeMeleeEnemy;
-    [SerializeField] private GameObject dodgeRangedEnemy;
+    [SerializeField] private GameObject baseMeleeEnemyEasy;
+    [SerializeField] private GameObject baseRangedEnemyEasy;
+    [SerializeField] private GameObject fastEnemyEasy;
+    [SerializeField] private GameObject shotgunEnemyMedium;
+    [SerializeField] private GameObject gunnerEnemyMedium;
+    [SerializeField] private GameObject tripleEnemyMedium;
+    [SerializeField] private GameObject heavyEnemyMedium;
+    [SerializeField] private GameObject sniperEnemyMedium;
+    [SerializeField] private GameObject chargeMeleeEnemyHard;
+    [SerializeField] private GameObject dodgeMeleeEnemyHard;
+    [SerializeField] private GameObject dodgeRangedEnemyHard;
+    [SerializeField] private GameObject reflectMeleeEnemyHard;
 
     [Header("Boss Prefabs")]
     [SerializeField] private GameObject dashBoss;
@@ -273,33 +278,55 @@ public class WaveManager : MonoBehaviour
     {
         if (s == "MeleeEnemy")
         {
-            return meleeEnemy;
+            return baseMeleeEnemyEasy;
         }
         else if (s == "RangedEnemy")
         {
-            return rangedEnemy;
+            return baseRangedEnemyEasy;
         }
         else if (s == "FastEnemy")
         {
-            return fastEnemy;
+            return fastEnemyEasy;
         }
-        else if (s == "DodgeMeleeEnemy")
-        {
-            return dodgeMeleeEnemy;
-        }
+
         else if (s == "ShotgunEnemy")
         {
-            return shotgunEnemy;
+            return shotgunEnemyMedium;
+        }
+        else if (s == "GunnerEnemy")
+        {
+            return gunnerEnemyMedium;
+        }
+        else if (s == "SniperEnemy")
+        {
+            return sniperEnemyMedium;
+        }
+        else if (s == "HeavyEnemy")
+        {
+            return heavyEnemyMedium;
+        }
+        else if (s == "TripleEnemy")
+        {
+            return tripleEnemyMedium;
+        }
+
+        else if (s == "DodgeMeleeEnemy")
+        {
+            return dodgeMeleeEnemyHard;
         }
         else if (s == "DodgeRangedEnemy")
         {
-            return dodgeRangedEnemy;
+            return dodgeRangedEnemyHard;
         }
         else if (s == "ChargeMeleeEnemy")
         {
-            return chargeMeleeEnemy;
-
+            return chargeMeleeEnemyHard;
         }
+        else if (s == "ReflectMeleeEnemy")
+        {
+            return reflectMeleeEnemyHard;
+        }
+
         else if (s == "SplitBoss")
         {
             return splitBoss;
@@ -313,7 +340,7 @@ public class WaveManager : MonoBehaviour
             return rangedBoss;
         }
 
-        return meleeEnemy;
+        return baseMeleeEnemyEasy;
     }
 
     private IEnumerator PerformAfterDelay(float delay, Action action)

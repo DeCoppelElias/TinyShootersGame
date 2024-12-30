@@ -150,6 +150,8 @@ public class GameStateManager : MonoBehaviour
     {
         ToRunning();
 
+        SaveHighScore();
+
         // Clean up all enemies
         Transform enemiesParent = GameObject.Find("Enemies").transform;
         foreach (Transform child in enemiesParent)
@@ -171,23 +173,8 @@ public class GameStateManager : MonoBehaviour
     {
         ToPaused();
 
-        bool beatHighScore = false;
+        bool beatHighScore = SaveHighScore();
         int currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
-        if (PlayerPrefs.HasKey("HighScore"))
-        {
-            float highScore = PlayerPrefs.GetFloat("HighScore");
-            if (currentScore > highScore)
-            {
-                beatHighScore = true;
-                PlayerPrefs.SetFloat("OldHighScore", highScore);
-                PlayerPrefs.SetFloat("HighScore", currentScore);
-            }
-        }
-        else
-        {
-            beatHighScore = true;
-            PlayerPrefs.SetFloat("HighScore", currentScore);
-        }
 
         onLose.Invoke(beatHighScore, currentScore);
     }
@@ -196,42 +183,64 @@ public class GameStateManager : MonoBehaviour
     {
         ToPaused();
 
-        bool beatBestTime = false;
+        bool beatBestTime = SaveBestTime();
         float currentTime = Time.time - startTime;
-        if (PlayerPrefs.HasKey("BestTime"))
-        {
-            float bestTime = PlayerPrefs.GetFloat("BestTime");
-            if (currentTime < bestTime)
-            {
-                beatBestTime = true;
-                PlayerPrefs.SetFloat("OldBestTime", bestTime);
-                PlayerPrefs.SetFloat("BestTime", currentTime);
-            }
-        }
-        else
-        {
-            beatBestTime = true;
-            PlayerPrefs.SetFloat("BestTime", currentTime);
-        }
 
-        bool beatHighScore = false;
+        bool beatHighScore = SaveHighScore();
+        float currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
+
+        onWin.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
+    }
+
+    /// <summary>
+    /// This methods checks if a new high score is reached and updates the PlayerPrefs accordingly.
+    /// </summary>
+    /// <returns></returns>
+    private bool SaveHighScore()
+    {
         float currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
         if (PlayerPrefs.HasKey("HighScore"))
         {
             float highScore = PlayerPrefs.GetFloat("HighScore");
             if (currentScore > highScore)
             {
-                beatHighScore = true;
                 PlayerPrefs.SetFloat("OldHighScore", highScore);
                 PlayerPrefs.SetFloat("HighScore", currentScore);
+                return true;
             }
         }
         else
         {
-            beatHighScore = true;
             PlayerPrefs.SetFloat("HighScore", currentScore);
+            return true;
         }
 
-        onWin.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
+        return false;
+    }
+
+    /// <summary>
+    /// This methods checks if a best time is reached and updates the PlayerPrefs accordingly.
+    /// </summary>
+    /// <returns></returns>
+    private bool SaveBestTime()
+    {
+        float currentTime = Time.time - startTime;
+        if (PlayerPrefs.HasKey("BestTime"))
+        {
+            float bestTime = PlayerPrefs.GetFloat("BestTime");
+            if (currentTime < bestTime)
+            {
+                PlayerPrefs.SetFloat("OldBestTime", bestTime);
+                PlayerPrefs.SetFloat("BestTime", currentTime);
+                return true;
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetFloat("BestTime", currentTime);
+            return true;
+        }
+
+        return false;
     }
 }
