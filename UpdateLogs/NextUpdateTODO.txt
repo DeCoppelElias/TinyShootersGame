@@ -1,26 +1,9 @@
 Done:
-- Charging a dash now move the entity back a little
-- Movement now comes in movement behaviors
-- Added other behaviors to dodge bullets, charge at player, etc.
-- Now the only enemies used are Melee and Ranged Enemies
-- Add A* path finding
-- fix bug where spam clicking removes the movement debuff when shooting
-- Add pits (can't move over them but can shoot over them)
-- Add more enemy types
-- Make ranged enemies move towards a closer range while shooting at reduced speed. This will also make them follow when the player moves.
-- Shadow renderers toevoegen aan alle enemies
-- Ranged enemies movement behavior testen + parameters doen bij alle enemies.
-- Hit visual when enemies are hit
-- Bullets disappear cleanly when max range is reached
-- Make Shooting Animations.
-- Check if alternative sprites still work
+
 
 TODO:
-- Set Pause on the tab button, change the button to change skin.
-- If you leave the game in the pause menu, save score if max score.
 - Add shooting sound or sound when enemies are hit
 - Add more decorative tiles
-- Shooting animation
 - Update pvp screen so player can choose the number of rounds
 - Create multiple pvp arenas that the players can either choose or just randomly
 
@@ -28,6 +11,9 @@ Either:
 - keep old campaign and leaderboard and create a new campaign and leaderboard so the player can choose what to play
 - delete old campaign and leaderboard and replace with new one.
 - Create new leaderboards for all time, weekly, daily
+
+SKIP
+- Set Pause on the tab button, change the button to change skin.
 
 DO NEXT UPDATE
 - Add new levels

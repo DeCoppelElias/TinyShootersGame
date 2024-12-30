@@ -1,0 +1,17 @@
+- Charging a dash now move the entity back a little
+- Movement now comes in movement behaviors
+- Added other behaviors to dodge bullets, charge at player, etc.
+- Now the only enemies used are Melee and Ranged Enemies
+- Add A* path finding
+- fix bug where spam clicking removes the movement debuff when shooting
+- Add pits (can't move over them but can shoot over them)
+- Add more enemy types
+- Make ranged enemies move towards a closer range while shooting at reduced speed. This will also make them follow when the player moves.
+- Shadow renderers toevoegen aan alle enemies
+- Ranged enemies movement behavior testen + parameters doen bij alle enemies.
+- Hit visual when enemies are hit
+- Bullets disappear cleanly when max range is reached
+- Make Shooting Animations.
+- Check if alternative sprites still work
+- If you leave the game in the pause menu, save score if max score.
+- Enemies leave behind bodies that fade out.
