@@ -17,6 +17,8 @@ public class PathFinding : MonoBehaviour
     [Header("Display settings")]
     [SerializeField] private LineRenderer displayLineRenderer;
 
+    private WaveManager waveManager;
+
     private void Start()
     {
         // Initialise size
@@ -26,6 +28,8 @@ public class PathFinding : MonoBehaviour
             if (collider == null) throw new Exception("Cannot find size because collider is missing");
             size = collider.bounds.size.x;
         }
+
+        waveManager = GameObject.Find("WaveManager")?.GetComponent<WaveManager>();
     }
 
     /// <summary>
@@ -165,7 +169,7 @@ public class PathFinding : MonoBehaviour
     }
 
     /// <summary>
-    /// Checks wether a certain position is valid by checking if it isn't too close to some obstacle. 
+    /// Checks wether a certain position is valid by checking if it isn't too close to some obstacle and by checking if the position is inside the level.
     /// </summary>
     /// <param name="location"></param>
     /// <returns></returns>
@@ -176,6 +180,12 @@ public class PathFinding : MonoBehaviour
         {
             if (collider.CompareTag("Wall") || collider.CompareTag("Pit")) return true;
         }
+
+        if (this.waveManager != null)
+        {
+            return this.waveManager.InsideLevel(location);
+        }
+
         return false;
     }
 

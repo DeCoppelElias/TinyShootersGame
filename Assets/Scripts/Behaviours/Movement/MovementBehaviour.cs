@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class MovementBehaviour : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 2;
+    [SerializeField] protected float moveSpeed = 2;
     [SerializeField] private float currentMoveSpeed;
     private enum MovementBehaviourState { Enabled, WalkingToPosition, Disabled}
     [SerializeField] private MovementBehaviourState movementBehaviourState = MovementBehaviourState.Enabled;
@@ -15,7 +15,7 @@ public abstract class MovementBehaviour : MonoBehaviour
     [SerializeField] private Vector3 targetPosition;
     private enum WalkToPositionState { Normal, DodgingObstacle, NoPathToPosition }
     [SerializeField] private WalkToPositionState walkToPositionState = WalkToPositionState.Normal;
-    private PathFinding pathFinder;
+    protected PathFinding pathFinder;
     private List<Vector3> currentPath;
     private float lastPathFindingRefresh = 0;
     private float pathFindingRefreshCooldown = 3f;

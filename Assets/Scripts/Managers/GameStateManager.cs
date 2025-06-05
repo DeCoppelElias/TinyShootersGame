@@ -27,6 +27,8 @@ public class GameStateManager : MonoBehaviour
 
     private float startTime;
 
+    private AudioManager audioManager;
+
     private void Start()
     {
         this.volume = GameObject.Find("Global Volume").GetComponent<Volume>();
@@ -198,7 +200,9 @@ public class GameStateManager : MonoBehaviour
     /// <returns></returns>
     private bool SaveHighScore()
     {
-        float currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
+        GameObject scoreManagerObject = GameObject.Find("ScoreManager");
+        if (scoreManagerObject == null) return false;
+        float currentScore = scoreManagerObject.GetComponent<ScoreManager>().GetScore();
         if (PlayerPrefs.HasKey("HighScore"))
         {
             float highScore = PlayerPrefs.GetFloat("HighScore");
