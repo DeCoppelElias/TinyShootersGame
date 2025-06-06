@@ -138,4 +138,11 @@ public class PlayerMovement : MonoBehaviour
 
         moveSpeed = playerClass.normalMoveSpeed;
     }
+
+    public void ApplyClass2(UpdatedClass playerClass)
+    {
+        if (playerClass == null) return;
+
+        moveSpeed += playerClass.normalMoveSpeedDelta;
+    }
 }

@@ -189,6 +189,31 @@ public class ShootingAbility : MonoBehaviour
         shootingMoveSpeed = playerClass.shootingMoveSpeed;
     }
 
+    public void ApplyClass2(UpdatedClass playerClass)
+    {
+        if (playerClass == null) return;
+        if (!playerClass.hasShootAbility) return;
+
+        damage += playerClass.damageDelta;
+        attackCooldown += playerClass.attackCooldownDelta;
+
+        range += playerClass.rangeDelta;
+        pierce += playerClass.pierceDelta;
+        totalSplit += playerClass.totalSplitDelta;
+        totalFan += playerClass.totalFanDelta;
+        bulletSize += playerClass.bulletSizeDelta;
+        bulletSpeed += playerClass.bulletSpeedDelta;
+
+        splitOnHit = playerClass.splitOnHit;
+        splitAmount += playerClass.splitAmountDelta;
+        splitRange += playerClass.splitRangeDelta;
+        splitBulletSize += playerClass.splitBulletSizeDelta;
+        splitBulletSpeed += playerClass.splitBulletSpeedDelta;
+        splitDamagePercentage += playerClass.splitDamagePercentageDelta;
+
+        shootingMoveSpeed += playerClass.shootingMoveSpeedDelta;
+    }
+
     private void PlayShootAnimation()
     {
         Animator animator = GetComponentInChildren<Animator>();

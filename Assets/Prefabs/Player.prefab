@@ -226,7 +226,9 @@ MonoBehaviour:
   outOfBounds: 0
   allowedOutOfBoundsDuration: 0.2
   playerClass: {fileID: 0}
+  playerClass2: {fileID: 11400000, guid: 59aaf2b940ad0414c9b408ad39e96984, type: 2}
   defaultPlayerClass: {fileID: 11400000, guid: 176d1dc744f2fb04fb65d529bb8baa40, type: 2}
+  baseStats: {fileID: 11400000, guid: 176d1dc744f2fb04fb65d529bb8baa40, type: 2}
   invulnerableDuration: 0.5
   onHitEvent:
     m_PersistentCalls:

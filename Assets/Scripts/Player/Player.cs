@@ -7,8 +7,9 @@ using UnityEngine.UI;
 public class Player : Entity
 {
     public Class playerClass;
-    [SerializeField]
-    private Class defaultPlayerClass = null;
+    public UpdatedClass playerClass2;
+    [SerializeField] private Class defaultPlayerClass = null;
+    [SerializeField] private Class baseStats = null;
 
     [SerializeField]
     private float invulnerableDuration = 0.5f;
@@ -33,11 +34,15 @@ public class Player : Entity
         dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();
 
-        if (playerClass == null)
+        // OLD
+        /*if (playerClass == null)
         {
             playerClass = defaultPlayerClass;
         }
-        ApplyClass(playerClass);
+        ApplyClass(playerClass);*/
+
+        ApplyClass(baseStats);
+        ApplyClass2(playerClass2);
     }
 
     public override void UpdateEntity()
@@ -73,6 +78,43 @@ public class Player : Entity
                 }
             }
         }
+    }
+
+    public void ApplyClass2(UpdatedClass playerClass)
+    {
+        if (playerClass == null) return;
+        this.playerClass2 = playerClass;
+
+        Animator animator = transform.Find("Sprite").GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.runtimeAnimatorController = playerClass.animatorController;
+        }
+
+        if (!isPVP) this.maxHealth += playerClass.healthDelta;
+        else this.maxHealth += playerClass.pvpHealthDelta;
+
+        Transform healthbar = this.transform.Find("EmptyHealthBar");
+        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+
+        this.health = this.maxHealth;
+
+        if (!isPVP) this.invulnerableDuration += playerClass.invulnerableDurationDelta;
+
+        this.contactDamage += playerClass.contactDamageDelta;
+        this.contactHitCooldown += playerClass.contactHitCooldownDelta;
+
+        AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
+        if (abilityBehaviour != null && playerClass.classAbility != null && playerController != null)
+        {
+            abilityBehaviour.LinkAbility(playerClass.classAbility);
+            playerController.classAbility = abilityBehaviour.UseAbility;
+        }
+
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null) playerMovement.ApplyClass2(playerClass);
+        if (shootingAbility != null) shootingAbility.ApplyClass2(playerClass);
+        if (dashAbility != null) dashAbility.ApplyClass2(playerClass);
     }
 
     public void ApplyClass(Class playerClass)

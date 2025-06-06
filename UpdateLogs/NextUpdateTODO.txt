@@ -18,3 +18,4 @@ DO NEXT UPDATE
 
 LONG TERM:
 - Create new campaign
+- Use GitHub actions to automatically upload a build.
