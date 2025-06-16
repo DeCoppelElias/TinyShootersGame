@@ -164,32 +164,32 @@ public class ShootingAbility : MonoBehaviour
         CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
     }
 
-    public void ApplyClass(Class playerClass)
+    public void ApplyStats(PlayerStats playerStats)
     {
-        if (playerClass == null) return;
-        if (!playerClass.hasShootAbility) return;
+        if (playerStats == null) return;
+        if (!playerStats.hasShootAbility) return;
 
-        damage = playerClass.damage;
-        attackCooldown = playerClass.attackCooldown;
+        damage = playerStats.damage;
+        attackCooldown = playerStats.attackCooldown;
 
-        range = playerClass.range;
-        pierce = playerClass.pierce;
-        totalSplit = playerClass.totalSplit;
-        totalFan = playerClass.totalFan;
-        bulletSize = playerClass.bulletSize;
-        bulletSpeed = playerClass.bulletSpeed;
+        range = playerStats.range;
+        pierce = playerStats.pierce;
+        totalSplit = playerStats.totalSplit;
+        totalFan = playerStats.totalFan;
+        bulletSize = playerStats.bulletSize;
+        bulletSpeed = playerStats.bulletSpeed;
 
-        splitOnHit = playerClass.splitOnHit;
-        splitAmount = playerClass.splitAmount;
-        splitRange = playerClass.splitRange;
-        splitBulletSize = playerClass.splitBulletSize;
-        splitBulletSpeed = playerClass.splitBulletSpeed;
-        splitDamagePercentage = playerClass.splitDamagePercentage;
+        splitOnHit = playerStats.splitOnHit;
+        splitAmount = playerStats.splitAmount;
+        splitRange = playerStats.splitRange;
+        splitBulletSize = playerStats.splitBulletSize;
+        splitBulletSpeed = playerStats.splitBulletSpeed;
+        splitDamagePercentage = playerStats.splitDamagePercentage;
 
-        shootingMoveSpeed = playerClass.shootingMoveSpeed;
+        shootingMoveSpeed = playerStats.shootingMoveSpeed;
     }
 
-    public void ApplyClass2(UpdatedClass playerClass)
+    public void ApplyClass(PlayerClass playerClass)
     {
         if (playerClass == null) return;
         if (!playerClass.hasShootAbility) return;

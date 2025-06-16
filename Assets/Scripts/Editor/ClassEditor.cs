@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 
-[CustomEditor(typeof(Class))]
+[CustomEditor(typeof(PlayerStats))]
 public class ClassEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         // Get a reference to the Class scriptable object
-        Class playerClass = (Class)target;
+        PlayerStats playerClass = (PlayerStats)target;
 
         serializedObject.Update();
 

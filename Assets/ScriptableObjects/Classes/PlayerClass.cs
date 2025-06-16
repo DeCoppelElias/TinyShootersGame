@@ -7,8 +7,8 @@ using UnityEngine;
 /// Instead of forcing set values when a player selects a class, I want to define how much is added or subtracted from player stats. 
 /// This is the first step in allowing more random power updates inbetween levels, allowing for more unique combinations.
 /// </summary>
-[CreateAssetMenu(fileName = "NewPlayerClass", menuName = "Player/PlayerClass2")]
-public class UpdatedClass : ScriptableObject
+[CreateAssetMenu(fileName = "NewPlayerClass", menuName = "Player/PlayerClass")]
+public class PlayerClass : ScriptableObject
 {
     [Header("General Settings")]
     public string className;
@@ -53,5 +53,5 @@ public class UpdatedClass : ScriptableObject
     public float dashSpeedDelta = 0;
 
     [Header("Upgrades")]
-    public List<UpdatedClass> upgrades = new List<UpdatedClass>();
+    public List<PlayerClass> upgrades = new List<PlayerClass>();
 }
