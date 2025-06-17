@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 552bfb895b8a84d46ac3e0619f0de159, type: 3}
-  m_Name: UpdatedShotgunClass
+  m_Name: Rocket
   m_EditorClassIdentifier: 
-  className: Shotgun
-  animatorController: {fileID: 9100000, guid: 9c65113a4bf725746a360cfb83c1830f, type: 2}
+  className: Rocket
+  animatorController: {fileID: 9100000, guid: 1ae993f5e1b95a24583f87f309b1d48d, type: 2}
   UISprite: {fileID: 21300000, guid: 1aca28879e46a0a4caeda669de110f8e, type: 3}
   healthDelta: 50
   pvpHealthDelta: 0
@@ -22,22 +22,22 @@ MonoBehaviour:
   invulnerableDurationDelta: 0
   contactDamageDelta: 0
   contactHitCooldownDelta: 0
-  classAbility: {fileID: 0}
+  classAbility: {fileID: 11400000, guid: 37fc610b55d68244f9738c3b593e1a4e, type: 2}
   hasShootAbility: 1
   damageDelta: 0
-  attackCooldownDelta: -0.1
-  rangeDelta: -1
+  attackCooldownDelta: 0.2
+  rangeDelta: 0
   pierceDelta: 0
-  totalSplitDelta: 1
-  totalFanDelta: 2
-  bulletSizeDelta: -0.5
-  bulletSpeedDelta: 0
-  splitOnHit: 0
+  totalSplitDelta: 0
+  totalFanDelta: 0
+  bulletSizeDelta: 0.5
+  bulletSpeedDelta: -1
+  splitOnHit: 1
   splitAmountDelta: 0
   splitRangeDelta: 0
   splitBulletSizeDelta: 0
   splitBulletSpeedDelta: 0
-  splitDamagePercentageDelta: 0
+  splitDamagePercentageDelta: -0.1
   hasDashAbility: 1
   dashCooldownDelta: 0
   dashDurationDelta: 0
