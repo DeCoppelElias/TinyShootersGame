@@ -1,7 +1,8 @@
 Done:
-
+- Updated classes
 
 TODO:
+- Add powerups
 - Add shooting sound or sound when enemies are hit
 - Add more decorative tiles
 - Update pvp screen so player can choose the number of rounds
