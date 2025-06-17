@@ -6,9 +6,9 @@ using UnityEngine;
 public class LittleGunner : MonoBehaviour
 {
     private ShootingAbility shootingAbility;
-    private Entity target;
+    [SerializeField] private Entity target;
 
-    public Entity owner;
+    [SerializeField] private Entity owner;
     private float lastRefresh = 0;
     private float refreshCooldown = 1;
 
@@ -20,10 +20,12 @@ public class LittleGunner : MonoBehaviour
 
     public void SetOwner(Entity entity)
     {
-        owner = entity;
+        this.owner = entity;
         shootingAbility = this.GetComponent<ShootingAbility>();
-        shootingAbility.damage = entity.GetComponent<ShootingAbility>().damage / 2;
-        shootingAbility.owner = owner;
+        shootingAbility.damage = entity.GetComponent<ShootingAbility>().damage / 2f;
+        shootingAbility.attackCooldown = entity.GetComponent<ShootingAbility>().attackCooldown;
+        shootingAbility.owner = entity;
+        this.tag = entity.tag;
     }
 
     // Update is called once per frame

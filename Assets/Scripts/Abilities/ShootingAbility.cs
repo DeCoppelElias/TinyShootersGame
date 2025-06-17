@@ -42,7 +42,7 @@ public class ShootingAbility : MonoBehaviour
     private void Start()
     {
         bullets = GameObject.Find("Bullets");
-        owner = GetComponent<Entity>();
+        if (owner == null) owner = GetComponent<Entity>();
     }
 
     private void Update()
