@@ -183,7 +183,7 @@ public class PathFinding : MonoBehaviour
 
         if (this.waveManager != null)
         {
-            return this.waveManager.InsideLevel(location);
+            return !this.waveManager.InsideLevel(location);
         }
 
         return false;
