@@ -128,9 +128,6 @@ public class UIManager : MonoBehaviour
 
     public void EnableUpgradeUI()
     {
-        LowerMusicVolume();
-        gameStateManager.ToPaused();
-
         List<PlayerClass> upgrades = new List<PlayerClass>();
         if (player.playerClass == null)
         {
@@ -143,6 +140,9 @@ public class UIManager : MonoBehaviour
             upgrades = player.playerClass.upgrades;
         }
         if (upgrades.Count == 0) return;
+
+        LowerMusicVolume();
+        gameStateManager.ToPaused();
 
         Transform buttons = upgradeUI.transform.Find("Buttons");
         // First make sure that the amount of buttons and upgrades are the same
