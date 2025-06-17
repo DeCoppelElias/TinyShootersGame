@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 552bfb895b8a84d46ac3e0619f0de159, type: 3}
+  m_Name: Sniper
+  m_EditorClassIdentifier: 
+  className: Sniper
+  animatorController: {fileID: 9100000, guid: 5b88cd74f24e66a4dacac6f220b69c22, type: 2}
+  UISprite: {fileID: 21300000, guid: ebe586905f7785e4e9dccc17ddb1b089, type: 3}
+  healthDelta: 50
+  pvpHealthDelta: 50
+  normalMoveSpeedDelta: 0
+  shootingMoveSpeedDelta: 0
+  invulnerableDurationDelta: 0
+  contactDamageDelta: 0
+  contactHitCooldownDelta: 0
+  classAbility: {fileID: 11400000, guid: 61bddf103a14e5e4facd2aa9af54cbb1, type: 2}
+  hasShootAbility: 1
+  damageDelta: 10
+  attackCooldownDelta: 0.2
+  rangeDelta: 5
+  pierceDelta: 0
+  totalSplitDelta: 0
+  totalFanDelta: 0
+  bulletSizeDelta: 0
+  bulletSpeedDelta: 6
+  splitOnHit: 0
+  splitAmountDelta: 0
+  splitRangeDelta: 0
+  splitBulletSizeDelta: 0
+  splitBulletSpeedDelta: 0
+  splitDamagePercentageDelta: 0
+  hasDashAbility: 1
+  dashCooldownDelta: 0
+  dashDurationDelta: 0
+  chargeDurationDelta: 0
+  dashSpeedDelta: 0
+  upgrades:
+  - {fileID: 11400000, guid: 8b721b3ee9db6114895119e46c5ef1e5, type: 2}
+  - {fileID: 11400000, guid: b7e701e0d455c914193b1e0d95a56470, type: 2}

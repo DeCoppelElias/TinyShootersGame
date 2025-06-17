@@ -128,19 +128,27 @@ public class UIManager : MonoBehaviour
 
     public void EnableUpgradeUI()
     {
+        List<PlayerClass> upgrades = new List<PlayerClass>();
+        if (player.playerClass == null)
+        {
+            if (player.baseStats == null) return;
+
+            upgrades = player.baseStats.upgrades;
+        }
+        else
+        {
+            upgrades = player.playerClass.upgrades;
+        }
+        if (upgrades.Count == 0) return;
+
         LowerMusicVolume();
-
-        Class playerClass = player.playerClass;
-        if (playerClass == null || playerClass.upgrades.Count == 0) return;
-
         gameStateManager.ToPaused();
 
         Transform buttons = upgradeUI.transform.Find("Buttons");
-
         // First make sure that the amount of buttons and upgrades are the same
-        if (buttons.childCount > playerClass.upgrades.Count)
+        if (buttons.childCount > upgrades.Count)
         {
-            for (int i = playerClass.upgrades.Count; i < buttons.childCount; i++)
+            for (int i = upgrades.Count; i < buttons.childCount; i++)
             {
                 GameObject child = buttons.GetChild(i).gameObject;
                 child.transform.SetParent(null);
@@ -149,7 +157,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            for (int i = buttons.childCount; i < playerClass.upgrades.Count; i++)
+            for (int i = buttons.childCount; i < upgrades.Count; i++)
             {
                 Instantiate(upgradeButtonPrefab, buttons);
             }
@@ -159,7 +167,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < buttons.childCount; i++)
         {
             Transform buttonTransform = buttons.GetChild(i);
-            Class currentPlayerClass = playerClass.upgrades[i];
+            PlayerClass currentPlayerClass = upgrades[i];
 
             Text text = buttonTransform.GetComponentInChildren<Text>();
             text.text = currentPlayerClass.className;

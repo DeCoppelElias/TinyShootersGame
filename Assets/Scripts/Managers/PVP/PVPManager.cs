@@ -251,7 +251,7 @@ public class PVPManager : MonoBehaviour
 
     public void EnableUpgradeUI(Player player)
     {
-        Class playerClass = player.playerClass;
+        PlayerClass playerClass = player.playerClass;
         if (playerClass.upgrades.Count == 0) return;
 
         (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
@@ -279,7 +279,7 @@ public class PVPManager : MonoBehaviour
         for (int i = 0; i < buttons.childCount; i++)
         {
             Transform buttonTransform = buttons.GetChild(i);
-            Class currentPlayerClass = playerClass.upgrades[i];
+            PlayerClass currentPlayerClass = playerClass.upgrades[i];
 
             Text text = buttonTransform.GetComponentInChildren<Text>();
             text.text = currentPlayerClass.className;

@@ -6,12 +6,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public class Player : Entity
 {
-    public Class playerClass;
-    [SerializeField]
-    private Class defaultPlayerClass = null;
+    [Header("Player Settings")]
+    public PlayerClass playerClass;
+    public PlayerStats baseStats = null;
 
-    [SerializeField]
-    private float invulnerableDuration = 0.5f;
+    [SerializeField] private float invulnerableDuration = 0.5f;
     private float invulnerableStart;
 
     private ShootingAbility shootingAbility;
@@ -33,10 +32,7 @@ public class Player : Entity
         dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();
 
-        if (playerClass == null)
-        {
-            playerClass = defaultPlayerClass;
-        }
+        ApplyStats(baseStats);
         ApplyClass(playerClass);
     }
 
@@ -75,7 +71,7 @@ public class Player : Entity
         }
     }
 
-    public void ApplyClass(Class playerClass)
+    public void ApplyClass(PlayerClass playerClass)
     {
         if (playerClass == null) return;
         this.playerClass = playerClass;
@@ -86,18 +82,18 @@ public class Player : Entity
             animator.runtimeAnimatorController = playerClass.animatorController;
         }
 
-        if (!isPVP) this.maxHealth = playerClass.maxHealth;
-        else this.maxHealth = playerClass.pvpMaxHealth;
+        if (!isPVP) this.maxHealth += playerClass.healthDelta;
+        else this.maxHealth += playerClass.pvpHealthDelta;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");
         healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
 
         this.health = this.maxHealth;
 
-        if (!isPVP) this.invulnerableDuration = playerClass.invulnerableDuration;
+        if (!isPVP) this.invulnerableDuration += playerClass.invulnerableDurationDelta;
 
-        this.contactDamage = playerClass.contactDamage;
-        this.contactHitCooldown = playerClass.contactHitCooldown;
+        this.contactDamage += playerClass.contactDamageDelta;
+        this.contactHitCooldown += playerClass.contactHitCooldownDelta;
 
         AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
         if (abilityBehaviour != null && playerClass.classAbility != null && playerController != null)
@@ -110,6 +106,42 @@ public class Player : Entity
         if (playerMovement != null) playerMovement.ApplyClass(playerClass);
         if (shootingAbility != null) shootingAbility.ApplyClass(playerClass);
         if (dashAbility != null) dashAbility.ApplyClass(playerClass);
+    }
+
+    public void ApplyStats(PlayerStats playerStats)
+    {
+        if (playerStats == null) return;
+
+        Animator animator = transform.Find("Sprite").GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.runtimeAnimatorController = playerStats.animatorController;
+        }
+
+        if (!isPVP) this.maxHealth = playerStats.maxHealth;
+        else this.maxHealth = playerStats.pvpMaxHealth;
+
+        Transform healthbar = this.transform.Find("EmptyHealthBar");
+        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+
+        this.health = this.maxHealth;
+
+        if (!isPVP) this.invulnerableDuration = playerStats.invulnerableDuration;
+
+        this.contactDamage = playerStats.contactDamage;
+        this.contactHitCooldown = playerStats.contactHitCooldown;
+
+        AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
+        if (abilityBehaviour != null && playerStats.classAbility != null && playerController != null)
+        {
+            abilityBehaviour.LinkAbility(playerStats.classAbility);
+            playerController.classAbility = abilityBehaviour.UseAbility;
+        }
+
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null) playerMovement.ApplyStats(playerStats);
+        if (shootingAbility != null) shootingAbility.ApplyStats(playerStats);
+        if (dashAbility != null) dashAbility.ApplyStats(playerStats);
     }
 
     public override void TakeDamage(float amount, string sourceTag, DamageType damageType)

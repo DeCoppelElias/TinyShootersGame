@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewPlayerClass", menuName = "Player/PlayerClass")]
-public class Class : ScriptableObject
+/// <summary>
+/// Player starting stats
+/// </summary>
+[CreateAssetMenu(fileName = "PlayerStats", menuName = "Player/PlayerStats")]
+public class PlayerStats : ScriptableObject
 {
     // General Settings
     public string className;
@@ -49,5 +52,5 @@ public class Class : ScriptableObject
     public float dashSpeed = 20;
 
     // Upgrades
-    public List<Class> upgrades = new List<Class>();
+    public List<PlayerClass> upgrades = new List<PlayerClass>();
 }

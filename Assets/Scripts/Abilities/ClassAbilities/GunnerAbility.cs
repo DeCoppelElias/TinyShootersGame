@@ -23,7 +23,6 @@ public class GunnerAbility : ClassAbility
     {
         littleGunner = Instantiate(littleGunnerPrefab, player.transform);
         littleGunner.GetComponent<LittleGunner>().SetOwner(player);
-        littleGunner.tag = player.tag;
         littleGunner.SetActive(false);
 
         return true;

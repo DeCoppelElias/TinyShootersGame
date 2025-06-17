@@ -132,10 +132,17 @@ public class PlayerMovement : MonoBehaviour
         this.movementState = MovementState.Knockback;
     }
 
-    public void ApplyClass(Class playerClass)
+    public void ApplyStats(PlayerStats playerStats)
+    {
+        if (playerStats == null) return;
+
+        moveSpeed = playerStats.normalMoveSpeed;
+    }
+
+    public void ApplyClass(PlayerClass playerClass)
     {
         if (playerClass == null) return;
 
-        moveSpeed = playerClass.normalMoveSpeed;
+        moveSpeed += playerClass.normalMoveSpeedDelta;
     }
 }

@@ -42,7 +42,7 @@ public class ShootingAbility : MonoBehaviour
     private void Start()
     {
         bullets = GameObject.Find("Bullets");
-        owner = GetComponent<Entity>();
+        if (owner == null) owner = GetComponent<Entity>();
     }
 
     private void Update()
@@ -164,29 +164,54 @@ public class ShootingAbility : MonoBehaviour
         CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
     }
 
-    public void ApplyClass(Class playerClass)
+    public void ApplyStats(PlayerStats playerStats)
+    {
+        if (playerStats == null) return;
+        if (!playerStats.hasShootAbility) return;
+
+        damage = playerStats.damage;
+        attackCooldown = playerStats.attackCooldown;
+
+        range = playerStats.range;
+        pierce = playerStats.pierce;
+        totalSplit = playerStats.totalSplit;
+        totalFan = playerStats.totalFan;
+        bulletSize = playerStats.bulletSize;
+        bulletSpeed = playerStats.bulletSpeed;
+
+        splitOnHit = playerStats.splitOnHit;
+        splitAmount = playerStats.splitAmount;
+        splitRange = playerStats.splitRange;
+        splitBulletSize = playerStats.splitBulletSize;
+        splitBulletSpeed = playerStats.splitBulletSpeed;
+        splitDamagePercentage = playerStats.splitDamagePercentage;
+
+        shootingMoveSpeed = playerStats.shootingMoveSpeed;
+    }
+
+    public void ApplyClass(PlayerClass playerClass)
     {
         if (playerClass == null) return;
         if (!playerClass.hasShootAbility) return;
 
-        damage = playerClass.damage;
-        attackCooldown = playerClass.attackCooldown;
+        damage += playerClass.damageDelta;
+        attackCooldown += playerClass.attackCooldownDelta;
 
-        range = playerClass.range;
-        pierce = playerClass.pierce;
-        totalSplit = playerClass.totalSplit;
-        totalFan = playerClass.totalFan;
-        bulletSize = playerClass.bulletSize;
-        bulletSpeed = playerClass.bulletSpeed;
+        range += playerClass.rangeDelta;
+        pierce += playerClass.pierceDelta;
+        totalSplit += playerClass.totalSplitDelta;
+        totalFan += playerClass.totalFanDelta;
+        bulletSize += playerClass.bulletSizeDelta;
+        bulletSpeed += playerClass.bulletSpeedDelta;
 
         splitOnHit = playerClass.splitOnHit;
-        splitAmount = playerClass.splitAmount;
-        splitRange = playerClass.splitRange;
-        splitBulletSize = playerClass.splitBulletSize;
-        splitBulletSpeed = playerClass.splitBulletSpeed;
-        splitDamagePercentage = playerClass.splitDamagePercentage;
+        splitAmount += playerClass.splitAmountDelta;
+        splitRange += playerClass.splitRangeDelta;
+        splitBulletSize += playerClass.splitBulletSizeDelta;
+        splitBulletSpeed += playerClass.splitBulletSpeedDelta;
+        splitDamagePercentage += playerClass.splitDamagePercentageDelta;
 
-        shootingMoveSpeed = playerClass.shootingMoveSpeed;
+        shootingMoveSpeed += playerClass.shootingMoveSpeedDelta;
     }
 
     private void PlayShootAnimation()
