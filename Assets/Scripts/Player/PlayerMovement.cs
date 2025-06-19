@@ -145,4 +145,11 @@ public class PlayerMovement : MonoBehaviour
 
         moveSpeed += playerClass.normalMoveSpeedDelta;
     }
+
+    public void ApplyPowerup(Powerup powerup)
+    {
+        if (powerup == null) return;
+
+        moveSpeed += powerup.normalMoveSpeedDelta;
+    }
 }

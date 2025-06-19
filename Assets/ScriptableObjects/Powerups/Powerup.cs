@@ -5,11 +5,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewPowerup", menuName = "Player/Powerup")]
 public class Powerup : ScriptableObject
 {
-    [Header("General Settings")]
+    [Header("Information")]
     public string powerupName;
+    public enum Rarity { Common, Uncommon, Rare};
+    public Rarity rarity;
 
+    [Header("General Upgrade")]
     public float healthDelta = 0;
-    public float pvpHealthDelta = 0;
+    public bool recoverHealth = false;
 
     public float normalMoveSpeedDelta = 0;
     public float shootingMoveSpeedDelta = 0;
@@ -19,10 +22,7 @@ public class Powerup : ScriptableObject
     public float contactDamageDelta = 0;
     public float contactHitCooldownDelta = 0;
 
-    public ClassAbility classAbility;
-
-    [Header("Ranged Combat Settings")]
-    public bool hasShootAbility = false;
+    [Header("Ranged Combat Upgrade")]
     public float damageDelta = 0;
     public float attackCooldownDelta = 0;
     public float rangeDelta = 0;
@@ -38,8 +38,7 @@ public class Powerup : ScriptableObject
     public float splitBulletSpeedDelta = 0;
     public float splitDamagePercentageDelta = 0;
 
-    [Header("Dash Settings")]
-    public bool hasDashAbility = false;
+    [Header("Dash Upgrade")]
     public int dashCooldownDelta = 0;
     public float dashDurationDelta = 0;
     public float chargeDurationDelta = 0;

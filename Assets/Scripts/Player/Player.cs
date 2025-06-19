@@ -144,6 +144,28 @@ public class Player : Entity
         if (dashAbility != null) dashAbility.ApplyStats(playerStats);
     }
 
+    public void ApplyPowerup(Powerup powerup)
+    {
+        if (powerup == null) return;
+
+        if (!isPVP) this.maxHealth += powerup.healthDelta;
+        else this.maxHealth += powerup.healthDelta;
+        if (powerup.recoverHealth) this.health = this.maxHealth;
+
+        Transform healthbar = this.transform.Find("EmptyHealthBar");
+        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+
+        if (!isPVP) this.invulnerableDuration += powerup.invulnerableDurationDelta;
+
+        this.contactDamage += powerup.contactDamageDelta;
+        this.contactHitCooldown += powerup.contactHitCooldownDelta;
+
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null) playerMovement.ApplyPowerup(powerup);
+        if (shootingAbility != null) shootingAbility.ApplyPowerup(powerup);
+        if (dashAbility != null) dashAbility.ApplyPowerup(powerup);
+    }
+
     public override void TakeDamage(float amount, string sourceTag, DamageType damageType)
     {
         if (amount <= 0) return;
