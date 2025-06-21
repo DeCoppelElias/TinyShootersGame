@@ -34,7 +34,7 @@ MonoBehaviour:
   bulletSize: 1
   bulletSpeed: 6
   splitOnHit: 0
-  splitAmount: 5
+  splitAmount: 0
   splitRange: 1
   splitBulletSize: 0.5
   splitBulletSpeed: 6

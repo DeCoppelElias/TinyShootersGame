@@ -42,16 +42,12 @@ public class Player : Entity
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            Debug.Log("lol1");
             alternativeSpriteIndex++;
             SpriteRenderer renderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
             if (renderer != null)
             {
-                Debug.Log("lol2");
                 if (alternativeSpriteIndex == alternativeSprites.Count + 1)
                 {
-
-                    Debug.Log("lol3");
                     alternativeSpriteIndex = 0;
 
                     Animator animator = transform.Find("Sprite").GetComponent<Animator>();
@@ -59,7 +55,6 @@ public class Player : Entity
                 }
                 else
                 {
-                    Debug.Log("lol4");
                     if (alternativeSpriteIndex == 1)
                     {
                         Animator animator = transform.Find("Sprite").GetComponent<Animator>();
@@ -148,8 +143,9 @@ public class Player : Entity
     {
         if (powerup == null) return;
 
-        if (!isPVP) this.maxHealth += powerup.healthDelta;
-        else this.maxHealth += powerup.healthDelta;
+        this.maxHealth += powerup.healthDelta;
+        this.health += powerup.healthDelta;
+
         if (powerup.recoverHealth) this.health = this.maxHealth;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");

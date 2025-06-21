@@ -16,6 +16,9 @@ public class UIManager : MonoBehaviour
     private GameObject upgradeUI;
     [SerializeField] private GameObject upgradeButtonPrefab;
 
+    private GameObject powerupUI;
+    private PowerupManager powerupManager;
+
     private GameObject abilityUI;
     private GameObject dashAbilityUI;
     private bool dashAbilityEnabled = true;
@@ -48,6 +51,10 @@ public class UIManager : MonoBehaviour
 
         upgradeUI = GameObject.Find("UpgradeUI");
         upgradeUI.SetActive(false);
+
+        powerupUI = GameObject.Find("PowerupUI");
+        powerupUI?.SetActive(false);
+        powerupManager = GameObject.Find("PowerupManager")?.GetComponent<PowerupManager>();
 
         pauseUI = GameObject.Find("PauseUI");
         pauseUI.SetActive(false);
@@ -193,6 +200,49 @@ public class UIManager : MonoBehaviour
 
         gameStateManager.ToRunning();
         upgradeUI.SetActive(false);
+        RemoveFirstSelected();
+    }
+
+    public void EnablePowerupUI()
+    {
+        List<Powerup> powerups = powerupManager.ChooseRandomPowerups(3);
+        if (powerups.Count != 3) return;
+
+        LowerMusicVolume();
+        gameStateManager.ToPaused();
+
+        Transform buttons = powerupUI.transform.Find("Buttons");
+
+        // Link each button to upgrading the player to that class
+        for (int i = 0; i < buttons.childCount; i++)
+        {
+            Transform buttonTransform = buttons.GetChild(i);
+            Powerup currentPowerup = powerups[i];
+
+            Text title = buttonTransform.Find("Title").GetComponent<Text>();
+            title.text = currentPowerup.powerupName;
+
+            Text description = buttonTransform.Find("Description").GetComponent<Text>();
+            description.text = currentPowerup.GenerateUIDescription();
+
+            Button button = buttonTransform.GetComponent<Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => {
+                player.ApplyPowerup(currentPowerup);
+                DisablePowerupUI();
+            });
+        }
+
+        powerupUI.SetActive(true);
+        SetFirstSelectedIfGamepad(buttons.GetChild(0).gameObject);
+    }
+
+    public void DisablePowerupUI()
+    {
+        ReturnMusicVolume();
+
+        gameStateManager.ToRunning();
+        powerupUI.SetActive(false);
         RemoveFirstSelected();
     }
 

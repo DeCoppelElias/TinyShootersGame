@@ -33,11 +33,11 @@ MonoBehaviour:
   bulletSizeDelta: 0.5
   bulletSpeedDelta: -1
   splitOnHit: 1
-  splitAmountDelta: 10
-  splitRangeDelta: 1
-  splitBulletSizeDelta: 0.5
-  splitBulletSpeedDelta: 6
-  splitDamagePercentageDelta: 0.4
+  splitAmountDelta: 5
+  splitRangeDelta: 0
+  splitBulletSizeDelta: 0
+  splitBulletSpeedDelta: 0
+  splitDamagePercentageDelta: -0.1
   hasDashAbility: 1
   dashCooldownDelta: 0
   dashDurationDelta: 0
