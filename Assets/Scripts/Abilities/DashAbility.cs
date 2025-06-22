@@ -143,6 +143,16 @@ public class DashAbility : MonoBehaviour
         dashSpeed += playerClass.dashSpeedDelta;
     }
 
+    public void ApplyPowerup(Powerup powerup)
+    {
+        if (powerup == null) return;
+
+        dashCooldown += powerup.dashCooldownDelta;
+        dashDuration += powerup.dashDurationDelta;
+        chargeDuration += powerup.chargeDurationDelta;
+        dashSpeed += powerup.dashSpeedDelta;
+    }
+
     public bool Dashing()
     {
         return this.dashingState == DashingState.Dashing;

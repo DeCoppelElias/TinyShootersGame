@@ -204,7 +204,7 @@ public class ShootingAbility : MonoBehaviour
         bulletSize += playerClass.bulletSizeDelta;
         bulletSpeed += playerClass.bulletSpeedDelta;
 
-        splitOnHit = playerClass.splitOnHit;
+        splitOnHit = splitOnHit || playerClass.splitOnHit;
         splitAmount += playerClass.splitAmountDelta;
         splitRange += playerClass.splitRangeDelta;
         splitBulletSize += playerClass.splitBulletSizeDelta;
@@ -212,6 +212,30 @@ public class ShootingAbility : MonoBehaviour
         splitDamagePercentage += playerClass.splitDamagePercentageDelta;
 
         shootingMoveSpeed += playerClass.shootingMoveSpeedDelta;
+    }
+
+    public void ApplyPowerup(Powerup powerup)
+    {
+        if (powerup == null) return;
+
+        damage += powerup.damageDelta;
+        attackCooldown += powerup.attackCooldownDelta;
+
+        range += powerup.rangeDelta;
+        pierce += powerup.pierceDelta;
+        totalSplit += powerup.totalSplitDelta;
+        totalFan += powerup.totalFanDelta;
+        bulletSize += powerup.bulletSizeDelta;
+        bulletSpeed += powerup.bulletSpeedDelta;
+
+        splitOnHit = splitOnHit || powerup.splitOnHit;
+        splitAmount += powerup.splitAmountDelta;
+        splitRange += powerup.splitRangeDelta;
+        splitBulletSize += powerup.splitBulletSizeDelta;
+        splitBulletSpeed += powerup.splitBulletSpeedDelta;
+        splitDamagePercentage += powerup.splitDamagePercentageDelta;
+
+        shootingMoveSpeed += powerup.shootingMoveSpeedDelta;
     }
 
     private void PlayShootAnimation()

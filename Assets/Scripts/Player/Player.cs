@@ -42,16 +42,12 @@ public class Player : Entity
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            Debug.Log("lol1");
             alternativeSpriteIndex++;
             SpriteRenderer renderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
             if (renderer != null)
             {
-                Debug.Log("lol2");
                 if (alternativeSpriteIndex == alternativeSprites.Count + 1)
                 {
-
-                    Debug.Log("lol3");
                     alternativeSpriteIndex = 0;
 
                     Animator animator = transform.Find("Sprite").GetComponent<Animator>();
@@ -59,7 +55,6 @@ public class Player : Entity
                 }
                 else
                 {
-                    Debug.Log("lol4");
                     if (alternativeSpriteIndex == 1)
                     {
                         Animator animator = transform.Find("Sprite").GetComponent<Animator>();
@@ -142,6 +137,29 @@ public class Player : Entity
         if (playerMovement != null) playerMovement.ApplyStats(playerStats);
         if (shootingAbility != null) shootingAbility.ApplyStats(playerStats);
         if (dashAbility != null) dashAbility.ApplyStats(playerStats);
+    }
+
+    public void ApplyPowerup(Powerup powerup)
+    {
+        if (powerup == null) return;
+
+        this.maxHealth += powerup.healthDelta;
+        this.health += powerup.healthDelta;
+
+        if (powerup.recoverHealth) this.health = this.maxHealth;
+
+        Transform healthbar = this.transform.Find("EmptyHealthBar");
+        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+
+        if (!isPVP) this.invulnerableDuration += powerup.invulnerableDurationDelta;
+
+        this.contactDamage += powerup.contactDamageDelta;
+        this.contactHitCooldown += powerup.contactHitCooldownDelta;
+
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null) playerMovement.ApplyPowerup(powerup);
+        if (shootingAbility != null) shootingAbility.ApplyPowerup(powerup);
+        if (dashAbility != null) dashAbility.ApplyPowerup(powerup);
     }
 
     public override void TakeDamage(float amount, string sourceTag, DamageType damageType)

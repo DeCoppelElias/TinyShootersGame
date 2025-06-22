@@ -338,7 +338,7 @@ MonoBehaviour:
   totalFan: 1
   bulletSize: 1
   bulletSpeed: 6
-  splitOnHit: 1
+  splitOnHit: 0
   splitAmount: 0
   splitRange: 1
   splitBulletSize: 0.25

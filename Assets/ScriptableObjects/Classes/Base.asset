@@ -35,10 +35,10 @@ MonoBehaviour:
   bulletSpeed: 6
   splitOnHit: 0
   splitAmount: 0
-  splitRange: 0
-  splitBulletSize: 0
-  splitBulletSpeed: 0
-  splitDamagePercentage: 0
+  splitRange: 1
+  splitBulletSize: 0.5
+  splitBulletSpeed: 6
+  splitDamagePercentage: 0.5
   hasDashAbility: 1
   dashCooldown: 2
   dashDuration: 0.1
