@@ -23,11 +23,13 @@ public class Bullet : MonoBehaviour
     public string ownerTag;
 
     private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb;
 
     private void Start()
     {
         createTime = Time.time;
         spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -44,7 +46,7 @@ public class Bullet : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Wall")
+        if (collision.CompareTag("Wall"))
         {
             BulletHit();
             return;
@@ -53,7 +55,15 @@ public class Bullet : MonoBehaviour
         Entity entity = collision.GetComponent<Entity>();
         if (entity != null && ownerTag != collision.tag && entity.health > 0)
         {
-            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged);
+            if (entity is Enemy enemy)
+            {
+                enemy.TakeDamageWithKnockback(damage, ownerTag, Entity.DamageType.Ranged, rb.velocity.normalized);
+            }
+            else
+            {
+                entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged);
+            }
+            
             pierce--;
             if (pierce == 0)
             {
@@ -105,9 +115,8 @@ public class Bullet : MonoBehaviour
 
         bullet.GetComponent<Bullet>().splitAmount = 0;
 
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
-        rb.AddForce(vector * splitBulletSpeed, ForceMode2D.Impulse);
+        Rigidbody2D splitBulletRb = bullet.GetComponent<Rigidbody2D>();
+        splitBulletRb.AddForce(vector * splitBulletSpeed, ForceMode2D.Impulse);
     }
 
     public GameObject CreateCopyWithNewOwner(string ownerTag)

@@ -20,6 +20,12 @@ public class Enemy : Entity
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
 
+    private int knockbackForce = 30;
+    private float knockbackCooldown = 0.3f;
+    private float lastKnockback;
+
+    private Rigidbody2D rb;
+
     public override void StartEntity()
     {
         base.StartEntity();
@@ -29,6 +35,8 @@ public class Enemy : Entity
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null) throw new System.Exception("Cannot find size because collider is missing");
         size = collider.bounds.size.x;
+
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private Player FindClosestPlayer()
@@ -103,5 +111,19 @@ public class Enemy : Entity
         }
 
         Destroy(this.gameObject);
+    }
+
+    public void TakeDamageWithKnockback(float amount, string sourceTag, DamageType damageType, Vector2 damageDirection)
+    {
+        this.TakeDamage(amount, sourceTag, damageType);
+
+        if (Time.time - lastKnockback > knockbackCooldown)
+        {
+            // Add knockback scaling with damage
+            float t = Mathf.InverseLerp(10f, 40f, amount);
+            float damageScale = Mathf.Lerp(1f, 2f, t);
+            rb.AddForce(damageScale * knockbackForce * damageDirection, ForceMode2D.Impulse);
+            lastKnockback = Time.time;
+        }
     }
 }
