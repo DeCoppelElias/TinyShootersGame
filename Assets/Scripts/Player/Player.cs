@@ -162,7 +162,7 @@ public class Player : Entity
         if (dashAbility != null) dashAbility.ApplyPowerup(powerup);
     }
 
-    public override void TakeDamage(float amount, string sourceTag, DamageType damageType)
+    public override void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
         if (amount <= 0) return;
         if (Time.time - invulnerableStart < invulnerableDuration) return;

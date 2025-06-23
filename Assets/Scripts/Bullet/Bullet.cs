@@ -55,15 +55,8 @@ public class Bullet : MonoBehaviour
         Entity entity = collision.GetComponent<Entity>();
         if (entity != null && ownerTag != collision.tag && entity.health > 0)
         {
-            if (entity is Enemy enemy)
-            {
-                enemy.TakeDamageWithKnockback(damage, ownerTag, Entity.DamageType.Ranged, rb.velocity.normalized);
-            }
-            else
-            {
-                entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged);
-            }
-            
+            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged, rb.velocity.normalized);
+
             pierce--;
             if (pierce == 0)
             {

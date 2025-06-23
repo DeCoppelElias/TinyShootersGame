@@ -69,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1934459445
-  m_SortingLayer: 4
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d5eed3d57575548448e5e6d81e1d6c96, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -212,23 +212,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5997db3c1447434eba712c0b87770b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityState: 0
   maxHealth: 300
   health: 300
-  damage: 10
-  moveSpeed: 3
   contactDamage: 20
   contactHitCooldown: 1
   onDeathScore: 200
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
-  damageColor: {r: 1, g: 0, b: 0, a: 1}
-  colorChangeDuration: 1
-  colorChangeState: 0
+  spawnBody: 1
   debug: 0
+  knockbackImmune: 0
+  damagePixelPrefab: {fileID: 4646526515456893302, guid: 9f57144ea1e9d1b46a0297c6c3428fd7, type: 3}
+  scoreDisplayPrefab: {fileID: 5739372400424013240, guid: d39106598a90e864a8fd9921f79b3a5f, type: 3}
 --- !u!114 &3583295328884798357
 MonoBehaviour:
   m_ObjectHideFlags: 0

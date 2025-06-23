@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
-public class DeadBodyBehaviour : MonoBehaviour
+public class ScoreDisplay : MonoBehaviour
 {
+    private float duration;
     private float startTime;
-    [SerializeField] private float duration;
-    private SpriteRenderer spriteRenderer;
+    private TextMeshPro textMeshPro;
     private bool start = false;
-    private Rigidbody2D rb;
 
     // Update is called once per frame
     void Update()
@@ -18,9 +18,9 @@ public class DeadBodyBehaviour : MonoBehaviour
         // Setting transparancy
         float p = Mathf.Clamp((Time.time - startTime) / duration, 0, 1);
         float a = 0.5f - (p / 2);
-        Color currentColor = spriteRenderer.color;
+        Color currentColor = textMeshPro.color;
         currentColor.a = a;
-        spriteRenderer.color = currentColor;
+        textMeshPro.color = currentColor;
 
         // Setting size
         // transform.localScale = new Vector3(1-p, 1-p, 1-p);
@@ -31,16 +31,13 @@ public class DeadBodyBehaviour : MonoBehaviour
         }
     }
 
-    public void Initialise(float duration, Vector2 lastDamageDirection)
+    public void Initialise(float duration, float score)
     {
-        this.spriteRenderer = GetComponent<SpriteRenderer>();
+        this.textMeshPro = GetComponent<TextMeshPro>();
+        this.textMeshPro.text = score.ToString();
+        this.textMeshPro.renderer.sortingLayerName = "Debug";
         this.startTime = Time.time;
         this.duration = duration;
         this.start = true;
-
-        this.rb = this.gameObject.AddComponent<Rigidbody2D>();
-        rb.gravityScale = 0;
-        rb.drag = 5f;
-        this.rb.AddForce(lastDamageDirection * 3, ForceMode2D.Impulse);
     }
 }

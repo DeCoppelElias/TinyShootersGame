@@ -14,17 +14,21 @@ public class Enemy : Entity
     protected float size = 0;
 
     [Header("On-Death Body Settings")]
-    [SerializeField] private float bodyDuration = 1;
+    private float bodyDuration = 0.25f;
     [SerializeField] protected bool spawnBody = true;
 
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
 
+    [Header("Knockback Settings")]
+    [SerializeField] private bool knockbackImmune = false;
     private int knockbackForce = 30;
     private float knockbackCooldown = 0.3f;
     private float lastKnockback;
 
     private Rigidbody2D rb;
+
+    private ParticleManager particleManager;
 
     public override void StartEntity()
     {
@@ -37,6 +41,8 @@ public class Enemy : Entity
         size = collider.bounds.size.x;
 
         rb = GetComponent<Rigidbody2D>();
+
+        particleManager = GameObject.Find("ParticleManager")?.GetComponent<ParticleManager>();
     }
 
     private Player FindClosestPlayer()
@@ -99,6 +105,12 @@ public class Enemy : Entity
         // Play death sound
         audioManager.PlayDieSound();
 
+        // Add damage pixels
+        AddDamagePixels(10);
+
+        // Display score
+        DisplayScore();
+
         // Spawn Body
         if (spawnBody)
         {
@@ -107,23 +119,51 @@ public class Enemy : Entity
             spriteRenderer.sortingOrder = -1;
             spriteTransform.SetParent(transform.parent);
             DeadBodyBehaviour deadBody = spriteTransform.gameObject.AddComponent<DeadBodyBehaviour>();
-            deadBody.Initialise(bodyDuration);
+            deadBody.Initialise(bodyDuration, lastDamageDirection);
         }
 
         Destroy(this.gameObject);
     }
 
-    public void TakeDamageWithKnockback(float amount, string sourceTag, DamageType damageType, Vector2 damageDirection)
+    public override void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
-        this.TakeDamage(amount, sourceTag, damageType);
+        base.TakeDamage(amount, sourceTag, damageType, direction);
 
-        if (Time.time - lastKnockback > knockbackCooldown)
+        AddKnockback(amount, direction);
+        AddDamagePixels(1);
+    }
+
+    private void AddKnockback(float amount, Vector2 direction)
+    {
+        if (Time.time - lastKnockback > knockbackCooldown && !knockbackImmune)
         {
             // Add knockback scaling with damage
             float t = Mathf.InverseLerp(10f, 40f, amount);
             float damageScale = Mathf.Lerp(1f, 2f, t);
-            rb.AddForce(damageScale * knockbackForce * damageDirection, ForceMode2D.Impulse);
+
+            rb.AddForce(damageScale * knockbackForce * direction, ForceMode2D.Impulse);
             lastKnockback = Time.time;
         }
+    }
+
+    private void AddDamagePixels(int amount)
+    {
+        if (particleManager == null || particleManager.damageParticlePrefab == null) return;
+
+        for (int i = 0; i < amount; i++)
+        {
+            Vector2 dir = UnityEngine.Random.insideUnitCircle.normalized;
+            float speed = UnityEngine.Random.Range(1f, 3f);
+            var pixel = Instantiate(particleManager.damageParticlePrefab, transform.position, Quaternion.identity, particleManager.particleParent);
+            pixel.GetComponent<DamagePixel>().Initialise(0.5f, dir, speed);
+        }
+    }
+
+    private void DisplayScore()
+    {
+        if (particleManager == null || particleManager.scoreTextPrefab == null) return;
+
+        var scoreDisplay = Instantiate(particleManager.scoreTextPrefab, transform.position, Quaternion.identity, particleManager.particleParent);
+        scoreDisplay.GetComponent<ScoreDisplay>().Initialise(1f, this.onDeathScore);
     }
 }

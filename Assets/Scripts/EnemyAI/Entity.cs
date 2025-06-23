@@ -21,7 +21,7 @@ public abstract class Entity : MonoBehaviour
 
     [Header("On-Hit Color Change Settings")]
     [SerializeField] private Color damageColor = Color.red;
-    [SerializeField] private float colorChangeDuration = 1f;
+    private float colorChangeDuration = 0.25f;
     [SerializeField] private ColorChangeState colorChangeState = ColorChangeState.Nothing;
     private enum ColorChangeState { Nothing, ToDamageColor, ToOriginalColor }
     protected SpriteRenderer spriteRenderer;
@@ -40,6 +40,7 @@ public abstract class Entity : MonoBehaviour
     public enum DamageType { Ranged, Melee }
     protected DamageType lastDamageType;
     protected string lastDamageSourceTag;
+    protected Vector2 lastDamageDirection;
 
     protected AudioManager audioManager;
     private WaveManager waveManager;
@@ -107,7 +108,7 @@ public abstract class Entity : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(float amount, string sourceTag, DamageType damageType)
+    public virtual void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
         if (amount <= 0) return;
 
@@ -115,6 +116,7 @@ public abstract class Entity : MonoBehaviour
 
         lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
+        lastDamageDirection = direction;
 
         StartColorChange();
     }
@@ -131,7 +133,8 @@ public abstract class Entity : MonoBehaviour
         {
             lastContactHit = Time.time;
 
-            entity.TakeDamage(contactDamage, this.tag, DamageType.Melee);
+            Vector2 direction = (collision.transform.position - this.transform.position).normalized;
+            entity.TakeDamage(contactDamage, this.tag, DamageType.Melee, direction);
         }
     }
 
