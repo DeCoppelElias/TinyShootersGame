@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DamagePixel : MonoBehaviour
+public class DamageParticle : MonoBehaviour
 {
     private float duration;
     private float startTime;
@@ -18,13 +18,10 @@ public class DamagePixel : MonoBehaviour
 
         // Setting transparancy
         float p = Mathf.Clamp((Time.time - startTime) / duration, 0, 1);
-        float a = 0.5f - (p / 2);
+        float a = 1-p;
         Color currentColor = spriteRenderer.color;
         currentColor.a = a;
         spriteRenderer.color = currentColor;
-
-        // Setting size
-        // transform.localScale = new Vector3(1-p, 1-p, 1-p);
 
         // Movement
         transform.position += velocity * Time.deltaTime * direction;
@@ -35,13 +32,17 @@ public class DamagePixel : MonoBehaviour
         }
     }
 
-    public void Initialise(float duration, Vector2 direction, float velocity)
+    public void Initialise(float duration, Vector2 direction, float velocity, Color color)
     {
         this.spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = color;
+
         this.startTime = Time.time;
         this.duration = duration;
+
         this.direction = direction;
         this.velocity = velocity;
+
         this.start = true;
     }
 }

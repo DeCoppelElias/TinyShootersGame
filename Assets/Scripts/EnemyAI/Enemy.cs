@@ -106,10 +106,13 @@ public class Enemy : Entity
         audioManager.PlayDieSound();
 
         // Add damage pixels
-        AddDamagePixels(10);
+        AddParticles(ParticleManager.ParticleType.Damage, 10);
+
+        // Drop Blood
+        AddParticles(ParticleManager.ParticleType.Blood, 1);
 
         // Display score
-        DisplayScore();
+        // DisplayScore();
 
         // Spawn Body
         if (spawnBody)
@@ -125,12 +128,17 @@ public class Enemy : Entity
         Destroy(this.gameObject);
     }
 
-    public override void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
+    public override void TakeDamage(float damage, string sourceTag, DamageType damageType, Vector2 direction)
     {
-        base.TakeDamage(amount, sourceTag, damageType, direction);
+        base.TakeDamage(damage, sourceTag, damageType, direction);
 
-        AddKnockback(amount, direction);
-        AddDamagePixels(1);
+        AddKnockback(damage, direction);
+
+        int damageParticleAmount = UnityEngine.Random.Range(1, 3);
+        AddParticles(ParticleManager.ParticleType.Damage, damageParticleAmount);
+
+        float r = UnityEngine.Random.Range(0, 1f);
+        if (r < 0.05f) AddParticles(ParticleManager.ParticleType.Blood, 1);
     }
 
     private void AddKnockback(float amount, Vector2 direction)
@@ -146,16 +154,13 @@ public class Enemy : Entity
         }
     }
 
-    private void AddDamagePixels(int amount)
+    private void AddParticles(ParticleManager.ParticleType particleType, int amount)
     {
-        if (particleManager == null || particleManager.damageParticlePrefab == null) return;
+        if (particleManager == null) return;
 
         for (int i = 0; i < amount; i++)
         {
-            Vector2 dir = UnityEngine.Random.insideUnitCircle.normalized;
-            float speed = UnityEngine.Random.Range(1f, 3f);
-            var pixel = Instantiate(particleManager.damageParticlePrefab, transform.position, Quaternion.identity, particleManager.particleParent);
-            pixel.GetComponent<DamagePixel>().Initialise(0.5f, dir, speed);
+            particleManager.CreateParticle(particleType, transform.position, Color.red);
         }
     }
 
