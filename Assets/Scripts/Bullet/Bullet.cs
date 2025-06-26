@@ -5,11 +5,14 @@ using UnityEngine.Tilemaps;
 
 public class Bullet : MonoBehaviour
 {
-    public float pierce;
     public float damage;
     public float airTime;
-    private float createTime;
-    public bool hit = false;
+    public float velocity;
+    public int pierce;
+    
+    private enum BulletState { Idle, Initialized, Shoot}
+    private BulletState bulletState = BulletState.Idle;
+    private float shootTime;
 
     public bool splitOnHit = false;
     public float splitAmount = 0;
@@ -23,30 +26,98 @@ public class Bullet : MonoBehaviour
     public string ownerTag;
 
     private SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb;
+
+    private System.Action onComplete;
+    private BulletManager bulletManager;
 
     private void Start()
     {
-        createTime = Time.time;
         spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
+        bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
+    }
+
+    public void AssignOnComplete(System.Action action)
+    {
+        this.onComplete = action;
+    }
+
+    public void Initialize(string ownerTag, Vector3 position, Quaternion rotation, Vector3 scale, float damage, float airTime, float velocity, int pierce)
+    {
+        this.ownerTag = ownerTag;
+
+        this.transform.position = position;
+        this.transform.rotation = rotation;
+        this.transform.localScale = scale;
+
+        this.damage = damage;
+        this.airTime = airTime;
+        this.velocity = velocity;
+        this.pierce = pierce;
+
+        bulletState = BulletState.Initialized;
+    }
+
+    public void InitializeSplitting(float splitAmount, float splitRange, float splitBulletSize, float splitBulletSpeed, float splitDamagePercentage)
+    {
+        this.splitOnHit = true;
+
+        this.splitAmount = splitAmount;
+        this.splitRange = splitRange;
+        this.splitBulletSize = splitBulletSize;
+        this.splitBulletSpeed = splitBulletSpeed;
+        this.splitDamagePercentage = splitDamagePercentage;
+    }
+
+    public void Shoot()
+    {
+        if (bulletState != BulletState.Initialized) throw new System.Exception("Bullet can only be fired when in initialized state.");
+
+        shootTime = Time.time;
+        bulletState = BulletState.Shoot;
+
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        rb.AddForce(transform.up * velocity, ForceMode2D.Impulse);
+    }
+
+    private void Complete()
+    {
+        if (splitOnHit)
+        {
+            Split();
+        }
+
+        bulletState = BulletState.Idle;
+        if (onComplete != null) onComplete();
+    }
+
+    public void RemoveBullet()
+    {
+        bulletState = BulletState.Idle;
+        onComplete();
     }
 
     private void Update()
     {
-        if(!hit && Time.time - createTime > airTime)
+        if (bulletState == BulletState.Shoot)
         {
-            BulletMiss();
-        }
+            float p = Mathf.Clamp((Time.time - shootTime - (0.8f * airTime)) / (0.2f * airTime), 0, 1);
+            Color originalColor = spriteRenderer.color;
+            originalColor.a = 1f - p;
+            spriteRenderer.color = originalColor;
 
-        float p = Mathf.Clamp((Time.time - createTime - (0.8f * airTime)) / (0.2f * airTime), 0, 1);
-        Color originalColor = spriteRenderer.color;
-        originalColor.a = 1f - p;
-        spriteRenderer.color = originalColor;
+            if (Time.time - shootTime > airTime)
+            {
+                Complete();
+            }
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Wall")
         {
-            BulletHit();
+            Complete();
             return;
         }
 
@@ -57,28 +128,16 @@ public class Bullet : MonoBehaviour
             pierce--;
             if (pierce == 0)
             {
-                BulletHit();
+                Complete();
+            }
+            else if (splitOnHit)
+            {
+                Split();
             }
         }
     }
 
-    public void BulletHit()
-    {
-        if (splitOnHit)
-        {
-            Split();
-        }
-
-        hit = true;
-        Destroy(gameObject);
-    }
-
-    public void BulletMiss()
-    {
-        Split();
-        Destroy(gameObject);
-    }
-    public void Split()
+    private void Split()
     {
         if (splitAmount > 0)
         {
@@ -92,22 +151,15 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    private void CreateSplitBullet(float currentAngle)
+    private void CreateSplitBullet(float angle)
     {
-        Vector3 vector = Quaternion.Euler(0, 0, currentAngle) * Vector3.up;
-        GameObject bullet = Instantiate(gameObject, transform.position + vector/3, Quaternion.identity,transform.parent);
-        bullet.transform.localScale = new Vector3(splitBulletSize, splitBulletSize,1);
+        Bullet bullet = bulletManager.GetBullet();
+        if (bullet == null) return;
+        bullet.AssignOnComplete(() => bulletManager.ReturnBullet(bullet));
 
-        bullet.GetComponent<Bullet>().pierce = 1;
-        bullet.GetComponent<Bullet>().damage = damage * splitDamagePercentage;
-        bullet.GetComponent<Bullet>().ownerTag = ownerTag;
-        bullet.GetComponent<Bullet>().airTime = splitRange / splitBulletSpeed;
-
-        bullet.GetComponent<Bullet>().splitAmount = 0;
-
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
-        rb.AddForce(vector * splitBulletSpeed, ForceMode2D.Impulse);
+        Vector3 direction = Quaternion.Euler(0, 0, angle) * Vector3.up;
+        bullet.Initialize(this.ownerTag, transform.position + direction / 3, Quaternion.Euler(0, 0, angle), new Vector3(splitBulletSize, splitBulletSize, 1), damage * splitDamagePercentage, splitRange / splitBulletSpeed, splitBulletSpeed, 1);
+        bullet.Shoot();
     }
 
     public GameObject CreateCopyWithNewOwner(string ownerTag)

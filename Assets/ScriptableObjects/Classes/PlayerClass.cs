@@ -33,7 +33,7 @@ public class PlayerClass : ScriptableObject
     public float damageDelta = 0;
     public float attackCooldownDelta = 0;
     public float rangeDelta = 0;
-    public float pierceDelta = 0;
+    public int pierceDelta = 0;
     public float totalSplitDelta = 0;
     public float totalFanDelta = 0;
     public float bulletSizeDelta = 0;

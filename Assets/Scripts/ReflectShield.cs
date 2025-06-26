@@ -9,40 +9,41 @@ public class ReflectShield : MonoBehaviour
     [SerializeField] private Sprite bulletSprite;
     [SerializeField] private string ownerTag;
 
+    private BulletManager bulletManager;
+
     private void Start()
     {
         Entity entity = GetComponentInParent<Entity>();
         if (entity != null) ownerTag = entity.tag;
+
+        bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Bullet oldBullet = collision.GetComponent<Bullet>();
-        if (oldBullet != null && !oldBullet.hit)
+        if (oldBullet != null)
         {
             if (oldBullet.ownerTag != ownerTag)
             {
-                Rigidbody2D rbOld = oldBullet.GetComponent<Rigidbody2D>();
+                Bullet reflectedBullet = bulletManager.GetBullet();
+                if (reflectedBullet == null) return;
+                reflectedBullet.AssignOnComplete(() => bulletManager.ReturnBullet(reflectedBullet));
 
-                GameObject newBulletGameObject;
-
-                newBulletGameObject = oldBullet.CreateCopyWithNewOwner(ownerTag);
-                newBulletGameObject.GetComponent<SpriteRenderer>().sprite = bulletSprite;
-
-                Bullet newBullet = newBulletGameObject.GetComponent<Bullet>();
-                Rigidbody2D rbNew = newBulletGameObject.GetComponent<Rigidbody2D>();
+                float reflectedDamage = oldBullet.damage;
+                float reflectedVelocity = oldBullet.velocity;
                 if (!oldBullet.reflected)
                 {
-                    newBullet.damage *= 2;
-                    rbNew.AddForce(-rbOld.velocity * 2, ForceMode2D.Impulse);
-                    newBullet.reflected = true;
+                    reflectedDamage *= 2;
+                    reflectedVelocity *= 2;
                 }
-                else
-                {
-                    rbNew.AddForce(-rbOld.velocity, ForceMode2D.Impulse);
-                }
+                float reflectedZ = oldBullet.transform.eulerAngles.z + 180f;
+                Quaternion reflectedRotation = Quaternion.Euler(0, 0, reflectedZ);
+                reflectedBullet.Initialize(ownerTag, oldBullet.transform.position, reflectedRotation, oldBullet.transform.localScale, reflectedDamage, oldBullet.airTime, reflectedVelocity, oldBullet.pierce);
+                if (oldBullet.splitOnHit) reflectedBullet.InitializeSplitting(oldBullet.splitAmount, oldBullet.splitRange, oldBullet.splitBulletSize, oldBullet.splitBulletSpeed, oldBullet.splitDamagePercentage);
 
-                Destroy(collision.gameObject);
+                reflectedBullet.Shoot();
+                oldBullet.RemoveBullet();
             }
         }
     }

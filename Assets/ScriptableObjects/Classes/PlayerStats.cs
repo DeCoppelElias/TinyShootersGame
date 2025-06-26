@@ -32,7 +32,7 @@ public class PlayerStats : ScriptableObject
     public bool hasShootAbility = false;
     public float attackCooldown = 0.5f;
     public float range = 5;
-    public float pierce = 1;
+    public int pierce = 1;
     public float totalSplit = 1;
     public float totalFan = 1;
     public float bulletSize = 1;

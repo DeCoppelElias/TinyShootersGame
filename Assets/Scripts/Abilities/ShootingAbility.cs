@@ -13,7 +13,7 @@ public class ShootingAbility : MonoBehaviour
     private float lastAttackRealTime;
 
     public float range = 1;
-    public float pierce = 1;
+    public int pierce = 1;
     public float totalSplit = 1;
     public float totalFan = 1;
     public float bulletSize = 1;
@@ -39,10 +39,14 @@ public class ShootingAbility : MonoBehaviour
 
     public UnityEvent onShoot;
 
+    private BulletManager bulletManager;
+
     private void Start()
     {
         bullets = GameObject.Find("Bullets");
         if (owner == null) owner = GetComponent<Entity>();
+
+        bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
     }
 
     private void Update()
@@ -100,7 +104,7 @@ public class ShootingAbility : MonoBehaviour
 
         if (onShoot != null) onShoot.Invoke();
     }
-    public void CreateBulletGroup(float split, float airTime, float bulletSpeed, float bulletSize, float pierce, float damage, float rotation)
+    public void CreateBulletGroup(float split, float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, float rotation)
     {
         if (split % 2 != 0)
         {
@@ -135,31 +139,19 @@ public class ShootingAbility : MonoBehaviour
             }
         }
     }
-    public void CreateBullet(float airTime, float bulletSpeed, float bulletSize, float pierce, float damage, Vector3 position, float rotation)
+    public void CreateBullet(float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, Vector3 position, float rotation)
     {
-        GameObject bullet = Instantiate(bulletPrefab, position, firePoint.rotation,bullets.transform);
-        bullet.transform.localScale = new Vector3(bulletSize, bulletSize, 1);
+        Bullet bullet = bulletManager.GetBullet();
+        if (bullet == null) return;
+        bullet.AssignOnComplete(() => bulletManager.ReturnBullet(bullet));
 
-        bullet.GetComponent<Bullet>().pierce = pierce;
-        bullet.GetComponent<Bullet>().damage = damage;
-        bullet.GetComponent<Bullet>().ownerTag = owner.tag;
-        bullet.GetComponent<Bullet>().airTime = airTime;
-
-        bullet.GetComponent<Bullet>().splitOnHit = splitOnHit;
-        bullet.GetComponent<Bullet>().splitAmount = splitAmount;
-        bullet.GetComponent<Bullet>().splitRange = splitRange;
-        bullet.GetComponent<Bullet>().splitBulletSize = splitBulletSize;
-        bullet.GetComponent<Bullet>().splitBulletSpeed = splitBulletSpeed;
-        bullet.GetComponent<Bullet>().splitDamagePercentage = splitDamagePercentage;
-
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
-        Vector3 vector = Quaternion.AngleAxis(rotation, new Vector3(0, 0, 1)) * firePoint.up;
-
-        rb.AddForce(vector * bulletSpeed, ForceMode2D.Impulse);
+        Quaternion finalRotation = Quaternion.Euler(0, 0, firePoint.eulerAngles.z + rotation);
+        bullet.Initialize(owner.tag, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce);
+        if (splitOnHit) bullet.InitializeSplitting(splitAmount, splitRange, splitBulletSize, splitBulletSpeed, splitDamagePercentage);
+        bullet.Shoot();
     }
 
-    public void ShootBullet(float range, float bulletSpeed, float bulletSize, float pierce, float damage)
+    public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage)
     {
         CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
     }
