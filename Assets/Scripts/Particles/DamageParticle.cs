@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DamageParticle : MonoBehaviour
+public class DamageParticle : Particle
 {
-    private float duration;
+    private float duration = 0.5f;
     private float startTime;
     private SpriteRenderer spriteRenderer;
     private bool start = false;
@@ -28,21 +28,24 @@ public class DamageParticle : MonoBehaviour
 
         if (p == 1)
         {
-            Destroy(this.gameObject);
+            Complete();
         }
     }
 
-    public void Initialise(float duration, Vector2 direction, float velocity, Color color)
+    public void Initialise(Vector3 position, Color color)
     {
+        this.transform.position = position;
+
         this.spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = color;
 
+        this.direction = UnityEngine.Random.insideUnitCircle.normalized;
+        this.velocity = UnityEngine.Random.Range(1f, 3f);
+    }
+
+    public override void Play()
+    {
         this.startTime = Time.time;
-        this.duration = duration;
-
-        this.direction = direction;
-        this.velocity = velocity;
-
         this.start = true;
     }
 }

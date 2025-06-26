@@ -164,11 +164,11 @@ public class Enemy : Entity
         }
     }
 
-    private void DisplayScore()
+    /*private void DisplayScore()
     {
         if (particleManager == null || particleManager.scoreTextPrefab == null) return;
 
         var scoreDisplay = Instantiate(particleManager.scoreTextPrefab, transform.position, Quaternion.identity, particleManager.particleParent);
         scoreDisplay.GetComponent<ScoreDisplay>().Initialise(1f, this.onDeathScore);
-    }
+    }*/
 }

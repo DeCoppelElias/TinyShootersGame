@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,20 +8,20 @@ public class ParticleManager : MonoBehaviour
     [SerializeField] private int particleLimit = 100;
     public enum ParticleType { Damage, Blood}
 
-    [SerializeField] private GameObject damageParticlePrefab;
-    [SerializeField] private GameObject bloodParticlePrefab;
     [SerializeField] public GameObject scoreTextPrefab;
-    [SerializeField] public Transform particleParent;
 
-    private bool ParticleLimit()
+    [SerializeField] private List<ParticlePool> particlePools = new List<ParticlePool>();
+
+    private void Start()
     {
-        return particleParent.childCount > particleLimit;
+        foreach (ParticlePool particlePool in particlePools)
+        {
+            particlePool.InitializePool(particleLimit, Mathf.RoundToInt(0.1f * particleLimit));
+        }
     }
 
     public GameObject CreateParticle(ParticleType particleType, Vector3 position, Color color)
     {
-        if (ParticleLimit()) return null;
-
         if (particleType == ParticleType.Damage)
         {
             return CreateDamageParticle(position, color);
@@ -34,35 +35,40 @@ public class ParticleManager : MonoBehaviour
 
     private GameObject CreateDamageParticle(Vector3 position, Color color)
     {
-        Vector2 dir = Random.insideUnitCircle.normalized;
-        float speed = Random.Range(1f, 3f);
-        GameObject pixel = Instantiate(damageParticlePrefab, position, Quaternion.identity, particleParent);
-        pixel.GetComponent<DamageParticle>().Initialise(0.5f, dir, speed, color);
-        return pixel;
+        ParticlePool particlePool = GetParticlePool(ParticleType.Damage);
+        DamageParticle particle = (DamageParticle)particlePool.GetParticle();
+        if (particle == null) return null;
+
+        particle.Initialise(position, color);
+        particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
+        particle.Play();
+
+        return particle.gameObject;
     }
 
     private GameObject CreateBloodParticle(Vector3 position, Color color)
     {
-        Transform bloodParent = new GameObject("BloodPool").transform;
-        bloodParent.parent = particleParent;
-        int count = Random.Range(5, 10);
+        ParticlePool particlePool = GetParticlePool(ParticleType.Blood);
+        BloodParticle particle = (BloodParticle)particlePool.GetParticle();
+        if (particle == null) return null;
 
-        for (int i = 0; i < count; i++)
+        particle.Initialise(position, color);
+        particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
+        particle.Play();
+
+        return particle.gameObject;
+    }
+
+    private ParticlePool GetParticlePool(ParticleType particleType)
+    {
+        foreach (ParticlePool particlePool in particlePools)
         {
-            Vector2 offset = Random.insideUnitCircle * 0.3f;
-            Vector3 spawnPos = position + new Vector3(offset.x, offset.y, 0);
-
-            GameObject pixel = Instantiate(bloodParticlePrefab, spawnPos, Quaternion.identity, bloodParent);
-            pixel.GetComponent<BloodParticle>().Initialise(5, 1, color);
-
-            float scale = Random.Range(0.5f, 1.5f);
-            pixel.transform.localScale = pixel.transform.localScale * scale;
-
-            float rotationZ = Random.Range(0f, 360f);
-            pixel.transform.rotation = Quaternion.Euler(0, 0, rotationZ);
+            if (particlePool.GetPoolType() == particleType)
+            {
+                return particlePool;
+            }
         }
 
-        
-        return bloodParent.gameObject;
+        throw new Exception($"Particle pool does not exist for type: {particleType}");
     }
 }
