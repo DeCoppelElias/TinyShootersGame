@@ -21,28 +21,15 @@ public class LittleGunner : MonoBehaviour
     public void SetOwner(Entity entity)
     {
         this.owner = entity;
+
         gunnerShootingAbility = this.GetComponent<ShootingAbility>();
         ShootingAbility ownerShootingAbility = entity.GetComponent<ShootingAbility>();
 
-
-        gunnerShootingAbility.SetBulletColor(ownerShootingAbility.GetBulletColor());
-        gunnerShootingAbility.Damage = ownerShootingAbility.Damage / 2f;
-        gunnerShootingAbility.attackCooldown = ownerShootingAbility.attackCooldown;
-        gunnerShootingAbility.range = ownerShootingAbility.range;
-        gunnerShootingAbility.pierce = ownerShootingAbility.pierce;
-        gunnerShootingAbility.totalSplit = ownerShootingAbility.totalSplit;
-        gunnerShootingAbility.totalFan = ownerShootingAbility.totalFan;
-        gunnerShootingAbility.bulletSize = ownerShootingAbility.bulletSize;
-        gunnerShootingAbility.bulletSpeed = ownerShootingAbility.bulletSpeed;
-
-        gunnerShootingAbility.splitOnHit = ownerShootingAbility.splitOnHit;
-        gunnerShootingAbility.splitAmount = ownerShootingAbility.splitAmount;
-        gunnerShootingAbility.splitRange = ownerShootingAbility.splitRange;
-        gunnerShootingAbility.splitBulletSize = ownerShootingAbility.splitBulletSize;
-        gunnerShootingAbility.splitBulletSpeed = ownerShootingAbility.splitBulletSpeed;
-        gunnerShootingAbility.splitDamagePercentage = ownerShootingAbility.splitDamagePercentage;
-
+        RuntimeShootingStats ownerShootingStats = ownerShootingAbility.Stats;
+        ownerShootingStats.Damage /= 2f;
+        gunnerShootingAbility.ApplyShootingStats(ownerShootingStats);
         gunnerShootingAbility.owner = entity;
+
         this.tag = entity.tag;
     }
 

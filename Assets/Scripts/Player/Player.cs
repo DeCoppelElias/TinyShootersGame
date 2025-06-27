@@ -139,7 +139,7 @@ public class Player : Entity
 
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();
         if (playerMovement != null) playerMovement.ApplyStats(playerStats);
-        if (shootingAbility != null) shootingAbility.ApplyStats(playerStats);
+        if (shootingAbility != null) shootingAbility.ApplyPlayerStats(playerStats);
         if (dashAbility != null) dashAbility.ApplyStats(playerStats);
     }
 

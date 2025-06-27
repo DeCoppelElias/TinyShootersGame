@@ -5,29 +5,14 @@ using UnityEngine.Events;
 
 public class ShootingAbility : MonoBehaviour
 {
-    public GameObject bullets;
+    [Header("Runtime Shooting Stats")]
+    [SerializeField] private RuntimeShootingStats stats;
+    public RuntimeShootingStats Stats { get => stats.GetStats(); }
 
-    [SerializeField] private float damage;
-    public float attackCooldown = 0.5f;
     private float lastAttack;
     private float lastAttackRealTime;
 
-    public float range = 1;
-    public int pierce = 1;
-    public float totalSplit = 1;
-    public float totalFan = 1;
-    public float bulletSize = 1;
-    public float bulletSpeed = 6;
-
-    public bool splitOnHit = false;
-    public float splitAmount = 0;
-    public float splitRange = 1;
-    public float splitBulletSize = 0.5f;
-    public float splitBulletSpeed = 6;
-    public float splitDamagePercentage = 0.5f;
-
-    public float shootingMoveSpeed = 2;
-
+    [Header("ShootAbility Parameters")]
     public bool shooting = false;
 
     public bool workWithRealTime = false;
@@ -44,10 +29,10 @@ public class ShootingAbility : MonoBehaviour
 
     private void Start()
     {
-        bullets = GameObject.Find("Bullets");
         if (owner == null) owner = GetComponent<Entity>();
 
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
+        this.stats = new RuntimeShootingStats();
     }
 
     private void Update()
@@ -57,21 +42,6 @@ public class ShootingAbility : MonoBehaviour
             TryShootOnce();
         }
     }
-
-    #region Properties
-    public float Damage
-    {
-        get { return damage; }
-        set
-        {
-            if (value < 1) damage = 1;
-            else damage = value;
-        }
-    }
-
-    //TODO
-    #endregion
-
     public void StartShooting()
     {
         shooting = true;
@@ -84,23 +54,23 @@ public class ShootingAbility : MonoBehaviour
 
     public void TryShootOnce()
     {
-        if (!workWithRealTime && Time.time - lastAttack <= attackCooldown) return;
-        else if (workWithRealTime && Time.realtimeSinceStartup - lastAttackRealTime <= attackCooldown) return;
+        if (!workWithRealTime && Time.time - lastAttack <= this.stats.AttackCooldown) return;
+        else if (workWithRealTime && Time.realtimeSinceStartup - lastAttackRealTime <= this.stats.AttackCooldown) return;
 
         lastAttack = Time.time;
         lastAttackRealTime = Time.realtimeSinceStartup;
 
-        float fan = totalFan;
-        float split = totalSplit;
+        float fan = this.stats.Fan;
+        float split = this.stats.Split;
         if (fan % 2 == 1)
         {
-            CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, 0);
+            CreateBulletGroup(split, this.stats.Range / this.stats.BulletVelocity, this.stats.BulletVelocity, this.stats.BulletSize, this.stats.Pierce, this.stats.Damage, 0);
             fan--;
             while (fan > 0)
             {
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, 45);
+                CreateBulletGroup(split, this.stats.Range / this.stats.BulletVelocity, this.stats.BulletVelocity, this.stats.BulletSize, this.stats.Pierce, this.stats.Damage, 45);
                 fan--;
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, -45);
+                CreateBulletGroup(split, this.stats.Range / this.stats.BulletVelocity, this.stats.BulletVelocity, this.stats.BulletSize, this.stats.Pierce, this.stats.Damage, -45);
                 fan--;
             }
         }
@@ -108,9 +78,9 @@ public class ShootingAbility : MonoBehaviour
         {
             while (fan > 0)
             {
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, 22.5f);
+                CreateBulletGroup(split, this.stats.Range / this.stats.BulletVelocity, this.stats.BulletVelocity, this.stats.BulletSize, this.stats.Pierce, this.stats.Damage, 22.5f);
                 fan--;
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, -22.5f);
+                CreateBulletGroup(split, this.stats.Range / this.stats.BulletVelocity, this.stats.BulletVelocity, this.stats.BulletSize, this.stats.Pierce, this.stats.Damage, -22.5f);
                 fan--;
             }
         }
@@ -162,7 +132,7 @@ public class ShootingAbility : MonoBehaviour
 
         Quaternion finalRotation = Quaternion.Euler(0, 0, firePoint.eulerAngles.z + rotation);
         bullet.Initialize(owner.tag, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
-        if (splitOnHit) bullet.InitializeSplitting(splitAmount, splitRange, splitBulletSize, splitBulletSpeed, splitDamagePercentage);
+        if (this.stats.Explode) bullet.InitializeSplitting(this.stats.ExplodeBulletAmount, this.stats.ExplodeBulletRange, this.stats.ExplodeBulletSize, this.stats.ExplodeBulletVelocity, this.stats.ExplodeDamagePercentage);
         bullet.Shoot();
     }
 
@@ -171,78 +141,24 @@ public class ShootingAbility : MonoBehaviour
         CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
     }
 
-    public void ApplyStats(PlayerStats playerStats)
+    public void ApplyPlayerStats(PlayerStats playerStats)
     {
-        if (playerStats == null) return;
-        if (!playerStats.hasShootAbility) return;
+        this.stats.ApplyPlayerStats(playerStats);
+    }
 
-        Damage = playerStats.damage;
-        attackCooldown = playerStats.attackCooldown;
-
-        range = playerStats.range;
-        pierce = playerStats.pierce;
-        totalSplit = playerStats.totalSplit;
-        totalFan = playerStats.totalFan;
-        bulletSize = playerStats.bulletSize;
-        bulletSpeed = playerStats.bulletSpeed;
-
-        splitOnHit = playerStats.splitOnHit;
-        splitAmount = playerStats.splitAmount;
-        splitRange = playerStats.splitRange;
-        splitBulletSize = playerStats.splitBulletSize;
-        splitBulletSpeed = playerStats.splitBulletSpeed;
-        splitDamagePercentage = playerStats.splitDamagePercentage;
-
-        shootingMoveSpeed = playerStats.shootingMoveSpeed;
+    public void ApplyShootingStats(RuntimeShootingStats stats)
+    {
+        this.stats.ApplyShootingStats(stats);
     }
 
     public void ApplyClass(PlayerClass playerClass)
     {
-        if (playerClass == null) return;
-        if (!playerClass.hasShootAbility) return;
-
-        Damage += playerClass.damageDelta;
-        attackCooldown += playerClass.attackCooldownDelta;
-
-        range += playerClass.rangeDelta;
-        pierce += playerClass.pierceDelta;
-        totalSplit += playerClass.totalSplitDelta;
-        totalFan += playerClass.totalFanDelta;
-        bulletSize += playerClass.bulletSizeDelta;
-        bulletSpeed += playerClass.bulletSpeedDelta;
-
-        splitOnHit = splitOnHit || playerClass.splitOnHit;
-        splitAmount += playerClass.splitAmountDelta;
-        splitRange += playerClass.splitRangeDelta;
-        splitBulletSize += playerClass.splitBulletSizeDelta;
-        splitBulletSpeed += playerClass.splitBulletSpeedDelta;
-        splitDamagePercentage += playerClass.splitDamagePercentageDelta;
-
-        shootingMoveSpeed += playerClass.shootingMoveSpeedDelta;
+        this.stats.ApplyClass(playerClass);
     }
 
     public void ApplyPowerup(Powerup powerup)
     {
-        if (powerup == null) return;
-
-        Damage += powerup.damageDelta;
-        attackCooldown += powerup.attackCooldownDelta;
-
-        range += powerup.rangeDelta;
-        pierce += powerup.pierceDelta;
-        totalSplit += powerup.totalSplitDelta;
-        totalFan += powerup.totalFanDelta;
-        bulletSize += powerup.bulletSizeDelta;
-        bulletSpeed += powerup.bulletSpeedDelta;
-
-        splitOnHit = splitOnHit || powerup.splitOnHit;
-        splitAmount += powerup.splitAmountDelta;
-        splitRange += powerup.splitRangeDelta;
-        splitBulletSize += powerup.splitBulletSizeDelta;
-        splitBulletSpeed += powerup.splitBulletSpeedDelta;
-        splitDamagePercentage += powerup.splitDamagePercentageDelta;
-
-        shootingMoveSpeed += powerup.shootingMoveSpeedDelta;
+        this.stats.ApplyPowerup(powerup);
     }
 
     private void PlayShootAnimation()
@@ -250,10 +166,10 @@ public class ShootingAbility : MonoBehaviour
         Animator animator = GetComponentInChildren<Animator>();
         if (animator == null) return;
 
-        animator.speed = 1 / attackCooldown;
+        animator.speed = 1 / this.stats.AttackCooldown;
         animator.SetBool("Shooting", true);
 
-        StartCoroutine(ResetShootingAnimation(animator, 0.2f * attackCooldown));
+        StartCoroutine(ResetShootingAnimation(animator, 0.2f * this.stats.AttackCooldown));
     }
 
     private IEnumerator ResetShootingAnimation(Animator animator, float delay)
@@ -273,5 +189,20 @@ public class ShootingAbility : MonoBehaviour
     public Color GetBulletColor()
     {
         return this.bulletColor;
+    }
+
+    public float GetShootingMoveSpeed()
+    {
+        return this.stats.ShootingMoveSpeed;
+    }
+
+    public float GetDamage()
+    {
+        return this.stats.Damage;
+    }
+
+    public float GetRange()
+    {
+        return this.stats.Range;
     }
 }
