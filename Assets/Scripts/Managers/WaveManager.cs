@@ -76,7 +76,7 @@ public class WaveManager : MonoBehaviour
         {
             if (waveState == WaveState.Ready)
             {
-                playerHealthBeforeWave = player.health;
+                playerHealthBeforeWave = player.Health;
                 SpawnWave(this.levelIndex, this.waveIndex);
                 waveState = WaveState.Fighting;
                 fightingStart = Time.time;
@@ -86,7 +86,7 @@ public class WaveManager : MonoBehaviour
                 if (enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
                 {
                     // Give Score if player did not lose health
-                    if (player.health == playerHealthBeforeWave)
+                    if (player.Health == playerHealthBeforeWave)
                     {
                         scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
                     }

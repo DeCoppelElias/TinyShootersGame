@@ -6,7 +6,7 @@ public class BulletManager : MonoBehaviour
 {
     [SerializeField] private int bulletLimit = 1000;
     [SerializeField] private int bulletStart = 10;
-    private int bulletCount = 0;
+    [SerializeField] private int bulletCount = 0;
     [SerializeField] private GameObject bulletPrefab;
 
     private Queue<Bullet> availableBullets = new Queue<Bullet>();
@@ -16,13 +16,13 @@ public class BulletManager : MonoBehaviour
     {
         for (int i = 0; i < bulletStart; i++)
         {
-            SpawnBullet();
+            TrySpawnBullet();
         }
     }
 
-    private Bullet SpawnBullet()
+    private void TrySpawnBullet()
     {
-        if (bulletCount > bulletLimit) return null;
+        if (bulletCount == bulletLimit) return;
         bulletCount++;
 
         GameObject bulletGO = Instantiate(bulletPrefab, this.transform);
@@ -31,25 +31,22 @@ public class BulletManager : MonoBehaviour
         
         availableBullets.Enqueue(bullet);
         bulletGO.SetActive(false);
-        return bullet;
     }
 
-    public Bullet GetBullet()
+    public Bullet TryGetBullet()
     {
+        if (availableBullets.Count == 0)
+        {
+            TrySpawnBullet();
+        }
+
         if (availableBullets.Count > 0)
         {
             Bullet bullet = availableBullets.Dequeue();
             bullet.gameObject.SetActive(true);
             return bullet;
         }
-        else
-        {
-            Bullet bullet = SpawnBullet();
-            if (bullet == null) return null;
-
-            bullet.gameObject.SetActive(true);
-            return bullet;
-        }
+        else return null;
     }
 
     public void ReturnBullet(Bullet bullet)

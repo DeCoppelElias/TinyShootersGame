@@ -21,6 +21,8 @@ public class Bullet : MonoBehaviour
     public float splitBulletSpeed = 6;
     public float splitDamagePercentage = 0.5f;
 
+    public Color color;
+
     public bool reflected = false;
 
     public string ownerTag;
@@ -34,6 +36,8 @@ public class Bullet : MonoBehaviour
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        if (this.spriteRenderer) spriteRenderer.color = color;
+
         rb = GetComponent<Rigidbody2D>();
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
     }
@@ -43,7 +47,7 @@ public class Bullet : MonoBehaviour
         this.onComplete = action;
     }
 
-    public void Initialize(string ownerTag, Vector3 position, Quaternion rotation, Vector3 scale, float damage, float airTime, float velocity, int pierce)
+    public void Initialize(string ownerTag, Vector3 position, Quaternion rotation, Vector3 scale, float damage, float airTime, float velocity, int pierce, Color color)
     {
         this.ownerTag = ownerTag;
 
@@ -55,6 +59,11 @@ public class Bullet : MonoBehaviour
         this.airTime = airTime;
         this.velocity = velocity;
         this.pierce = pierce;
+
+        this.color = color;
+        if (this.spriteRenderer) spriteRenderer.color = color;
+
+        this.splitOnHit = false;
 
         bulletState = BulletState.Initialized;
     }
@@ -115,14 +124,14 @@ public class Bullet : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Wall")
+        if (collision.CompareTag("Wall"))
         {
             Complete();
             return;
         }
 
         Entity entity = collision.GetComponent<Entity>();
-        if (entity != null && ownerTag != collision.tag && entity.health > 0)
+        if (entity != null && ownerTag != collision.tag && entity.Health > 0)
         {
             entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged);
             pierce--;
@@ -153,22 +162,13 @@ public class Bullet : MonoBehaviour
 
     private void CreateSplitBullet(float angle)
     {
-        Bullet bullet = bulletManager.GetBullet();
+        Bullet bullet = bulletManager.TryGetBullet();
         if (bullet == null) return;
         bullet.AssignOnComplete(() => bulletManager.ReturnBullet(bullet));
 
         Vector3 direction = Quaternion.Euler(0, 0, angle) * Vector3.up;
-        bullet.Initialize(this.ownerTag, transform.position + direction / 3, Quaternion.Euler(0, 0, angle), new Vector3(splitBulletSize, splitBulletSize, 1), damage * splitDamagePercentage, splitRange / splitBulletSpeed, splitBulletSpeed, 1);
+        bullet.Initialize(this.ownerTag, transform.position + direction / 3, Quaternion.Euler(0, 0, angle), new Vector3(splitBulletSize, splitBulletSize, 1), damage * splitDamagePercentage, splitRange / splitBulletSpeed, splitBulletSpeed, 1, this.color);
         bullet.Shoot();
-    }
-
-    public GameObject CreateCopyWithNewOwner(string ownerTag)
-    {
-        GameObject newBulletGameObject = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
-        newBulletGameObject.GetComponent<Bullet>().ownerTag = ownerTag;
-        newBulletGameObject.GetComponent<Bullet>().reflected = reflected;
-
-        return newBulletGameObject;
     }
 }
  

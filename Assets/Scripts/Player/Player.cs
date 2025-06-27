@@ -28,7 +28,11 @@ public class Player : Entity
 
     public override void StartEntity()
     {
+        base.StartEntity();
+
         shootingAbility = GetComponent<ShootingAbility>();
+        if (shootingAbility != null) shootingAbility.SetBulletColor(new Color(65/255f,166/255f,246/255f));
+
         dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();
 
@@ -77,18 +81,18 @@ public class Player : Entity
             animator.runtimeAnimatorController = playerClass.animatorController;
         }
 
-        if (!isPVP) this.maxHealth += playerClass.healthDelta;
-        else this.maxHealth += playerClass.pvpHealthDelta;
+        if (!isPVP) this.MaxHealth += playerClass.healthDelta;
+        else this.MaxHealth += playerClass.pvpHealthDelta;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");
-        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+        healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
 
-        this.health = this.maxHealth;
+        this.Health = this.MaxHealth;
 
         if (!isPVP) this.invulnerableDuration += playerClass.invulnerableDurationDelta;
 
-        this.contactDamage += playerClass.contactDamageDelta;
-        this.contactHitCooldown += playerClass.contactHitCooldownDelta;
+        this.ContactDamage += playerClass.contactDamageDelta;
+        this.ContactHitCooldown += playerClass.contactHitCooldownDelta;
 
         AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
         if (abilityBehaviour != null && playerClass.classAbility != null && playerController != null)
@@ -113,18 +117,18 @@ public class Player : Entity
             animator.runtimeAnimatorController = playerStats.animatorController;
         }
 
-        if (!isPVP) this.maxHealth = playerStats.maxHealth;
-        else this.maxHealth = playerStats.pvpMaxHealth;
+        if (!isPVP) this.MaxHealth = playerStats.maxHealth;
+        else this.MaxHealth = playerStats.pvpMaxHealth;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");
-        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+        healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
 
-        this.health = this.maxHealth;
+        this.Health = this.MaxHealth;
 
         if (!isPVP) this.invulnerableDuration = playerStats.invulnerableDuration;
 
-        this.contactDamage = playerStats.contactDamage;
-        this.contactHitCooldown = playerStats.contactHitCooldown;
+        this.ContactDamage = playerStats.contactDamage;
+        this.ContactHitCooldown = playerStats.contactHitCooldown;
 
         AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
         if (abilityBehaviour != null && playerStats.classAbility != null && playerController != null)
@@ -143,18 +147,18 @@ public class Player : Entity
     {
         if (powerup == null) return;
 
-        this.maxHealth += powerup.healthDelta;
-        this.health += powerup.healthDelta;
+        this.MaxHealth += powerup.healthDelta;
+        this.Health += powerup.healthDelta;
 
-        if (powerup.recoverHealth) this.health = this.maxHealth;
+        if (powerup.recoverHealth) this.Health = this.MaxHealth;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");
-        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+        healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
 
         if (!isPVP) this.invulnerableDuration += powerup.invulnerableDurationDelta;
 
-        this.contactDamage += powerup.contactDamageDelta;
-        this.contactHitCooldown += powerup.contactHitCooldownDelta;
+        this.ContactDamage += powerup.contactDamageDelta;
+        this.ContactHitCooldown += powerup.contactHitCooldownDelta;
 
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();
         if (playerMovement != null) playerMovement.ApplyPowerup(powerup);
@@ -168,7 +172,7 @@ public class Player : Entity
         if (Time.time - invulnerableStart < invulnerableDuration) return;
         if (dashAbility != null && dashAbility.Dashing()) return;
 
-        this.health -= amount;
+        this.Health -= amount;
 
         StartColorChange();
 

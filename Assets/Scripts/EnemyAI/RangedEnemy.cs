@@ -17,6 +17,7 @@ public class RangedEnemy : Enemy
         base.StartEntity();
 
         shootingAbility = GetComponent<ShootingAbility>();
+        shootingAbility.SetBulletColor(new Color(239 / 255f, 125 / 255f, 87 / 255f));
         range = shootingAbility.range;
         enemySprite = transform.Find("Sprite").GetComponent<SpriteRenderer>();
     }

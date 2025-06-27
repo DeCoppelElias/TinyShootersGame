@@ -7,7 +7,7 @@ public class ShootingAbility : MonoBehaviour
 {
     public GameObject bullets;
 
-    public float damage;
+    [SerializeField] private float damage;
     public float attackCooldown = 0.5f;
     private float lastAttack;
     private float lastAttackRealTime;
@@ -33,6 +33,7 @@ public class ShootingAbility : MonoBehaviour
     public bool workWithRealTime = false;
 
     public GameObject bulletPrefab;
+    private Color bulletColor = Color.white;
     public Transform firePoint;
 
     public Entity owner;
@@ -57,6 +58,20 @@ public class ShootingAbility : MonoBehaviour
         }
     }
 
+    #region Properties
+    public float Damage
+    {
+        get { return damage; }
+        set
+        {
+            if (value < 1) damage = 1;
+            else damage = value;
+        }
+    }
+
+    //TODO
+    #endregion
+
     public void StartShooting()
     {
         shooting = true;
@@ -79,13 +94,13 @@ public class ShootingAbility : MonoBehaviour
         float split = totalSplit;
         if (fan % 2 == 1)
         {
-            CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, 0);
+            CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, 0);
             fan--;
             while (fan > 0)
             {
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, 45);
+                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, 45);
                 fan--;
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, -45);
+                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, -45);
                 fan--;
             }
         }
@@ -93,9 +108,9 @@ public class ShootingAbility : MonoBehaviour
         {
             while (fan > 0)
             {
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, 22.5f);
+                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, 22.5f);
                 fan--;
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, -22.5f);
+                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, Damage, -22.5f);
                 fan--;
             }
         }
@@ -141,12 +156,12 @@ public class ShootingAbility : MonoBehaviour
     }
     public void CreateBullet(float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, Vector3 position, float rotation)
     {
-        Bullet bullet = bulletManager.GetBullet();
+        Bullet bullet = bulletManager.TryGetBullet();
         if (bullet == null) return;
         bullet.AssignOnComplete(() => bulletManager.ReturnBullet(bullet));
 
         Quaternion finalRotation = Quaternion.Euler(0, 0, firePoint.eulerAngles.z + rotation);
-        bullet.Initialize(owner.tag, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce);
+        bullet.Initialize(owner.tag, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
         if (splitOnHit) bullet.InitializeSplitting(splitAmount, splitRange, splitBulletSize, splitBulletSpeed, splitDamagePercentage);
         bullet.Shoot();
     }
@@ -161,7 +176,7 @@ public class ShootingAbility : MonoBehaviour
         if (playerStats == null) return;
         if (!playerStats.hasShootAbility) return;
 
-        damage = playerStats.damage;
+        Damage = playerStats.damage;
         attackCooldown = playerStats.attackCooldown;
 
         range = playerStats.range;
@@ -186,7 +201,7 @@ public class ShootingAbility : MonoBehaviour
         if (playerClass == null) return;
         if (!playerClass.hasShootAbility) return;
 
-        damage += playerClass.damageDelta;
+        Damage += playerClass.damageDelta;
         attackCooldown += playerClass.attackCooldownDelta;
 
         range += playerClass.rangeDelta;
@@ -210,7 +225,7 @@ public class ShootingAbility : MonoBehaviour
     {
         if (powerup == null) return;
 
-        damage += powerup.damageDelta;
+        Damage += powerup.damageDelta;
         attackCooldown += powerup.attackCooldownDelta;
 
         range += powerup.rangeDelta;
@@ -248,5 +263,15 @@ public class ShootingAbility : MonoBehaviour
         {
             animator.SetBool("Shooting", false);
         }
+    }
+
+    public void SetBulletColor(Color color)
+    {
+        this.bulletColor = color;
+    }
+
+    public Color GetBulletColor()
+    {
+        return this.bulletColor;
     }
 }

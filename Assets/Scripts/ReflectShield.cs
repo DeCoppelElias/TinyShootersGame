@@ -8,6 +8,7 @@ public class ReflectShield : MonoBehaviour
     [Header("Reflect Shield Settings")]
     [SerializeField] private Sprite bulletSprite;
     [SerializeField] private string ownerTag;
+    private Color ownerBulletColor = Color.white;
 
     private BulletManager bulletManager;
 
@@ -26,7 +27,7 @@ public class ReflectShield : MonoBehaviour
         {
             if (oldBullet.ownerTag != ownerTag)
             {
-                Bullet reflectedBullet = bulletManager.GetBullet();
+                Bullet reflectedBullet = bulletManager.TryGetBullet();
                 if (reflectedBullet == null) return;
                 reflectedBullet.AssignOnComplete(() => bulletManager.ReturnBullet(reflectedBullet));
 
@@ -37,9 +38,14 @@ public class ReflectShield : MonoBehaviour
                     reflectedDamage *= 2;
                     reflectedVelocity *= 2;
                 }
+
+                ShootingAbility shootingAbility = GetComponentInParent<ShootingAbility>();
+                if (shootingAbility != null) ownerBulletColor = shootingAbility.GetBulletColor();
+
                 float reflectedZ = oldBullet.transform.eulerAngles.z + 180f;
                 Quaternion reflectedRotation = Quaternion.Euler(0, 0, reflectedZ);
-                reflectedBullet.Initialize(ownerTag, oldBullet.transform.position, reflectedRotation, oldBullet.transform.localScale, reflectedDamage, oldBullet.airTime, reflectedVelocity, oldBullet.pierce);
+
+                reflectedBullet.Initialize(ownerTag, oldBullet.transform.position, reflectedRotation, oldBullet.transform.localScale, reflectedDamage, oldBullet.airTime, reflectedVelocity, oldBullet.pierce, ownerBulletColor);
                 if (oldBullet.splitOnHit) reflectedBullet.InitializeSplitting(oldBullet.splitAmount, oldBullet.splitRange, oldBullet.splitBulletSize, oldBullet.splitBulletSpeed, oldBullet.splitDamagePercentage);
 
                 reflectedBullet.Shoot();
