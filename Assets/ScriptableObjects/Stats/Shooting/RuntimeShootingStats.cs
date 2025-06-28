@@ -24,29 +24,20 @@ public class RuntimeShootingStats
     [SerializeField] private float shootingMoveSpeed = 2;
 
     public RuntimeShootingStats(){ }
+    public RuntimeShootingStats(PlayerStats stats)
+    {
+        ApplyStats(stats);
+    }
     public RuntimeShootingStats(RuntimeShootingStats stats)
     {
-        Damage = stats.Damage;
-        AttackCooldown = stats.AttackCooldown;
-
-        Range = stats.Range;
-        Pierce = stats.Pierce;
-        Split = stats.Split;
-        Fan = stats.Fan;
-        BulletSize = stats.BulletSize;
-        BulletVelocity = stats.BulletVelocity;
-
-        Explode = stats.Explode;
-        ExplodeBulletAmount = stats.ExplodeBulletAmount;
-        ExplodeBulletRange = stats.ExplodeBulletRange;
-        ExplodeBulletSize = stats.ExplodeBulletSize;
-        ExplodeBulletVelocity = stats.ExplodeBulletVelocity;
-        ExplodeDamagePercentage = stats.ExplodeDamagePercentage;
-
-        ShootingMoveSpeed = stats.shootingMoveSpeed;
+        ApplyStats(stats);
+    }
+    public RuntimeShootingStats(BaseShootingStats stats)
+    {
+        ApplyStats(stats);
     }
 
-    public void ApplyPlayerStats(PlayerStats baseStats)
+    public void ApplyStats(PlayerStats baseStats)
     {
         if (baseStats == null) return;
 
@@ -70,7 +61,7 @@ public class RuntimeShootingStats
         ShootingMoveSpeed = baseStats.shootingMoveSpeed;
     }
 
-    public void ApplyShootingStats(RuntimeShootingStats stats)
+    public void ApplyStats(RuntimeShootingStats stats)
     {
         Damage = stats.Damage;
         AttackCooldown = stats.AttackCooldown;
@@ -89,7 +80,29 @@ public class RuntimeShootingStats
         ExplodeBulletVelocity = stats.ExplodeBulletVelocity;
         ExplodeDamagePercentage = stats.ExplodeDamagePercentage;
 
-        ShootingMoveSpeed = stats.shootingMoveSpeed;
+        ShootingMoveSpeed = stats.ShootingMoveSpeed;
+    }
+
+    public void ApplyStats(BaseShootingStats stats)
+    {
+        Damage = stats.Damage;
+        AttackCooldown = stats.AttackCooldown;
+
+        Range = stats.Range;
+        Pierce = stats.Pierce;
+        Split = stats.Split;
+        Fan = stats.Fan;
+        BulletSize = stats.BulletSize;
+        BulletVelocity = stats.BulletVelocity;
+
+        Explode = stats.Explode;
+        ExplodeBulletAmount = stats.ExplodeBulletAmount;
+        ExplodeBulletRange = stats.ExplodeBulletRange;
+        ExplodeBulletSize = stats.ExplodeBulletSize;
+        ExplodeBulletVelocity = stats.ExplodeBulletVelocity;
+        ExplodeDamagePercentage = stats.ExplodeDamagePercentage;
+
+        ShootingMoveSpeed = stats.ShootingMoveSpeed;
     }
 
     public void ApplyClass(PlayerClass playerClass)

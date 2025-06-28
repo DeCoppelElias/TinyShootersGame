@@ -25,7 +25,7 @@ public class LittleGunner : MonoBehaviour
         gunnerShootingAbility = this.GetComponent<ShootingAbility>();
         ShootingAbility ownerShootingAbility = entity.GetComponent<ShootingAbility>();
 
-        RuntimeShootingStats ownerShootingStats = ownerShootingAbility.Stats;
+        RuntimeShootingStats ownerShootingStats = ownerShootingAbility.RuntimeStats;
         ownerShootingStats.Damage /= 2f;
         gunnerShootingAbility.ApplyShootingStats(ownerShootingStats);
         gunnerShootingAbility.owner = entity;
