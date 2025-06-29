@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(ShootingAbility))]
 public class LittleGunner : MonoBehaviour
 {
-    private ShootingAbility shootingAbility;
+    private ShootingAbility gunnerShootingAbility;
     [SerializeField] private Entity target;
 
     [SerializeField] private Entity owner;
@@ -15,16 +15,21 @@ public class LittleGunner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        shootingAbility = this.GetComponent<ShootingAbility>();
+        gunnerShootingAbility = this.GetComponent<ShootingAbility>();
     }
 
     public void SetOwner(Entity entity)
     {
         this.owner = entity;
-        shootingAbility = this.GetComponent<ShootingAbility>();
-        shootingAbility.damage = entity.GetComponent<ShootingAbility>().damage / 2f;
-        shootingAbility.attackCooldown = entity.GetComponent<ShootingAbility>().attackCooldown;
-        shootingAbility.owner = entity;
+
+        gunnerShootingAbility = this.GetComponent<ShootingAbility>();
+        ShootingAbility ownerShootingAbility = entity.GetComponent<ShootingAbility>();
+
+        RuntimeShootingStats ownerShootingStats = ownerShootingAbility.RuntimeStats;
+        ownerShootingStats.Damage /= 2f;
+        gunnerShootingAbility.ApplyShootingStats(ownerShootingStats);
+        gunnerShootingAbility.owner = entity;
+
         this.tag = entity.tag;
     }
 
@@ -37,7 +42,7 @@ public class LittleGunner : MonoBehaviour
         {
             Vector2 lookDir = (target.transform.position - gameObject.transform.position).normalized;
             this.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDir);
-            shootingAbility.shooting = true;
+            gunnerShootingAbility.shooting = true;
 
             if (Time.time - lastRefresh > refreshCooldown)
             {
@@ -47,7 +52,7 @@ public class LittleGunner : MonoBehaviour
         }
         else
         {
-            shootingAbility.shooting = false;
+            gunnerShootingAbility.shooting = false;
             lastRefresh = Time.time;
             target = FindTarget();
         }

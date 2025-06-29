@@ -46,7 +46,7 @@ public class TutorialManager : MonoBehaviour
 
     private void Update()
     {
-        if (player.health < player.maxHealth / 2) player.health = player.maxHealth;
+        if (player.Health < player.MaxHealth / 2) player.Health = player.MaxHealth;
 
         if (tutorialState == TutorialState.Movement)
         {

@@ -6,6 +6,7 @@ using UnityEngine;
 public class RangedEnemyMovementBehaviour : MovementBehaviour
 {
     private RangedEnemy owner;
+    private ShootingAbility ownerShootingAbility;
 
     [Header("Ranged Movement Settings")]
     [SerializeField] private float shootingMoveSpeedReduction = 0.8f;
@@ -16,6 +17,7 @@ public class RangedEnemyMovementBehaviour : MovementBehaviour
         base.Start();
 
         owner = GetComponent<RangedEnemy>();
+        ownerShootingAbility = owner.GetComponent<ShootingAbility>();
     }
 
     // Update is called once per frame
@@ -34,7 +36,7 @@ public class RangedEnemyMovementBehaviour : MovementBehaviour
             }
             else
             {
-                if (Vector3.Distance(this.transform.position, player.transform.position) > movementTargetDistance * owner.GetRange())
+                if (Vector3.Distance(this.transform.position, player.transform.position) > movementTargetDistance * ownerShootingAbility.GetRange())
                 {
                     WalkToPosition(player.transform.position, shootingMoveSpeedReduction);
                 }

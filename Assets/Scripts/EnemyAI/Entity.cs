@@ -8,13 +8,13 @@ public abstract class Entity : MonoBehaviour
 {
     [Header("Basic Entity Stats")]
     [SerializeField] protected EntityState entityState = EntityState.Alive;
-    protected enum EntityState { Alive, Dead}
+    protected enum EntityState { Alive, Dead }
 
-    public float maxHealth = 100;
-    public float health = 100;
+    [SerializeField] private float maxHealth = 100;
+    [SerializeField] private float health = 100;
 
-    public float contactDamage = 10;
-    public float contactHitCooldown = 1f;
+    [SerializeField] private float contactDamage = 10;
+    [SerializeField] private float contactHitCooldown = 1f;
     private float lastContactHit = 0;
 
     public int onDeathScore = 100;
@@ -72,12 +72,6 @@ public abstract class Entity : MonoBehaviour
     {
         if (entityState == EntityState.Dead) return;
 
-        if (health <= 0)
-        {
-            OnDeath();
-            return;
-        }
-
         UpdateHealthBar();
         EnforceValidPosition();
         ColorUpdate();
@@ -85,9 +79,54 @@ public abstract class Entity : MonoBehaviour
         UpdateEntity();
     }
 
+    #region Properties
+    public float MaxHealth
+    {
+        get { return maxHealth; }
+        set 
+        {
+            if (value < 1) maxHealth = 1;
+            else maxHealth = value;
+        }
+    }
+
+    public float Health
+    {
+        get { return health; }
+        set
+        {
+            if (value <= 0)
+            {
+                health = 0;
+                OnDeath();
+            }
+            else health = value;
+        }
+    }
+
+    public float ContactDamage 
+    {
+        get { return contactDamage; }
+        set 
+        {
+            if (value < 0) contactDamage = 0;
+            else contactDamage = value;
+        }
+    }
+    public float ContactHitCooldown 
+    { 
+        get { return contactHitCooldown; }
+        set
+        {
+            if (value < 0.01f) contactHitCooldown = 0.01f;
+            else contactHitCooldown = value;
+        }
+    }
+    #endregion
+
     private void UpdateHealthBar()
     {
-        float scale = health / maxHealth;
+        float scale = Health / MaxHealth;
         healthBar.localScale = new Vector3(scale, 1, 1);
     }
 
@@ -111,7 +150,7 @@ public abstract class Entity : MonoBehaviour
     {
         if (amount <= 0) return;
 
-        this.health -= amount;
+        this.Health -= amount;
 
         lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
@@ -127,11 +166,11 @@ public abstract class Entity : MonoBehaviour
         if (collision.transform.CompareTag("Enemy") && this.transform.CompareTag("Enemy")) return;
 
         Entity entity = collision.gameObject.GetComponent<Entity>();
-        if (entity != null && Time.time - lastContactHit > contactHitCooldown)
+        if (entity != null && Time.time - lastContactHit > ContactHitCooldown)
         {
             lastContactHit = Time.time;
 
-            entity.TakeDamage(contactDamage, this.tag, DamageType.Melee);
+            entity.TakeDamage(ContactDamage, this.tag, DamageType.Melee);
         }
     }
 

@@ -40,7 +40,7 @@ public class ClassEditor : Editor
         {
             playerClass.attackCooldown = EditorGUILayout.FloatField("Attack Cooldown", playerClass.attackCooldown);
             playerClass.range = EditorGUILayout.FloatField("Range", playerClass.range);
-            playerClass.pierce = EditorGUILayout.FloatField("Pierce", playerClass.pierce);
+            playerClass.pierce = EditorGUILayout.IntField("Pierce", playerClass.pierce);
             playerClass.totalSplit = EditorGUILayout.FloatField("Total Split", playerClass.totalSplit);
             playerClass.totalFan = EditorGUILayout.FloatField("Total Fan", playerClass.totalFan);
             playerClass.bulletSize = EditorGUILayout.FloatField("Bullet Size", playerClass.bulletSize);
