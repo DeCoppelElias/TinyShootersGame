@@ -22,7 +22,7 @@ public class BulletManager : MonoBehaviour
 
     private void TrySpawnBullet()
     {
-        if (bulletCount == bulletLimit) return;
+        if (bulletCount >= bulletLimit) return;
         bulletCount++;
 
         GameObject bulletGO = Instantiate(bulletPrefab, this.transform);
