@@ -264,6 +264,7 @@ MonoBehaviour:
   contactHitCooldown: 1
   onDeathScore: 100
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 1
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
@@ -271,6 +272,7 @@ MonoBehaviour:
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
+  bodyDuration: 1
   spawnBody: 1
   debug: 0
   knockbackImmune: 1
@@ -288,22 +290,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddaf7ee882e3e9b43ac7d2a8a0cd8dd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullets: {fileID: 0}
-  damage: 10
-  attackCooldown: 1
-  range: 6
-  pierce: 1
-  totalSplit: 1
-  totalFan: 3
-  bulletSize: 1
-  bulletSpeed: 2
-  splitOnHit: 0
-  splitAmount: 0
-  splitRange: 1
-  splitBulletSize: 0.5
-  splitBulletSpeed: 6
-  splitDamagePercentage: 0.5
-  shootingMoveSpeed: 2
+  baseStats: {fileID: 11400000, guid: 75b7a39e5d3110d409db2cf214bb1132, type: 2}
+  runtimeStats:
+    damage: 5
+    range: 1
+    pierce: 1
+    split: 1
+    fan: 1
+    bulletSize: 1
+    bulletVelocity: 6
+    attackCooldown: 0.5
+    explode: 0
+    explodeBulletAmount: 0
+    explodeDamagePercentage: 0.5
+    explodeBulletRange: 1
+    explodeBulletSize: 0.5
+    explodeBulletVelocity: 6
+    shootingMoveSpeed: 2
   shooting: 0
   workWithRealTime: 0
   bulletPrefab: {fileID: 3904042468818896706, guid: 7709d2fb16adc5b44aa98577c92a9be6, type: 3}

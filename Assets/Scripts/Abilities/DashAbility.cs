@@ -77,7 +77,7 @@ public class DashAbility : MonoBehaviour
                 // Increase contact damage
                 if (entity != null)
                 {
-                    entity.contactDamage *= contactDamageIncrease;
+                    entity.ContactDamage *= contactDamageIncrease;
                 }
             }
             else
@@ -101,7 +101,7 @@ public class DashAbility : MonoBehaviour
                 // Decrease contact damage again
                 if (entity != null)
                 {
-                    entity.contactDamage /= contactDamageIncrease;
+                    entity.ContactDamage /= contactDamageIncrease;
                 }
             }
             else

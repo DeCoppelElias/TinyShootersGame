@@ -332,8 +332,8 @@ public class PVPManager : MonoBehaviour
         player2.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
 
         // Reset player health
-        player1.health = player1.maxHealth;
-        player2.health = player2.maxHealth;
+        player1.Health = player1.MaxHealth;
+        player2.Health = player2.MaxHealth;
 
         // Clean up all enemies
         Transform enemiesParent = GameObject.Find("Enemies").transform;

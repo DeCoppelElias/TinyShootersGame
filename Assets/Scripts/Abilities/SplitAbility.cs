@@ -15,9 +15,9 @@ public class SplitAbility : MonoBehaviour
 
         GameObject clone1 = Instantiate(this.gameObject, transform.position + throwDirection1 * (transform.localScale / 2).x, Quaternion.identity, transform.parent);
         clone1.transform.localScale = transform.localScale / 2;
-        clone1.GetComponent<Entity>().maxHealth = GetComponent<Entity>().maxHealth / 2;
-        clone1.GetComponent<Entity>().health = GetComponent<Entity>().maxHealth / 2;
-        clone1.GetComponent<Entity>().contactDamage = GetComponent<Entity>().contactDamage / 2;
+        clone1.GetComponent<Entity>().MaxHealth = GetComponent<Entity>().MaxHealth / 2;
+        clone1.GetComponent<Entity>().Health = GetComponent<Entity>().MaxHealth / 2;
+        clone1.GetComponent<Entity>().ContactDamage = GetComponent<Entity>().ContactDamage / 2;
         clone1.GetComponent<Entity>().onDeathScore = GetComponent<Entity>().onDeathScore / 2;
         clone1.GetComponent<Entity>().lastValidPosition = GetComponent<Entity>().lastValidPosition;
         clone1.GetComponent<SplitMeleeEnemy>().splitAmount = currentSplitAmount + 1;
@@ -26,9 +26,9 @@ public class SplitAbility : MonoBehaviour
 
         GameObject clone2 = Instantiate(this.gameObject, transform.position + throwDirection2 * (transform.localScale / 2).x, Quaternion.identity, transform.parent);
         clone2.transform.localScale = transform.localScale / 2;
-        clone2.GetComponent<Entity>().maxHealth = GetComponent<Entity>().maxHealth / 2;
-        clone2.GetComponent<Entity>().health = GetComponent<Entity>().maxHealth / 2;
-        clone2.GetComponent<Entity>().contactDamage = GetComponent<Entity>().contactDamage / 2;
+        clone2.GetComponent<Entity>().MaxHealth = GetComponent<Entity>().MaxHealth / 2;
+        clone2.GetComponent<Entity>().Health = GetComponent<Entity>().MaxHealth / 2;
+        clone2.GetComponent<Entity>().ContactDamage = GetComponent<Entity>().ContactDamage / 2;
         clone2.GetComponent<Entity>().onDeathScore = GetComponent<Entity>().onDeathScore / 2;
         clone2.GetComponent<Entity>().lastValidPosition = GetComponent<Entity>().lastValidPosition;
         clone2.GetComponent<SplitMeleeEnemy>().splitAmount = currentSplitAmount + 1;

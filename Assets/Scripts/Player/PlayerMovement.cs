@@ -82,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
             if (shootAbility != null && shootAbility.shooting)
             {
                 this.movementState = MovementState.Reduced;
-                currentVelocity = shootAbility.shootingMoveSpeed;
+                currentVelocity = shootAbility.GetShootingMoveSpeed();
             }
         }
         else if (this.movementState == MovementState.Reduced)

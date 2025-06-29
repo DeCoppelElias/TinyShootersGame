@@ -42,7 +42,7 @@ public class Enemy : Entity
 
         rb = GetComponent<Rigidbody2D>();
 
-        particleManager = GameObject.Find("ParticleManager")?.GetComponent<ParticleManager>();
+        particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }
 
     private Player FindClosestPlayer()
