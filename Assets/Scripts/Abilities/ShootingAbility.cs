@@ -34,8 +34,11 @@ public class ShootingAbility : MonoBehaviour
 
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
         
-        if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
-        else this.runtimeStats = new RuntimeShootingStats();
+        if (runtimeStats == null)
+        {
+            if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
+            else this.runtimeStats = new RuntimeShootingStats();
+        }
     }
 
     private void Update()
