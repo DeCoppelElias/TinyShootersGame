@@ -35,7 +35,7 @@ public class Player : Entity
         particleManager = GameObject.Find("Particles")?.GetComponent<ParticleManager>();
 
         shootingAbility = GetComponent<ShootingAbility>();
-        if (shootingAbility != null) shootingAbility.SetBulletColor(new Color(65/255f,166/255f,246/255f));
+        if (shootingAbility != null) shootingAbility.SetBulletColor(new Color(59/255f,93/255f,201/255f));
 
         dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();

@@ -28,6 +28,8 @@ public class ShootingAbility : MonoBehaviour
 
     private BulletManager bulletManager;
 
+    private ParticleSystem muzzleFlash;
+
     private void Start()
     {
         if (owner == null) owner = GetComponent<Entity>();
@@ -39,6 +41,8 @@ public class ShootingAbility : MonoBehaviour
             if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
             else this.runtimeStats = new RuntimeShootingStats();
         }
+
+        this.muzzleFlash = firePoint.GetComponentInChildren<ParticleSystem>();
     }
 
     private void Update()
@@ -140,6 +144,8 @@ public class ShootingAbility : MonoBehaviour
         bullet.Initialize(owner.tag, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
         if (this.runtimeStats.Explode) bullet.InitializeSplitting(this.runtimeStats.ExplodeBulletAmount, this.runtimeStats.ExplodeBulletRange, this.runtimeStats.ExplodeBulletSize, this.runtimeStats.ExplodeBulletVelocity, this.runtimeStats.ExplodeDamagePercentage);
         bullet.Shoot();
+
+        if (this.muzzleFlash != null) muzzleFlash.Play();
     }
 
     public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage)

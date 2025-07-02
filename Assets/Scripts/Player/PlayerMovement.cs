@@ -109,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = (customCamera != null) ? customCamera.ScreenToWorldPoint(mousePosition) : Camera.main.ScreenToWorldPoint(mousePosition);
             Vector2 lookDirection = (worldMousePosition - transform.position);
-            spriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDirection);
+            spriteRenderer.transform.localRotation = Quaternion.LookRotation(Vector3.forward, lookDirection);
         }
     }
 

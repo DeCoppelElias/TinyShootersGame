@@ -33,6 +33,8 @@ public class Bullet : MonoBehaviour
     private System.Action onComplete;
     private BulletManager bulletManager;
 
+    private ParticleSystem trailParticleSystem;
+
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -40,6 +42,8 @@ public class Bullet : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
+
+        this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
     }
 
     public void AssignOnComplete(System.Action action)
@@ -66,6 +70,13 @@ public class Bullet : MonoBehaviour
         this.splitOnHit = false;
 
         bulletState = BulletState.Initialized;
+
+        if (this.trailParticleSystem == null) this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
+        if (this.trailParticleSystem != null)
+        {
+            ParticleSystem.MainModule main = trailParticleSystem.main;
+            main.startColor = color;
+        }
     }
 
     public void InitializeSplitting(float splitAmount, float splitRange, float splitBulletSize, float splitBulletSpeed, float splitDamagePercentage)
