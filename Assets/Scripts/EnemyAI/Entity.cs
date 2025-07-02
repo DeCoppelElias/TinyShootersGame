@@ -51,6 +51,8 @@ public abstract class Entity : MonoBehaviour
     private Tilemap walls;
     private Tilemap pits;
 
+    protected Rigidbody2D rb;
+
     private void Start()
     {
         walls = GameObject.Find("Walls")?.GetComponent<Tilemap>();
@@ -64,6 +66,8 @@ public abstract class Entity : MonoBehaviour
 
         entityState = EntityState.Alive;
         colorChangeState = ColorChangeState.Nothing;
+
+        rb = this.GetComponent<Rigidbody2D>();
 
         if (CheckOutOfBounds()) lastValidPosition = this.transform.position;
 
@@ -262,5 +266,10 @@ public abstract class Entity : MonoBehaviour
         if (colorChangeState == ColorChangeState.Nothing) originalColor = spriteRenderer.color;
         startColorChange = Time.time;
         colorChangeState = ColorChangeState.ToDamageColor;
+    }
+
+    public virtual void AddKnockback(float force, Vector3 direction)
+    {
+        if (rb != null) rb.AddForce(force * direction, ForceMode2D.Impulse);
     }
 }

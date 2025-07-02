@@ -27,6 +27,7 @@ public class Player : Entity
     private int alternativeSpriteIndex = 0;
 
     private ParticleManager particleManager;
+    private PlayerMovement playerMovement;
 
     public override void StartEntity()
     {
@@ -39,6 +40,8 @@ public class Player : Entity
 
         dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();
+
+        playerMovement = GetComponent<PlayerMovement>();
 
         ApplyStats(baseStats);
         ApplyClass(playerClass);
@@ -213,5 +216,10 @@ public class Player : Entity
         {
             particleManager.CreateParticle(particleType, transform.position, Color.blue);
         }
+    }
+
+    public override void AddKnockback(float force, Vector3 direction)
+    {
+        if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(direction, force / 0.1f, 0.1f);
     }
 }

@@ -29,6 +29,7 @@ public class ShootingAbility : MonoBehaviour
     private BulletManager bulletManager;
 
     private ParticleSystem muzzleFlash;
+    private Rigidbody2D rb;
 
     private void Start()
     {
@@ -43,6 +44,7 @@ public class ShootingAbility : MonoBehaviour
         }
 
         this.muzzleFlash = firePoint.GetComponentInChildren<ParticleSystem>();
+        this.rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -136,6 +138,7 @@ public class ShootingAbility : MonoBehaviour
     }
     public void CreateBullet(float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, Vector3 position, float rotation)
     {
+        // Create Bullet
         Bullet bullet = bulletManager.TryGetBullet();
         if (bullet == null) return;
         bullet.AssignOnComplete(() => bulletManager.ReturnBullet(bullet));
@@ -145,7 +148,13 @@ public class ShootingAbility : MonoBehaviour
         if (this.runtimeStats.Explode) bullet.InitializeSplitting(this.runtimeStats.ExplodeBulletAmount, this.runtimeStats.ExplodeBulletRange, this.runtimeStats.ExplodeBulletSize, this.runtimeStats.ExplodeBulletVelocity, this.runtimeStats.ExplodeDamagePercentage);
         bullet.Shoot();
 
+        // Play Muzzle Flash
         if (this.muzzleFlash != null) muzzleFlash.Play();
+
+        // Give Knockback to self
+        Vector2 knockbackDirection = -(Vector2)(finalRotation * Vector3.up);
+        float knockbackForce = 0.1f;
+        if (this.owner != null) this.owner.AddKnockback(knockbackForce, knockbackDirection);
     }
 
     public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage)

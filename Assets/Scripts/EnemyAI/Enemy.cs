@@ -26,8 +26,6 @@ public class Enemy : Entity
     private float knockbackCooldown = 0.3f;
     private float lastKnockback;
 
-    private Rigidbody2D rb;
-
     private ParticleManager particleManager;
 
     public override void StartEntity()
@@ -39,8 +37,6 @@ public class Enemy : Entity
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null) throw new System.Exception("Cannot find size because collider is missing");
         size = collider.bounds.size.x;
-
-        rb = GetComponent<Rigidbody2D>();
 
         particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }

@@ -65,7 +65,10 @@ public class PlayerMovement : MonoBehaviour
         // If knockback, move in knockback direction
         if (this.movementState == MovementState.Knockback)
         {
-            playerRB.velocity = knockbackDirection * knockbackSpeed;
+            Vector2 knockbackVelocity = knockbackDirection * knockbackSpeed;
+            Vector2 inputVelocity = currentMoveDirection * moveSpeed * 0.5f;
+
+            playerRB.velocity = knockbackVelocity + inputVelocity;
 
             // If knockback is over, return to normal movement
             if (Time.time - knockbackStart > knockbackDuration || playerRB.velocity == Vector2.zero)
