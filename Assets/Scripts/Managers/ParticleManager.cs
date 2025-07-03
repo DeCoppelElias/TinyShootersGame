@@ -6,7 +6,7 @@ using UnityEngine;
 public class ParticleManager : MonoBehaviour
 {
     [SerializeField] private int particleLimit = 100;
-    public enum ParticleType { Damage, Blood}
+    public enum ParticleType { Damage, Blood, BulletExplosion}
 
     [SerializeField] public GameObject scoreTextPrefab;
 
@@ -30,6 +30,10 @@ public class ParticleManager : MonoBehaviour
         {
             return CreateBloodParticle(position, color);
         }
+        else if (particleType == ParticleType.BulletExplosion)
+        {
+            return CreateBulletExplosion(position, color);
+        }
         return null;
     }
 
@@ -50,6 +54,19 @@ public class ParticleManager : MonoBehaviour
     {
         ParticlePool particlePool = GetParticlePool(ParticleType.Blood);
         BloodParticle particle = (BloodParticle)particlePool.GetParticle();
+        if (particle == null) return null;
+
+        particle.Initialise(position, color);
+        particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
+        particle.Play();
+
+        return particle.gameObject;
+    }
+
+    private GameObject CreateBulletExplosion(Vector3 position, Color color)
+    {
+        ParticlePool particlePool = GetParticlePool(ParticleType.BulletExplosion);
+        BulletExplosionParticle particle = (BulletExplosionParticle)particlePool.GetParticle();
         if (particle == null) return null;
 
         particle.Initialise(position, color);

@@ -9,7 +9,7 @@ public abstract class Particle : MonoBehaviour
 
     public void AssignOnComplete(Action action)
     {
-        this.onComplete = action;
+        this.onComplete += action;
     }
 
     public abstract void Play();

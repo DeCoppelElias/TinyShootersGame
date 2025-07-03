@@ -36,13 +36,11 @@ public class Player : Entity
         particleManager = GameObject.Find("Particles")?.GetComponent<ParticleManager>();
 
         shootingAbility = GetComponent<ShootingAbility>();
-        if (shootingAbility != null) shootingAbility.SetBulletColor(new Color(59/255f,93/255f,201/255f));
-
         dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();
-
         playerMovement = GetComponent<PlayerMovement>();
 
+        SetupColor(new Color(59 / 255f, 93 / 255f, 201 / 255f));
         ApplyStats(baseStats);
         ApplyClass(playerClass);
     }
@@ -221,5 +219,11 @@ public class Player : Entity
     public override void AddKnockback(float force, Vector3 direction)
     {
         if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(direction, force / 0.1f, 0.1f);
+    }
+
+    private void SetupColor(Color color)
+    {
+        if (shootingAbility != null) shootingAbility.SetBulletColor(color);
+        if (dashAbility != null) dashAbility.SetDashColor(color);
     }
 }

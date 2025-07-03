@@ -34,6 +34,7 @@ public class Bullet : MonoBehaviour
     private BulletManager bulletManager;
 
     private ParticleSystem trailParticleSystem;
+    private ParticleManager particleManager;
 
     private void Start()
     {
@@ -44,6 +45,7 @@ public class Bullet : MonoBehaviour
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
 
         this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
+        this.particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }
 
     public void AssignOnComplete(System.Action action)
@@ -137,6 +139,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("Wall"))
         {
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
             Complete();
             return;
         }
@@ -149,12 +152,15 @@ public class Bullet : MonoBehaviour
             pierce--;
             if (pierce == 0)
             {
+                GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
                 Complete();
             }
             else if (splitOnHit)
             {
                 Split();
             }
+
+            return;
         }
     }
 
