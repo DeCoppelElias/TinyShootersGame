@@ -34,6 +34,7 @@ public class RuntimeShootingStats
     }
     public RuntimeShootingStats(BaseShootingStats stats)
     {
+        Debug.Log("constructor");
         ApplyStats(stats);
     }
 

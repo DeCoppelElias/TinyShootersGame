@@ -20942,7 +20942,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 832d708147d2aa2469c93a4f5d9ad63d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveIndex: 0
+  waveIndex: 5
   levelIndex: 0
   totalLevels: 3
   waveCooldown: 5

@@ -270,6 +270,7 @@ public abstract class Entity : MonoBehaviour
 
     public virtual void AddKnockback(float force, Vector3 direction)
     {
-        if (rb != null) rb.AddForce(force * direction, ForceMode2D.Impulse);
+        Debug.Log(this.rb);
+        if (rb != null) rb.AddForce(100 * force * direction, ForceMode2D.Impulse);
     }
 }

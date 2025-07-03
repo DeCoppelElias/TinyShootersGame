@@ -264,7 +264,6 @@ MonoBehaviour:
   contactHitCooldown: 1
   onDeathScore: 100
   damageColor: {r: 1, g: 0, b: 0, a: 1}
-  colorChangeDuration: 1
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
@@ -272,12 +271,9 @@ MonoBehaviour:
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
-  bodyDuration: 1
   spawnBody: 1
   debug: 0
   knockbackImmune: 1
-  damagePixelPrefab: {fileID: 4646526515456893302, guid: 9f57144ea1e9d1b46a0297c6c3428fd7, type: 3}
-  scoreDisplayPrefab: {fileID: 5739372400424013240, guid: d39106598a90e864a8fd9921f79b3a5f, type: 3}
 --- !u!114 &3223117026757677455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +390,8 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 8783754946750245066}
   m_Father: {fileID: 6624335756847701852}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -481,6 +478,68 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &5126856141819988961
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 8592713406704124680}
+    m_Modifications:
+    - target: {fileID: 3357447134876260430, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_Name
+      value: MuzzleShotEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+--- !u!4 &8783754946750245066 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4521731581694780203, guid: 501224bcc5353d24a8bece50ad91cfd2, type: 3}
+  m_PrefabInstance: {fileID: 5126856141819988961}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6768061900298467537
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -538,7 +597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_InstanceId
-      value: -57952
+      value: -181814
       objectReference: {fileID: 0}
     - target: {fileID: 8478164273474325271, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_Name

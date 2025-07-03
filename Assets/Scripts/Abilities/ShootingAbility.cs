@@ -36,12 +36,8 @@ public class ShootingAbility : MonoBehaviour
         if (owner == null) owner = GetComponent<Entity>();
 
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
-        
-        if (runtimeStats == null)
-        {
-            if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
-            else this.runtimeStats = new RuntimeShootingStats();
-        }
+
+        if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
 
         this.muzzleFlash = firePoint.GetComponentInChildren<ParticleSystem>();
         this.rb = GetComponent<Rigidbody2D>();
