@@ -144,6 +144,16 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        if (collision.CompareTag("Box"))
+        {
+            Box box = collision.GetComponent<Box>();
+            if (box) box.GiveKnockback(damage, rb.velocity.normalized);
+
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
+            Complete();
+            return;
+        }
+
         Entity entity = collision.GetComponent<Entity>();
         if (entity != null && ownerTag != collision.tag && entity.Health > 0)
         {

@@ -42,8 +42,6 @@ public class BloodParticle : Particle
         int childCount = this.transform.childCount;
         if (childCount == 0) return;
 
-        Debug.Log(position);
-
         this.transform.position = position;
 
         for (int i = 0; i < childCount; i++)
