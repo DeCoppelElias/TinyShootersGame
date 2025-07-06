@@ -33,6 +33,9 @@ public class Bullet : MonoBehaviour
     private System.Action onComplete;
     private BulletManager bulletManager;
 
+    private ParticleSystem trailParticleSystem;
+    private ParticleManager particleManager;
+
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -40,6 +43,9 @@ public class Bullet : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
+
+        this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
+        this.particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }
 
     public void AssignOnComplete(System.Action action)
@@ -66,6 +72,13 @@ public class Bullet : MonoBehaviour
         this.splitOnHit = false;
 
         bulletState = BulletState.Initialized;
+
+        if (this.trailParticleSystem == null) this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
+        if (this.trailParticleSystem != null)
+        {
+            ParticleSystem.MainModule main = trailParticleSystem.main;
+            main.startColor = color;
+        }
     }
 
     public void InitializeSplitting(float splitAmount, float splitRange, float splitBulletSize, float splitBulletSpeed, float splitDamagePercentage)
@@ -126,6 +139,17 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("Wall"))
         {
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
+            Complete();
+            return;
+        }
+
+        if (collision.CompareTag("Box"))
+        {
+            Box box = collision.GetComponent<Box>();
+            if (box) box.GiveKnockback(damage, rb.velocity.normalized);
+
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
             Complete();
             return;
         }
@@ -133,16 +157,20 @@ public class Bullet : MonoBehaviour
         Entity entity = collision.GetComponent<Entity>();
         if (entity != null && ownerTag != collision.tag && entity.Health > 0)
         {
-            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged);
+            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged, rb.velocity.normalized);
+
             pierce--;
             if (pierce == 0)
             {
+                GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
                 Complete();
             }
             else if (splitOnHit)
             {
                 Split();
             }
+
+            return;
         }
     }
 

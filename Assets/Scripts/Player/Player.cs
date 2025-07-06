@@ -26,16 +26,21 @@ public class Player : Entity
     [SerializeField] private List<Sprite> alternativeSprites = new List<Sprite>();
     private int alternativeSpriteIndex = 0;
 
+    private ParticleManager particleManager;
+    private PlayerMovement playerMovement;
+
     public override void StartEntity()
     {
         base.StartEntity();
 
-        shootingAbility = GetComponent<ShootingAbility>();
-        if (shootingAbility != null) shootingAbility.SetBulletColor(new Color(65/255f,166/255f,246/255f));
+        particleManager = GameObject.Find("Particles")?.GetComponent<ParticleManager>();
 
+        shootingAbility = GetComponent<ShootingAbility>();
         dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();
+        playerMovement = GetComponent<PlayerMovement>();
 
+        SetupColor(new Color(59 / 255f, 93 / 255f, 201 / 255f));
         ApplyStats(baseStats);
         ApplyClass(playerClass);
     }
@@ -166,7 +171,7 @@ public class Player : Entity
         if (dashAbility != null) dashAbility.ApplyPowerup(powerup);
     }
 
-    public override void TakeDamage(float amount, string sourceTag, DamageType damageType)
+    public override void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
         if (amount <= 0) return;
         if (Time.time - invulnerableStart < invulnerableDuration) return;
@@ -178,6 +183,12 @@ public class Player : Entity
 
         invulnerableStart = Time.time;
 
+        int damageParticleAmount = UnityEngine.Random.Range(1, 3);
+        AddParticles(ParticleManager.ParticleType.Damage, damageParticleAmount);
+
+        float r = UnityEngine.Random.Range(0, 1f);
+        if (r < 0.05f) AddParticles(ParticleManager.ParticleType.Blood, 1);
+
         if (onHitEvent != null) onHitEvent.Invoke();
     }
 
@@ -185,7 +196,34 @@ public class Player : Entity
     {
         base.OnDeath();
 
+        // Add damage pixels
+        AddParticles(ParticleManager.ParticleType.Damage, 10);
+
+        // Drop Blood
+        AddParticles(ParticleManager.ParticleType.Blood, 1);
+
         audioManager.PlayDieSound();
         onDeath.Invoke();
+    }
+
+    private void AddParticles(ParticleManager.ParticleType particleType, int amount)
+    {
+        if (particleManager == null) return;
+
+        for (int i = 0; i < amount; i++)
+        {
+            particleManager.CreateParticle(particleType, transform.position, Color.blue);
+        }
+    }
+
+    public override void AddKnockback(float force, Vector3 direction)
+    {
+        if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(direction, force / 0.1f, 0.1f);
+    }
+
+    private void SetupColor(Color color)
+    {
+        if (shootingAbility != null) shootingAbility.SetBulletColor(color);
+        if (dashAbility != null) dashAbility.SetDashColor(color);
     }
 }

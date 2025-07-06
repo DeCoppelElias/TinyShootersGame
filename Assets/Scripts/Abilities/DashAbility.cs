@@ -15,6 +15,9 @@ public class DashAbility : MonoBehaviour
     [SerializeField] private float dashSpeed = 20;
     [SerializeField] private float contactDamageIncrease = 5;
 
+    [SerializeField] private GameObject dashEffectPrefab;
+    private GameObject dashEffect;
+
     private float dashStart = 0;
     private float chargeStart = 0;
     private float lastDash = 0;
@@ -33,8 +36,9 @@ public class DashAbility : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-
         entity = GetComponent<Entity>();
+
+        InstantiateDashEffect();
     }
     public void Dash(Vector2 direction, System.Action action = null)
     {
@@ -79,6 +83,9 @@ public class DashAbility : MonoBehaviour
                 {
                     entity.ContactDamage *= contactDamageIncrease;
                 }
+
+                // Enable the dashing effect
+                this.dashEffect.SetActive(true);
             }
             else
             {
@@ -103,6 +110,9 @@ public class DashAbility : MonoBehaviour
                 {
                     entity.ContactDamage /= contactDamageIncrease;
                 }
+
+                // Disable dashing effect
+                this.dashEffect.SetActive(false);
             }
             else
             {
@@ -161,5 +171,21 @@ public class DashAbility : MonoBehaviour
     public bool Charging()
     {
         return this.dashingState == DashingState.Charging;
+    }
+
+    private void InstantiateDashEffect()
+    {
+        if (this.dashEffectPrefab == null) return;
+        if (this.dashEffect != null) return;
+
+        this.dashEffect = Instantiate(this.dashEffectPrefab, this.transform);
+        this.dashEffect.SetActive(false);
+    }
+
+    public void SetDashColor(Color color)
+    {
+        if (this.dashEffect == null) InstantiateDashEffect();
+        this.dashEffect.GetComponentInChildren<TrailRenderer>().startColor = color;
+        this.dashEffect.GetComponentInChildren<TrailRenderer>().endColor = color;
     }
 }

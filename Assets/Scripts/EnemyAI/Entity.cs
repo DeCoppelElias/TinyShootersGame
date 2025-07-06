@@ -21,7 +21,7 @@ public abstract class Entity : MonoBehaviour
 
     [Header("On-Hit Color Change Settings")]
     [SerializeField] private Color damageColor = Color.red;
-    [SerializeField] private float colorChangeDuration = 1f;
+    private float colorChangeDuration = 0.25f;
     [SerializeField] private ColorChangeState colorChangeState = ColorChangeState.Nothing;
     private enum ColorChangeState { Nothing, ToDamageColor, ToOriginalColor }
     protected SpriteRenderer spriteRenderer;
@@ -40,6 +40,7 @@ public abstract class Entity : MonoBehaviour
     public enum DamageType { Ranged, Melee }
     protected DamageType lastDamageType;
     protected string lastDamageSourceTag;
+    protected Vector2 lastDamageDirection;
 
     protected AudioManager audioManager;
     private WaveManager waveManager;
@@ -49,6 +50,8 @@ public abstract class Entity : MonoBehaviour
 
     private Tilemap walls;
     private Tilemap pits;
+
+    protected Rigidbody2D rb;
 
     private void Start()
     {
@@ -63,6 +66,8 @@ public abstract class Entity : MonoBehaviour
 
         entityState = EntityState.Alive;
         colorChangeState = ColorChangeState.Nothing;
+
+        rb = this.GetComponent<Rigidbody2D>();
 
         if (CheckOutOfBounds()) lastValidPosition = this.transform.position;
 
@@ -146,7 +151,7 @@ public abstract class Entity : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(float amount, string sourceTag, DamageType damageType)
+    public virtual void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
         if (amount <= 0) return;
 
@@ -154,6 +159,7 @@ public abstract class Entity : MonoBehaviour
 
         lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
+        lastDamageDirection = direction;
 
         StartColorChange();
     }
@@ -170,7 +176,8 @@ public abstract class Entity : MonoBehaviour
         {
             lastContactHit = Time.time;
 
-            entity.TakeDamage(ContactDamage, this.tag, DamageType.Melee);
+            Vector2 direction = (collision.transform.position - this.transform.position).normalized;
+            entity.TakeDamage(contactDamage, this.tag, DamageType.Melee, direction);
         }
     }
 
@@ -259,5 +266,10 @@ public abstract class Entity : MonoBehaviour
         if (colorChangeState == ColorChangeState.Nothing) originalColor = spriteRenderer.color;
         startColorChange = Time.time;
         colorChangeState = ColorChangeState.ToDamageColor;
+    }
+
+    public virtual void AddKnockback(float force, Vector3 direction)
+    {
+        if (rb != null) rb.AddForce(100 * force * direction, ForceMode2D.Impulse);
     }
 }

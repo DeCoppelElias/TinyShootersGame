@@ -14,11 +14,19 @@ public class Enemy : Entity
     protected float size = 0;
 
     [Header("On-Death Body Settings")]
-    [SerializeField] private float bodyDuration = 1;
+    private float bodyDuration = 0.25f;
     [SerializeField] protected bool spawnBody = true;
 
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
+
+    [Header("Knockback Settings")]
+    [SerializeField] private bool knockbackImmune = false;
+    private int knockbackForce = 30;
+    private float knockbackCooldown = 0.3f;
+    private float lastKnockback;
+
+    private ParticleManager particleManager;
 
     public override void StartEntity()
     {
@@ -29,6 +37,8 @@ public class Enemy : Entity
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null) throw new System.Exception("Cannot find size because collider is missing");
         size = collider.bounds.size.x;
+
+        particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }
 
     private Player FindClosestPlayer()
@@ -91,6 +101,15 @@ public class Enemy : Entity
         // Play death sound
         audioManager.PlayDieSound();
 
+        // Add damage pixels
+        AddParticles(ParticleManager.ParticleType.Damage, 10);
+
+        // Drop Blood
+        AddParticles(ParticleManager.ParticleType.Blood, 1);
+
+        // Display score
+        // DisplayScore();
+
         // Spawn Body
         if (spawnBody)
         {
@@ -99,9 +118,53 @@ public class Enemy : Entity
             spriteRenderer.sortingOrder = -1;
             spriteTransform.SetParent(transform.parent);
             DeadBodyBehaviour deadBody = spriteTransform.gameObject.AddComponent<DeadBodyBehaviour>();
-            deadBody.Initialise(bodyDuration);
+            deadBody.Initialise(bodyDuration, lastDamageDirection);
         }
 
         Destroy(this.gameObject);
     }
+
+    public override void TakeDamage(float damage, string sourceTag, DamageType damageType, Vector2 direction)
+    {
+        base.TakeDamage(damage, sourceTag, damageType, direction);
+
+        AddKnockback(damage, direction);
+
+        int damageParticleAmount = UnityEngine.Random.Range(1, 3);
+        AddParticles(ParticleManager.ParticleType.Damage, damageParticleAmount);
+
+        float r = UnityEngine.Random.Range(0, 1f);
+        if (r < 0.05f) AddParticles(ParticleManager.ParticleType.Blood, 1);
+    }
+
+    private void AddKnockback(float amount, Vector2 direction)
+    {
+        if (Time.time - lastKnockback > knockbackCooldown && !knockbackImmune)
+        {
+            // Add knockback scaling with damage
+            float t = Mathf.InverseLerp(10f, 40f, amount);
+            float damageScale = Mathf.Lerp(1f, 2f, t);
+
+            rb.AddForce(damageScale * knockbackForce * direction, ForceMode2D.Impulse);
+            lastKnockback = Time.time;
+        }
+    }
+
+    private void AddParticles(ParticleManager.ParticleType particleType, int amount)
+    {
+        if (particleManager == null) return;
+
+        for (int i = 0; i < amount; i++)
+        {
+            particleManager.CreateParticle(particleType, transform.position, Color.red);
+        }
+    }
+
+    /*private void DisplayScore()
+    {
+        if (particleManager == null || particleManager.scoreTextPrefab == null) return;
+
+        var scoreDisplay = Instantiate(particleManager.scoreTextPrefab, transform.position, Quaternion.identity, particleManager.particleParent);
+        scoreDisplay.GetComponent<ScoreDisplay>().Initialise(1f, this.onDeathScore);
+    }*/
 }

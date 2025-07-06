@@ -15,6 +15,7 @@ TagManager:
   - Player2
   - RecordingCamera
   - Pit
+  - Box
   layers:
   - Default
   - TransparentFX

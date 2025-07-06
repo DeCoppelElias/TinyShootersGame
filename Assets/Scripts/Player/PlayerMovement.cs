@@ -65,7 +65,10 @@ public class PlayerMovement : MonoBehaviour
         // If knockback, move in knockback direction
         if (this.movementState == MovementState.Knockback)
         {
-            playerRB.velocity = knockbackDirection * knockbackSpeed;
+            Vector2 knockbackVelocity = knockbackDirection * knockbackSpeed;
+            Vector2 inputVelocity = currentMoveDirection * moveSpeed * 0.5f;
+
+            playerRB.velocity = knockbackVelocity + inputVelocity;
 
             // If knockback is over, return to normal movement
             if (Time.time - knockbackStart > knockbackDuration || playerRB.velocity == Vector2.zero)
@@ -109,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 mousePosition = Mouse.current.position.ReadValue();
             Vector3 worldMousePosition = (customCamera != null) ? customCamera.ScreenToWorldPoint(mousePosition) : Camera.main.ScreenToWorldPoint(mousePosition);
             Vector2 lookDirection = (worldMousePosition - transform.position);
-            spriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDirection);
+            spriteRenderer.transform.localRotation = Quaternion.LookRotation(Vector3.forward, lookDirection);
         }
     }
 
