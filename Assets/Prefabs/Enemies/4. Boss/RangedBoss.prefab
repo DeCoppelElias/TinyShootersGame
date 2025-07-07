@@ -185,13 +185,14 @@ GameObject:
   m_Component:
   - component: {fileID: 714806141019521048}
   - component: {fileID: 2514064231762690244}
-  - component: {fileID: 6798595562060821363}
-  - component: {fileID: 9087488915836476857}
-  - component: {fileID: 3942658835709379017}
   - component: {fileID: 5830200549234116787}
-  - component: {fileID: -827839642670681394}
+  - component: {fileID: 5801558176621113447}
   - component: {fileID: -2126329393386220075}
+  - component: {fileID: 9087488915836476857}
+  - component: {fileID: 2661245408951144127}
+  - component: {fileID: 6798595562060821363}
   - component: {fileID: 8935053601394649553}
+  - component: {fileID: 3942658835709379017}
   m_Layer: 0
   m_Name: RangedBoss
   m_TagString: Enemy
@@ -238,84 +239,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &6798595562060821363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4618751346984361700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaf7ee882e3e9b43ac7d2a8a0cd8dd0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseStats: {fileID: 11400000, guid: ab2517ae3b0a54e47bd481e6f960bf3a, type: 2}
-  runtimeStats:
-    damage: 5
-    range: 1
-    pierce: 1
-    split: 1
-    fan: 1
-    bulletSize: 1
-    bulletVelocity: 6
-    attackCooldown: 0.5
-    explode: 0
-    explodeBulletAmount: 0
-    explodeDamagePercentage: 0.5
-    explodeBulletRange: 1
-    explodeBulletSize: 0.5
-    explodeBulletVelocity: 6
-    shootingMoveSpeed: 2
-  shooting: 0
-  workWithRealTime: 0
-  bulletPrefab: {fileID: 3904042468818896706, guid: 7709d2fb16adc5b44aa98577c92a9be6, type: 3}
-  firePoint: {fileID: 1108159613198680592}
-  owner: {fileID: 0}
-  onShoot:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &9087488915836476857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4618751346984361700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  customSize: 0
-  size: 0
-  stepSize: 0.25
-  maxIterations: 1000
-  displayLineRenderer: {fileID: 0}
---- !u!114 &3942658835709379017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4618751346984361700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64a6141b21c1b02428e1943a31d954b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerReflectShield: {fileID: 4275745250244666332, guid: 53734d34131d8494d867a7fc2439dac7, type: 3}
-  enemyReflectShield: {fileID: 9205213379581261609, guid: 2432446cfb8d33641b3442a38d3924a6, type: 3}
-  reflectShieldState: 0
-  reflectShieldDuration: 2
-  reflectShieldCooldown: 8
-  reflectBulletSprite: {fileID: 0}
-  onPerformed:
-    m_PersistentCalls:
-      m_Calls: []
-  onReady:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!58 &5830200549234116787
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -332,7 +255,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.4
---- !u!114 &-827839642670681394
+--- !u!114 &5801558176621113447
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -341,7 +264,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4618751346984361700}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cef1dd1f90f86744b811a990fc4971f, type: 3}
+  m_Script: {fileID: 11500000, guid: b0382c258546ae9499fbb40838f43f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   entityState: 0
@@ -381,6 +304,72 @@ MonoBehaviour:
   debug: 0
   shootingMoveSpeedReduction: 0.8
   movementTargetDistance: 0.8
+--- !u!114 &9087488915836476857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4618751346984361700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customSize: 0
+  size: 0
+  stepSize: 0.25
+  maxIterations: 1000
+  displayLineRenderer: {fileID: 0}
+--- !u!114 &2661245408951144127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4618751346984361700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88ff3d965eec184b81a3ea3ce7b7483, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6798595562060821363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4618751346984361700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddaf7ee882e3e9b43ac7d2a8a0cd8dd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseStats: {fileID: 11400000, guid: ab2517ae3b0a54e47bd481e6f960bf3a, type: 2}
+  runtimeStats:
+    damage: 5
+    range: 1
+    pierce: 1
+    split: 1
+    fan: 1
+    bulletSize: 1
+    bulletVelocity: 6
+    attackCooldown: 0.5
+    explode: 0
+    explodeBulletAmount: 0
+    explodeDamagePercentage: 0.5
+    explodeBulletRange: 1
+    explodeBulletSize: 0.5
+    explodeBulletVelocity: 6
+    shootingMoveSpeed: 2
+  shooting: 0
+  workWithRealTime: 0
+  bulletColor: {r: 1, g: 1, b: 1, a: 1}
+  firepoints: []
+  owner: {fileID: 0}
+  onShoot:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8935053601394649553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -395,6 +384,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customBulletTrigger: 0
   bulletTrigger: {fileID: 0}
+--- !u!114 &3942658835709379017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4618751346984361700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64a6141b21c1b02428e1943a31d954b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerReflectShield: {fileID: 4275745250244666332, guid: 53734d34131d8494d867a7fc2439dac7, type: 3}
+  enemyReflectShield: {fileID: 9205213379581261609, guid: 2432446cfb8d33641b3442a38d3924a6, type: 3}
+  reflectShieldState: 0
+  reflectShieldDuration: 2
+  reflectShieldCooldown: 8
+  reflectBulletSprite: {fileID: 0}
+  onPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReady:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &2282893969619620940
 PrefabInstance:
   m_ObjectHideFlags: 0

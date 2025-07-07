@@ -12,10 +12,6 @@ public class HeavyAbility : ClassAbility
     {
         shootingAbility.ShootBullet(10, 2, 5, 10, shootingAbility.GetDamage() * 2);
 
-        // Add knockback after shooting
-        Vector3 knockbackDirection = (player.transform.position - shootingAbility.firePoint.position).normalized;
-        playerMovement.ApplyKnockBack(knockbackDirection, 8, 1.5f);
-
         // Add screen shake after use
         if (this.cameraManager != null) cameraManager.ShakeScreen();
     }

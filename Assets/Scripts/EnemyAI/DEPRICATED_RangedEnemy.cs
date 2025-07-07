@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(ShootingAbility))]
-public class RangedEnemy : Enemy
+public class DEPRICATED_RangedEnemy : Enemy
 {
     private SpriteRenderer enemySprite;
     private ShootingAbility shootingAbility;

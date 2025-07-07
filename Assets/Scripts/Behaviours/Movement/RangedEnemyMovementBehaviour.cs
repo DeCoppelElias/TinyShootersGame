@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(RangedEnemy))]
+[RequireComponent(typeof(Enemy), typeof(ShootingAbility))]
 public class RangedEnemyMovementBehaviour : MovementBehaviour
 {
-    private RangedEnemy owner;
-    private ShootingAbility ownerShootingAbility;
+    private Enemy owner;
+    private ShootingAbility shootingAbility;
 
     [Header("Ranged Movement Settings")]
     [SerializeField] private float shootingMoveSpeedReduction = 0.8f;
@@ -16,8 +16,8 @@ public class RangedEnemyMovementBehaviour : MovementBehaviour
     {
         base.Start();
 
-        owner = GetComponent<RangedEnemy>();
-        ownerShootingAbility = owner.GetComponent<ShootingAbility>();
+        owner = GetComponent<Enemy>();
+        shootingAbility = GetComponent<ShootingAbility>();
     }
 
     // Update is called once per frame
@@ -25,25 +25,26 @@ public class RangedEnemyMovementBehaviour : MovementBehaviour
     {
         base.Update();
 
-        if (owner != null && owner.GetTargetPlayer() != null)
-        {
-            Player player = owner.GetTargetPlayer();
+        if (owner == null) return;
+        if (shootingAbility == null) return;
 
-            // If player is not shootable => walk towards player
-            if (!owner.IsPlayerShootable())
+        Player player = owner.GetTargetPlayer();
+        if (player == null) return;
+
+        // If player is not shootable => walk towards player
+        if (!shootingAbility.IsShootable(this.transform.position, player.transform.position))
+        {
+            WalkToPosition(player.transform.position);
+        }
+        else
+        {
+            if (Vector3.Distance(this.transform.position, player.transform.position) > movementTargetDistance * shootingAbility.GetRange())
             {
-                WalkToPosition(player.transform.position);
+                WalkToPosition(player.transform.position, shootingMoveSpeedReduction);
             }
             else
             {
-                if (Vector3.Distance(this.transform.position, player.transform.position) > movementTargetDistance * ownerShootingAbility.GetRange())
-                {
-                    WalkToPosition(player.transform.position, shootingMoveSpeedReduction);
-                }
-                else
-                {
-                    StopWalking();
-                }
+                StopWalking();
             }
         }
     }

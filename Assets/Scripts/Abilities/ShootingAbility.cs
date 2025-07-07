@@ -18,18 +18,15 @@ public class ShootingAbility : MonoBehaviour
 
     public bool workWithRealTime = false;
 
-    public GameObject bulletPrefab;
-    private Color bulletColor = Color.white;
-    public Transform firePoint;
+    [SerializeField] private Color bulletColor = Color.white;
+    public List<Transform> firepoints = new List<Transform>();
+    private List<ParticleSystem> muzzleFlashes = new List<ParticleSystem>();
 
     public Entity owner;
 
     public UnityEvent onShoot;
 
     private BulletManager bulletManager;
-
-    private ParticleSystem muzzleFlash;
-    private Rigidbody2D rb;
 
     private void Start()
     {
@@ -39,8 +36,31 @@ public class ShootingAbility : MonoBehaviour
 
         if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
 
-        this.muzzleFlash = firePoint.GetComponentInChildren<ParticleSystem>();
-        this.rb = GetComponent<Rigidbody2D>();
+        InitializeFirepoints();
+        InitializeMuzzleFlashes();
+    }
+
+    private void InitializeFirepoints()
+    {
+        Transform spriteTransform = this.transform.Find("Sprite");
+        if (spriteTransform == null) return;
+
+        this.firepoints.Clear();
+        for (int i = 0; i < spriteTransform.childCount; i++)
+        {
+            Transform firepointTransform = spriteTransform.GetChild(i);
+            this.firepoints.Add(firepointTransform);
+        }
+    }
+
+    private void InitializeMuzzleFlashes()
+    {
+        this.muzzleFlashes.Clear();
+        foreach (Transform firepoint in this.firepoints)
+        {
+            ParticleSystem muzzleFlash = firepoint.GetComponentInChildren<ParticleSystem>();
+            this.muzzleFlashes.Add(muzzleFlash);
+        }
     }
 
     private void Update()
@@ -68,17 +88,40 @@ public class ShootingAbility : MonoBehaviour
         lastAttack = Time.time;
         lastAttackRealTime = Time.realtimeSinceStartup;
 
+        Shoot();
+
+        if (onShoot != null) onShoot.Invoke();
+    }
+
+    private void Shoot()
+    {
+        for (int i = 0; i < this.firepoints.Count; i++)
+        {
+            Transform firepoint = this.firepoints[i];
+            ShootFromFirepoint(firepoint);
+
+            // Trigger animation
+            PlayShootAnimation();
+
+            // Play muzzle flash effect
+            ParticleSystem muzzleFlash = this.muzzleFlashes[i];
+            if (muzzleFlash != null) muzzleFlash.Play();
+        }
+    }
+
+    private void ShootFromFirepoint(Transform firepoint)
+    {
         float fan = this.runtimeStats.Fan;
         float split = this.runtimeStats.Split;
         if (fan % 2 == 1)
         {
-            CreateBulletGroup(split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 0);
+            CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 0);
             fan--;
             while (fan > 0)
             {
-                CreateBulletGroup(split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 45);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 45);
                 fan--;
-                CreateBulletGroup(split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, -45);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, -45);
                 fan--;
             }
         }
@@ -86,31 +129,28 @@ public class ShootingAbility : MonoBehaviour
         {
             while (fan > 0)
             {
-                CreateBulletGroup(split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 22.5f);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 22.5f);
                 fan--;
-                CreateBulletGroup(split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, -22.5f);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, -22.5f);
                 fan--;
             }
         }
-
-        PlayShootAnimation();
-
-        if (onShoot != null) onShoot.Invoke();
     }
-    public void CreateBulletGroup(float split, float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, float rotation)
+
+    private void CreateBulletGroup(Transform firepoint, float split, float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, float rotation)
     {
         if (split % 2 != 0)
         {
-            CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position, rotation);
+            CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position, rotation);
             split--;
             int counter = 1;
             while (split != 0)
             {
-                CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
                 split--;
                 if (split != 0)
                 {
-                    CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(-firePoint.up.y, firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                    CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(-firepoint.up.y, firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
                     split--;
                 }
                 counter++;
@@ -121,31 +161,28 @@ public class ShootingAbility : MonoBehaviour
             int counter = 0;
             while (split != 0)
             {
-                CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.25f + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.25f + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
                 split--;
                 if (split != 0)
                 {
-                    CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(-firePoint.up.y, firePoint.up.x, 0) * 0.25f + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                    CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(-firepoint.up.y, firepoint.up.x, 0) * 0.25f + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
                     split--;
                 }
                 counter++;
             }
         }
     }
-    public void CreateBullet(float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, Vector3 position, float rotation)
+
+    private void CreateBullet(Transform firepoint, float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, Vector3 position, float rotation)
     {
-        // Create Bullet
         Bullet bullet = bulletManager.TryGetBullet();
         if (bullet == null) return;
         bullet.AssignOnComplete(() => bulletManager.ReturnBullet(bullet));
 
-        Quaternion finalRotation = Quaternion.Euler(0, 0, firePoint.eulerAngles.z + rotation);
+        Quaternion finalRotation = Quaternion.Euler(0, 0, firepoint.eulerAngles.z + rotation);
         bullet.Initialize(owner.tag, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
         if (this.runtimeStats.Explode) bullet.InitializeSplitting(this.runtimeStats.ExplodeBulletAmount, this.runtimeStats.ExplodeBulletRange, this.runtimeStats.ExplodeBulletSize, this.runtimeStats.ExplodeBulletVelocity, this.runtimeStats.ExplodeDamagePercentage);
         bullet.Shoot();
-
-        // Play Muzzle Flash
-        if (this.muzzleFlash != null) muzzleFlash.Play();
 
         // Give Knockback to self
         Vector2 knockbackDirection = -(Vector2)(finalRotation * Vector3.up);
@@ -155,7 +192,18 @@ public class ShootingAbility : MonoBehaviour
 
     public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage)
     {
-        CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
+        for (int i = 0; i < this.firepoints.Count; i++)
+        {
+            Transform firepoint = this.firepoints[i];
+            CreateBullet(firepoint, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firepoint.position, 0);
+
+            // Trigger animation
+            PlayShootAnimation();
+
+            // Play muzzle flash effect
+            ParticleSystem muzzleFlash = this.muzzleFlashes[i];
+            if (muzzleFlash != null) muzzleFlash.Play();
+        }
     }
 
     public void ApplyPlayerStats(PlayerStats playerStats)
@@ -221,5 +269,40 @@ public class ShootingAbility : MonoBehaviour
     public float GetRange()
     {
         return this.runtimeStats.Range;
+    }
+
+    public bool IsShootable(Vector3 from, Vector3 to)
+    {
+        Vector3 raycastDirection = (to - from).normalized;
+        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, Vector3.Distance(from, to));
+        if (RaycastContainsWall(rays)) return false;
+
+        // Perpendicular vectors
+        Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
+        Vector3 perpendicular2 = new Vector3(raycastDirection.y, -raycastDirection.x, raycastDirection.z);
+
+        Vector3 newFrom1 = from + (this.runtimeStats.BulletSize * perpendicular1);
+        raycastDirection = (to - newFrom1).normalized;
+        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, Vector3.Distance(newFrom1, to));
+        if (RaycastContainsWall(rays)) return false;
+
+        Vector3 newFrom2 = from + (this.runtimeStats.BulletSize * perpendicular2);
+        raycastDirection = (to - newFrom2).normalized;
+        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, Vector3.Distance(newFrom2, to));
+        if (RaycastContainsWall(rays)) return false;
+
+        return true;
+    }
+
+    protected bool RaycastContainsWall(RaycastHit2D[] rays)
+    {
+        foreach (RaycastHit2D ray in rays)
+        {
+            if (ray.transform.CompareTag("Wall"))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
