@@ -1,6 +1,6 @@
 {
     "roomLocation": {
-            "x": 0,
+            "x": -26,
             "y": 0,
             "z": 0
     },
@@ -10,11 +10,11 @@
         "z": -10
     },
     "playerSpawnLocation": {
-        "x": 0,
+        "x": -3,
         "y": 0,
         "z": 0
     },
-    "roomWidth":  9.5,
+    "roomWidth":  11.5,
     "roomHeight": 5.5,
     "spawnLocations": [
         { "x": 7.5, "y": 3.5, "z": 0 }, { "x": 7.5, "y": 2.5, "z": 0 }, { "x": 6.5, "y": 3.5, "z": 0 }, { "x": 6.5, "y": 2.5, "z": 0 },
@@ -27,8 +27,8 @@
             "waveNumber": 1,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 1
+                    "type": "Spider",
+                    "amount": 2
                 }
             ]
         },
@@ -36,8 +36,8 @@
             "waveNumber": 2,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 2
+                    "type": "Spider",
+                    "amount": 3
                 }
             ]
         },
@@ -45,8 +45,12 @@
             "waveNumber": 3,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
+                    "type": "Spider",
                     "amount": 3
+                },
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 1
                 }
             ]
         },

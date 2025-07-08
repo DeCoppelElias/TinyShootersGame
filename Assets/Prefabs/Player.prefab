@@ -348,8 +348,8 @@ MonoBehaviour:
     shootingMoveSpeed: 2
   shooting: 0
   workWithRealTime: 0
-  bulletPrefab: {fileID: 4050574258624113803, guid: ae862bf17e6f19043a7b1d777ddd48da, type: 3}
-  firePoint: {fileID: 7383428955508614188}
+  bulletColor: {r: 1, g: 1, b: 1, a: 1}
+  firepoints: []
   owner: {fileID: 0}
   onShoot:
     m_PersistentCalls:
@@ -856,7 +856,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_InstanceId
-      value: -12950
+      value: -26824
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
+      propertyPath: m_ShapePath.Array.data[7].x
+      value: -0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
+      propertyPath: m_ShapePathHash
+      value: -733496043
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
+      propertyPath: m_ShapePath.Array.data[0].x
+      value: -0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
+      propertyPath: m_ShapePath.Array.data[2].x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
+      propertyPath: m_ShapePath.Array.data[4].x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
+      propertyPath: m_ShapePath.Array.data[3].x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
+      propertyPath: m_ShapePath.Array.data[6].x
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8478164273474325271, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_Name

@@ -17,6 +17,8 @@ public class WaveManager : MonoBehaviour
     private Dictionary<int,Level> levels = new Dictionary<int,Level>();
 
     [Header("Enemy Prefabs")]
+    [SerializeField] private GameObject spider;
+    [SerializeField] private GameObject plus;
     [SerializeField] private GameObject baseMeleeEnemyEasy;
     [SerializeField] private GameObject baseRangedEnemyEasy;
     [SerializeField] private GameObject fastEnemyEasy;
@@ -276,7 +278,16 @@ public class WaveManager : MonoBehaviour
 
     public GameObject StringToPrefab(string s)
     {
-        if (s == "MeleeEnemy")
+        if (s == "Spider")
+        {
+            return spider;
+        }
+        if (s == "Plus")
+        {
+            return plus;
+        }
+
+        else if (s == "MeleeEnemy")
         {
             return baseMeleeEnemyEasy;
         }

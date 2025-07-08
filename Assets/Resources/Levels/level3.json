@@ -1,7 +1,7 @@
 {
     "roomLocation": {
             "x": 0,
-            "y": 0,
+            "y": 22,
             "z": 0
     },
     "cameraLocation": {
@@ -17,10 +17,10 @@
     "roomWidth":  9.5,
     "roomHeight": 5.5,
     "spawnLocations": [
-        { "x": 7.5, "y": 3.5, "z": 0 }, { "x": 7.5, "y": 2.5, "z": 0 }, { "x": 6.5, "y": 3.5, "z": 0 }, { "x": 6.5, "y": 2.5, "z": 0 },
-        { "x": -7.5, "y": 3.5, "z": 0 }, { "x": -7.5, "y": 2.5, "z": 0 }, { "x": -6.5, "y": 3.5, "z": 0 }, { "x": -6.5, "y": 2.5, "z": 0 },
-        { "x": 7.5, "y": -3.5, "z": 0 }, { "x": 7.5, "y": -2.5, "z": 0 }, { "x": 6.5, "y": -3.5, "z": 0 }, { "x": 6.5, "y": -2.5, "z": 0 },
-        { "x": -7.5, "y": -3.5, "z": 0 }, { "x": -7.5, "y": -2.5, "z": 0 }, { "x": -6.5, "y": -3.5, "z": 0 }, { "x": -6.5, "y": -2.5, "z": 0 }
+        { "x": -7.5, "y": -3.5, "z": 0 }, { "x": -6.5, "y": -3.5, "z": 0 }, { "x": 6.5, "y": -3.5, "z": 0 }, { "x": 7.5, "y": -3.5, "z": 0 },
+        { "x": -7.5, "y": 3.5, "z": 0 }, { "x": -6.5, "y": 3.5, "z": 0 }, { "x": 6.5, "y": 3.5, "z": 0 }, { "x": 7.5, "y": 3.5, "z": 0 },
+        { "x": -7.5, "y": -2.5, "z": 0 }, { "x": -6.5, "y": -2.5, "z": 0 }, { "x": 6.5, "y": -2.5, "z": 0 }, { "x": 7.5, "y": -2.5, "z": 0 },
+        { "x": -7.5, "y": 2.5, "z": 0 }, { "x": -6.5, "y": 2.5, "z": 0 }, { "x": 6.5, "y": 2.5, "z": 0 }, { "x": 7.5, "y": 2.5, "z": 0 }
     ],
     "waves": [
         {
@@ -28,7 +28,7 @@
             "enemies": [
                 {
                     "type": "MeleeEnemy",
-                    "amount": 1
+                    "amount": 6
                 }
             ]
         },
@@ -37,6 +37,10 @@
             "enemies": [
                 {
                     "type": "MeleeEnemy",
+                    "amount": 3
+                },
+                {
+                    "type": "DodgeMeleeEnemy",
                     "amount": 2
                 }
             ]
@@ -45,8 +49,8 @@
             "waveNumber": 3,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 3
+                    "type": "DodgeMeleeEnemy",
+                    "amount": 4
                 }
             ]
         },
@@ -58,8 +62,8 @@
                     "amount": 3
                 },
                 {
-                    "type": "RangedEnemy",
-                    "amount": 1
+                    "type": "ChargeMeleeEnemy",
+                    "amount": 2
                 }
             ]
         },
@@ -67,12 +71,8 @@
             "waveNumber": 5,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 3
-                },
-                {
-                    "type": "RangedEnemy",
-                    "amount": 2
+                    "type": "ChargeMeleeEnemy",
+                    "amount": 4
                 }
             ]
         },
@@ -80,8 +80,12 @@
             "waveNumber": 6,
             "enemies": [
                 {
-                    "type": "RangedEnemy",
-                    "amount": 4
+                    "type": "DodgeMeleeEnemy",
+                    "amount": 3
+                },
+                {
+                    "type": "ChargeMeleeEnemy",
+                    "amount": 3
                 }
             ]
         },
@@ -89,7 +93,11 @@
             "waveNumber": 7,
             "enemies": [
                 {
-                    "type": "FastEnemy",
+                    "type": "ShotgunEnemy",
+                    "amount": 3
+                },
+                {
+                    "type": "DodgeMeleeEnemy",
                     "amount": 3
                 }
             ]
@@ -98,16 +106,16 @@
             "waveNumber": 8,
             "enemies": [
                 {
-                    "type": "FastEnemy",
-                    "amount": 1
+                    "type": "ShotgunEnemy",
+                    "amount": 3
                 },
                 {
-                    "type": "RangedEnemy",
+                    "type": "DodgeMeleeEnemy",
                     "amount": 2
                 },
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 1
+                    "type": "ChargeMeleeEnemy",
+                    "amount": 2
                 }
             ]
         },
@@ -115,11 +123,15 @@
             "waveNumber": 9,
             "enemies": [
                 {
-                    "type": "FastEnemy",
+                    "type": "ShotgunEnemy",
                     "amount": 2
                 },
                 {
-                    "type": "RangedEnemy",
+                    "type": "DodgeMeleeEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "ChargeMeleeEnemy",
                     "amount": 2
                 },
                 {
@@ -132,8 +144,14 @@
             "waveNumber": 10,
             "enemies": [
                 {
-                    "type": "SplitBoss",
-                    "amount": 1
+                    "type": "RangedBoss",
+                    "amount": 1,
+                    "customSpawn": true,
+                    "customSpawnLocation": {
+                        "x": 5.5,
+                        "y": 0.5,
+                        "z": 0
+                    }
                 }
             ],
             "boss": true

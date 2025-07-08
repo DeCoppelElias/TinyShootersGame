@@ -307,7 +307,7 @@ MonoBehaviour:
   - {x: -0.5, y: 0, z: 0}
   m_ShapePathHash: -300134306
   m_Mesh: {fileID: 0}
-  m_InstanceId: -3432
+  m_InstanceId: 61352
 --- !u!1 &8242213477927556755
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,7 +323,7 @@ GameObject:
   - component: {fileID: 201740266062877922}
   - component: {fileID: 5869828916203284582}
   m_Layer: 0
-  m_Name: IdleEnemies
+  m_Name: Spider
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -359,8 +359,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityState: 0
-  maxHealth: 100
-  health: 100
+  maxHealth: 50
+  health: 50
   contactDamage: 10
   contactHitCooldown: 1
   onDeathScore: 50
@@ -375,8 +375,6 @@ MonoBehaviour:
   spawnBody: 1
   debug: 0
   knockbackImmune: 0
-  damagePixelPrefab: {fileID: 4646526515456893302, guid: 9f57144ea1e9d1b46a0297c6c3428fd7, type: 3}
-  scoreDisplayPrefab: {fileID: 5739372400424013240, guid: d39106598a90e864a8fd9921f79b3a5f, type: 3}
 --- !u!50 &1506833388709921254
 Rigidbody2D:
   serializedVersion: 4
@@ -389,7 +387,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 30
   m_LinearDrag: 2
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -440,7 +438,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8242213477927556755}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e2d5fa15e1ac1a4d888d290132d882f, type: 3}
+  m_Script: {fileID: 11500000, guid: 33ed1a7dee81deb419677f4a064715db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 2
@@ -451,5 +449,5 @@ MonoBehaviour:
   debug: 0
   minimumMovementCooldown: 1
   maximumMovementCooldown: 2
-  minimumForceApplied: 500
-  maximumForceApplied: 1500
+  minimumForceApplied: 3500
+  maximumForceApplied: 4000
