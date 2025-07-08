@@ -91,7 +91,7 @@ public abstract class MovementBehaviour : MonoBehaviour
             // If there is an obstacle blocking the way, try to find a path to player and change state
             if (pathFinder.IsObstacleInBetween(transform.position, position, 1))
             {
-                currentPath = pathFinder.FindShortestPath(transform.position, position);
+                currentPath = pathFinder.FindPath(transform.position, position);
                 lastPathFindingRefresh = Time.time;
 
                 // There is an existing path
@@ -128,7 +128,7 @@ public abstract class MovementBehaviour : MonoBehaviour
                 // Refresh route every few seconds
                 if (Time.time - lastPathFindingRefresh > pathFindingRefreshCooldown)
                 {
-                    currentPath = pathFinder.FindShortestPath(transform.position, position);
+                    currentPath = pathFinder.FindPath(transform.position, position);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path
@@ -156,7 +156,7 @@ public abstract class MovementBehaviour : MonoBehaviour
                 }
                 else
                 {
-                    currentPath = pathFinder.FindShortestPath(transform.position, position);
+                    currentPath = pathFinder.FindPath(transform.position, position);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path

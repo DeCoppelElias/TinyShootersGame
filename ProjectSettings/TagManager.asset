@@ -27,9 +27,9 @@ TagManager:
   - 
   - UIPlayer1
   - UIPlayer2
-  - 
-  - 
-  - 
+  - Wall
+  - Pit
+  - Pushable
   - 
   - 
   - 
