@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -5043753967661619660}
   - component: {fileID: 7856494755013612870}
   - component: {fileID: 6573535081637884499}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: HorizontalBox
   m_TagString: Object
   m_Icon: {fileID: 0}
