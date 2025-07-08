@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6573535081637884499}
   m_Layer: 0
   m_Name: HorizontalBox
-  m_TagString: Box
+  m_TagString: Object
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,7 +98,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 30
+  m_Mass: 100
   m_LinearDrag: 10
   m_AngularDrag: 0.05
   m_GravityScale: 0

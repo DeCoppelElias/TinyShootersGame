@@ -139,17 +139,17 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("Wall"))
         {
-            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.color);
             Complete();
             return;
         }
 
-        if (collision.CompareTag("Box"))
+        if (collision.CompareTag("Object"))
         {
-            Box box = collision.GetComponent<Box>();
-            if (box) box.GiveKnockback(damage, rb.velocity.normalized);
+            Object obj = collision.GetComponent<Object>();
+            if (obj != null) obj.OnBulletHit(damage, rb.velocity.normalized);
 
-            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.color);
             Complete();
             return;
         }
@@ -162,7 +162,7 @@ public class Bullet : MonoBehaviour
             pierce--;
             if (pierce == 0)
             {
-                GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, this.color);
+                GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.color);
                 Complete();
             }
             else if (splitOnHit)

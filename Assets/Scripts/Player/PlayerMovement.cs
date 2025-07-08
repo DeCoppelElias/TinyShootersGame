@@ -34,7 +34,11 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Camera customCamera;
 
-    private float lastShot;
+    private enum TrailState { Idle, Trailing}
+    private TrailState trailState = TrailState.Idle;
+    private Vector3 previousTrailPosition;
+    private Vector3 trailStartPosition;
+    private ParticleManager particleManager;
 
     private void Start()
     {
@@ -48,6 +52,9 @@ public class PlayerMovement : MonoBehaviour
         this.currentVelocity = moveSpeed;
 
         this.spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
+
+        this.previousTrailPosition = this.transform.position;
+        this.particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }
 
     // Update is called once per frame
@@ -55,6 +62,25 @@ public class PlayerMovement : MonoBehaviour
     {
         Move();
         Look();
+        // DisplayTrail();
+    }
+
+    private void DisplayTrail()
+    {
+        if (trailState == TrailState.Idle && Vector3.Distance(this.transform.position, this.previousTrailPosition) > 2)
+        {
+            trailState = TrailState.Trailing;
+            trailStartPosition = this.transform.position;
+        }
+        else if (trailState == TrailState.Trailing && Vector3.Distance(this.transform.position, trailStartPosition) > 0.5f)
+        {
+            Vector3 trailDirection = (this.transform.position - trailStartPosition).normalized;
+            Quaternion trailRotation = Quaternion.FromToRotation(Vector3.up, trailDirection);
+            this.particleManager.CreateParticle(ParticleManager.ParticleType.Trail, this.transform.position, trailRotation, player.Color);
+
+            trailState = TrailState.Idle;
+            previousTrailPosition = this.transform.position;
+        }
     }
 
     private void Move()

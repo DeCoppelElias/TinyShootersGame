@@ -29,6 +29,8 @@ public class Player : Entity
     private ParticleManager particleManager;
     private PlayerMovement playerMovement;
 
+    public Color Color { get; set; }
+
     public override void StartEntity()
     {
         base.StartEntity();
@@ -212,7 +214,7 @@ public class Player : Entity
 
         for (int i = 0; i < amount; i++)
         {
-            particleManager.CreateParticle(particleType, transform.position, Color.blue);
+            particleManager.CreateParticle(particleType, transform.position, Quaternion.identity, Color.blue);
         }
     }
 
@@ -225,5 +227,7 @@ public class Player : Entity
     {
         if (shootingAbility != null) shootingAbility.SetBulletColor(color);
         if (dashAbility != null) dashAbility.SetDashColor(color);
+
+        this.Color = color;
     }
 }

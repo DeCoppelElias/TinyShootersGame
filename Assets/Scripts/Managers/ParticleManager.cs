@@ -6,7 +6,7 @@ using UnityEngine;
 public class ParticleManager : MonoBehaviour
 {
     [SerializeField] private int particleLimit = 100;
-    public enum ParticleType { Damage, Blood, BulletExplosion}
+    public enum ParticleType { Damage, Blood, BulletExplosion, Trail}
 
     [SerializeField] public GameObject scoreTextPrefab;
 
@@ -20,56 +20,13 @@ public class ParticleManager : MonoBehaviour
         }
     }
 
-    public GameObject CreateParticle(ParticleType particleType, Vector3 position, Color color)
+    public GameObject CreateParticle(ParticleType particleType, Vector3 position, Quaternion rotation, Color color)
     {
-        if (particleType == ParticleType.Damage)
-        {
-            return CreateDamageParticle(position, color);
-        }
-        else if (particleType == ParticleType.Blood)
-        {
-            return CreateBloodParticle(position, color);
-        }
-        else if (particleType == ParticleType.BulletExplosion)
-        {
-            return CreateBulletExplosion(position, color);
-        }
-        return null;
-    }
-
-    private GameObject CreateDamageParticle(Vector3 position, Color color)
-    {
-        ParticlePool particlePool = GetParticlePool(ParticleType.Damage);
-        DamageParticle particle = (DamageParticle)particlePool.GetParticle();
+        ParticlePool particlePool = GetParticlePool(particleType);
+        Particle particle = particlePool.GetParticle();
         if (particle == null) return null;
 
-        particle.Initialise(position, color);
-        particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
-        particle.Play();
-
-        return particle.gameObject;
-    }
-
-    private GameObject CreateBloodParticle(Vector3 position, Color color)
-    {
-        ParticlePool particlePool = GetParticlePool(ParticleType.Blood);
-        BloodParticle particle = (BloodParticle)particlePool.GetParticle();
-        if (particle == null) return null;
-
-        particle.Initialise(position, color);
-        particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
-        particle.Play();
-
-        return particle.gameObject;
-    }
-
-    private GameObject CreateBulletExplosion(Vector3 position, Color color)
-    {
-        ParticlePool particlePool = GetParticlePool(ParticleType.BulletExplosion);
-        BulletExplosionParticle particle = (BulletExplosionParticle)particlePool.GetParticle();
-        if (particle == null) return null;
-
-        particle.Initialise(position, color);
+        particle.Initialise(position, rotation, color);
         particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
         particle.Play();
 

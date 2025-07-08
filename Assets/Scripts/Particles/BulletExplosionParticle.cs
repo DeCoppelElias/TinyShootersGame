@@ -11,7 +11,7 @@ public class BulletExplosionParticle : Particle
         StartCoroutine(CompleteAfterAnimation(animationTime));
     }
 
-    public void Initialise(Vector3 position, Color color)
+    public override void Initialise(Vector3 position, Quaternion rotation, Color color)
     {
         this.transform.position = position;
         this.GetComponent<SpriteRenderer>().color = color;

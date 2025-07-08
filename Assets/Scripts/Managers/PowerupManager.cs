@@ -14,14 +14,14 @@ public class PowerupManager : MonoBehaviour
 
     private void LoadPowerups()
     {
-        Object[] commonPowerupsObjects = Resources.LoadAll("Powerups/Common", typeof(Powerup));
-        foreach (Object powerup in commonPowerupsObjects)
+        UnityEngine.Object[] commonPowerupsObjects = Resources.LoadAll("Powerups/Common", typeof(Powerup));
+        foreach (UnityEngine.Object powerup in commonPowerupsObjects)
         {
             commonPowerups.Add((Powerup)powerup);
         }
 
-        Object[] uncommonPowerupsObjects = Resources.LoadAll("Powerups/Uncommon", typeof(Powerup));
-        foreach (Object powerup in uncommonPowerupsObjects)
+        UnityEngine.Object[] uncommonPowerupsObjects = Resources.LoadAll("Powerups/Uncommon", typeof(Powerup));
+        foreach (UnityEngine.Object powerup in uncommonPowerupsObjects)
         {
             uncommonPowerups.Add((Powerup)powerup);
         }

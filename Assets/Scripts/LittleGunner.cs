@@ -63,7 +63,7 @@ public class LittleGunner : MonoBehaviour
 
     private Entity FindTarget()
     {
-        Entity[] entities = Object.FindObjectsOfType<Entity>();
+        Entity[] entities = UnityEngine.Object.FindObjectsOfType<Entity>();
 
         Entity closestPlayer = null;
         float closestDistance = float.MaxValue;

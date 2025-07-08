@@ -37,7 +37,7 @@ public class BloodParticle : Particle
         }
     }
 
-    public void Initialise(Vector3 position, Color color)
+    public override void Initialise(Vector3 position, Quaternion rotation, Color color)
     {
         int childCount = this.transform.childCount;
         if (childCount == 0) return;
