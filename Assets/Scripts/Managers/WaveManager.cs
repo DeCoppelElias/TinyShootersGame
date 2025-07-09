@@ -52,6 +52,7 @@ public class WaveManager : MonoBehaviour
     private UIManager uiManager;
     private GameStateManager gameStateManager;
     private ScoreManager scoreManager;
+    private CameraManager cameraManager;
     private Player player;
 
     private float lastWaveTime = 0;
@@ -67,6 +68,7 @@ public class WaveManager : MonoBehaviour
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
         scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
+        cameraManager = GameObject.Find("CameraManager").GetComponent<CameraManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
 
         SetupCurrentLevel();
@@ -163,7 +165,7 @@ public class WaveManager : MonoBehaviour
     {
         Level level = GetLevel(this.levelIndex);
 
-        Camera.main.transform.position = level.GetCameraLocation();
+        cameraManager.TransitionCamera(level.GetCameraLocation());
         player.transform.position = level.GetPlayerSpawnLocation();
     }
 
