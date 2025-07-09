@@ -12,7 +12,7 @@ public class PathFinding : MonoBehaviour
 
     [Header("Pathfinding settings")]
     [SerializeField] private float stepSize = 0.25f;
-    [SerializeField] private int maxIterations = 1000;
+    [SerializeField] private int maxIterations = 10000;
 
     [Header("Display settings")]
     [SerializeField] private LineRenderer displayLineRenderer;
@@ -30,6 +30,10 @@ public class PathFinding : MonoBehaviour
             if (collider == null) throw new Exception("Cannot find size because collider is missing");
             diameter = collider.bounds.size.x;
         }
+
+        // Initial Pathfinding settings
+        this.stepSize = 0.25f;
+        this.maxIterations = 10000;
 
         waveManager = GameObject.Find("WaveManager")?.GetComponent<WaveManager>();
     }
@@ -320,23 +324,6 @@ public class PathFinding : MonoBehaviour
         LayerMask obstacleLayerMask = LayerMask.GetMask("Wall", "Pit", "Pushable");
         RaycastHit2D hit = Physics2D.CircleCast(from, radius, direction, distance, obstacleLayerMask);
         return hit.collider != null;
-    }
-
-    /// <summary>
-    /// Checks whether a raycast has hit an obstacle.
-    /// </summary>
-    /// <param name="rays"></param>
-    /// <returns></returns>
-    public bool RaycastHitsObstacle(RaycastHit2D[] rays)
-    {
-        foreach (RaycastHit2D ray in rays)
-        {
-            if (ray.transform.CompareTag("Wall") || ray.transform.CompareTag("Pit"))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     public float GetSize()

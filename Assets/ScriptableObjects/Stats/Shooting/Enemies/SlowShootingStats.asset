@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ded07073f0ab4f46a3a76ea3c431197, type: 3}
   m_Name: SlowShootingStats
   m_EditorClassIdentifier: 
-  damage: 5
+  damage: 10
   range: 5
   pierce: 1
   split: 1

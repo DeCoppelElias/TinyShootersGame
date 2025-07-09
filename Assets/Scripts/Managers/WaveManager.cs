@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Sherbert.Framework.Generic;
 
 public class WaveManager : MonoBehaviour
 {
@@ -17,26 +18,9 @@ public class WaveManager : MonoBehaviour
     private Dictionary<int,Level> levels = new Dictionary<int,Level>();
 
     [Header("Enemy Prefabs")]
-    [SerializeField] private GameObject spider;
-    [SerializeField] private GameObject plus;
-    [SerializeField] private GameObject baseMeleeEnemyEasy;
-    [SerializeField] private GameObject baseRangedEnemyEasy;
-    [SerializeField] private GameObject fastEnemyEasy;
-    [SerializeField] private GameObject shotgunEnemyMedium;
-    [SerializeField] private GameObject gunnerEnemyMedium;
-    [SerializeField] private GameObject tripleEnemyMedium;
-    [SerializeField] private GameObject heavyEnemyMedium;
-    [SerializeField] private GameObject sniperEnemyMedium;
-    [SerializeField] private GameObject chargeMeleeEnemyHard;
-    [SerializeField] private GameObject dodgeMeleeEnemyHard;
-    [SerializeField] private GameObject dodgeRangedEnemyHard;
-    [SerializeField] private GameObject reflectMeleeEnemyHard;
-
-    [Header("Boss Prefabs")]
-    [SerializeField] private GameObject dashBoss;
-    [SerializeField] private GameObject splitBoss;
-    [SerializeField] private GameObject rangedBoss;
-
+    private Dictionary<string, GameObject> enemyDict = new Dictionary<string, GameObject>();
+    [SerializeField] private List<string> enemyNames = new List<string>();
+    [SerializeField] private List<GameObject> enemyPrefabs = new List<GameObject>();
 
     [Header("Tilemaps")]
     [SerializeField] private Tilemap groundTilemap;
@@ -44,7 +28,7 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private Tilemap warningTilemap;
     [SerializeField] private Tile warningTile;
 
-    private enum WaveState { Fighting, Ready, Cooldown, Done }
+    private enum WaveState { Fighting, Ready, Spawning, Cooldown, Done }
     [Header("State")]
     [SerializeField] private WaveState waveState = WaveState.Cooldown;
     [SerializeField] private GameObject enemies;
@@ -56,9 +40,14 @@ public class WaveManager : MonoBehaviour
     private Player player;
 
     private float lastWaveTime = 0;
-    private float minFightingDuration = 3f;
-    private float fightingStart = 0;
     private float playerHealthBeforeWave = 0;
+    private float enemySpawnDelay = 1;
+
+    private float classUpgradeCooldown = 10;
+    private float classUpgradeCounter = 0;
+
+    private float powerupCooldown = 10;
+    private float powerupCounter = 5;
 
 
     private void Start()
@@ -71,6 +60,7 @@ public class WaveManager : MonoBehaviour
         cameraManager = GameObject.Find("CameraManager").GetComponent<CameraManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
 
+        InitializeDict();
         SetupCurrentLevel();
     }
 
@@ -80,55 +70,18 @@ public class WaveManager : MonoBehaviour
         {
             if (waveState == WaveState.Ready)
             {
-                playerHealthBeforeWave = player.Health;
                 SpawnWave(this.levelIndex, this.waveIndex);
-                waveState = WaveState.Fighting;
-                fightingStart = Time.time;
             }
             else if (waveState == WaveState.Fighting)
             {
-                if (enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
+                if (enemies.transform.childCount == 0)
                 {
-                    // Give Score if player did not lose health
-                    if (player.Health == playerHealthBeforeWave)
-                    {
-                        scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
-                    }
-
-                    if (CheckLastWave())
-                    {
-                        waveState = WaveState.Done;
-                        uiManager.EnableLevelCompletedText(levelIndex + 1);
-                        if (CheckLastLevel())
-                        {
-                            StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
-                        }
-                        else
-                        {
-                            StartCoroutine(PerformAfterDelay(5, NextLevel));
-                        }
-                    }
-                    else
-                    {
-                        waveIndex++;
-
-                        waveState = WaveState.Cooldown;
-                        lastWaveTime = Time.time;
-
-                        Level level = GetLevel(this.levelIndex);
-                        Wave wave = level.GetWave(waveIndex);
-                        uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
-
-                        if (waveIndex == 4)
-                        {
-                            uiManager.EnableUpgradeUI();
-                        }
-                    }
+                    EndWave();
                 }
             }
             else if (waveState == WaveState.Cooldown)
             {
-                if (Time.time > lastWaveTime + waveCooldown)
+                if (Time.time - lastWaveTime > waveCooldown)
                 {
                     waveState = WaveState.Ready;
                     uiManager.DisableWaveUI();
@@ -137,6 +90,63 @@ public class WaveManager : MonoBehaviour
         }
     }
 
+    private void EndWave()
+    {
+        // Give Score if player did not lose health
+        if (player.Health == playerHealthBeforeWave)
+        {
+            scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
+        }
+
+        if (CheckLastWave())
+        {
+            waveState = WaveState.Done;
+            uiManager.EnableLevelCompletedText(levelIndex + 1);
+            if (CheckLastLevel())
+            {
+                StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
+            }
+            else
+            {
+                StartCoroutine(PerformAfterDelay(5, NextLevel));
+            }
+        }
+        else
+        {
+            waveIndex++;
+
+            waveState = WaveState.Cooldown;
+            lastWaveTime = Time.time;
+
+            Level level = GetLevel(this.levelIndex);
+            Wave wave = level.GetWave(waveIndex);
+            uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
+
+            classUpgradeCounter++;
+            if (classUpgradeCounter == classUpgradeCooldown)
+            {
+                classUpgradeCounter = 0;
+                uiManager.EnableUpgradeUI();
+            }
+
+            powerupCounter++;
+            if (powerupCounter == powerupCooldown)
+            {
+                powerupCounter = 0;
+                uiManager.EnablePowerupUI();
+            }
+        }
+    }
+
+    private void InitializeDict()
+    {
+        this.enemyDict.Clear();
+
+        for (int i = 0; i < this.enemyPrefabs.Count; i++)
+        {
+            this.enemyDict.Add(this.enemyNames[i], this.enemyPrefabs[i]);
+        }
+    }
     private void LoadLevel(int levelIndex)
     {
         string path = $"Levels/level{levelIndex}";
@@ -181,6 +191,13 @@ public class WaveManager : MonoBehaviour
 
     private void SpawnWave(int levelIndex, int waveIndex)
     {
+        if (waveState != WaveState.Ready) return;
+
+        waveState = WaveState.Spawning;
+        StartCoroutine(PerformAfterDelay(this.enemySpawnDelay, () => waveState = WaveState.Fighting));
+
+        playerHealthBeforeWave = player.Health;
+
         Level level = GetLevel(levelIndex);
         Wave wave = level.GetWave(waveIndex);
         List<EnemyCount> enemies = wave.enemies;
@@ -265,12 +282,12 @@ public class WaveManager : MonoBehaviour
     private void CreateEnemy(GameObject prefab, Vector3 spawnLocation)
     {
         warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), warningTile);
-        StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation, 1));
+        StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation));
     }
 
-    private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation, int delay)
+    private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(this.enemySpawnDelay);
 
         GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
         enemy.transform.SetParent(enemies.transform);
@@ -280,80 +297,7 @@ public class WaveManager : MonoBehaviour
 
     public GameObject StringToPrefab(string s)
     {
-        if (s == "Spider")
-        {
-            return spider;
-        }
-        if (s == "Plus")
-        {
-            return plus;
-        }
-
-        else if (s == "MeleeEnemy")
-        {
-            return baseMeleeEnemyEasy;
-        }
-        else if (s == "RangedEnemy")
-        {
-            return baseRangedEnemyEasy;
-        }
-        else if (s == "FastEnemy")
-        {
-            return fastEnemyEasy;
-        }
-
-        else if (s == "ShotgunEnemy")
-        {
-            return shotgunEnemyMedium;
-        }
-        else if (s == "GunnerEnemy")
-        {
-            return gunnerEnemyMedium;
-        }
-        else if (s == "SniperEnemy")
-        {
-            return sniperEnemyMedium;
-        }
-        else if (s == "HeavyEnemy")
-        {
-            return heavyEnemyMedium;
-        }
-        else if (s == "TripleEnemy")
-        {
-            return tripleEnemyMedium;
-        }
-
-        else if (s == "DodgeMeleeEnemy")
-        {
-            return dodgeMeleeEnemyHard;
-        }
-        else if (s == "DodgeRangedEnemy")
-        {
-            return dodgeRangedEnemyHard;
-        }
-        else if (s == "ChargeMeleeEnemy")
-        {
-            return chargeMeleeEnemyHard;
-        }
-        else if (s == "ReflectMeleeEnemy")
-        {
-            return reflectMeleeEnemyHard;
-        }
-
-        else if (s == "SplitBoss")
-        {
-            return splitBoss;
-        }
-        else if (s == "DashBoss")
-        {
-            return dashBoss;
-        }
-        else if (s == "RangedBoss")
-        {
-            return rangedBoss;
-        }
-
-        return baseMeleeEnemyEasy;
+        return this.enemyDict[s];
     }
 
     private IEnumerator PerformAfterDelay(float delay, Action action)

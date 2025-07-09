@@ -273,25 +273,14 @@ public class ShootingAbility : MonoBehaviour
 
     public bool IsShootable(Vector3 from, Vector3 to)
     {
-        Vector3 raycastDirection = (to - from).normalized;
-        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, Vector3.Distance(from, to));
-        if (RaycastContainsWall(rays)) return false;
+        float distance = Vector3.Distance(from, to);
+        if (distance > this.runtimeStats.Range) return false;
 
-        // Perpendicular vectors
-        Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
-        Vector3 perpendicular2 = new Vector3(raycastDirection.y, -raycastDirection.x, raycastDirection.z);
-
-        Vector3 newFrom1 = from + (this.runtimeStats.BulletSize * perpendicular1);
-        raycastDirection = (to - newFrom1).normalized;
-        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, Vector3.Distance(newFrom1, to));
-        if (RaycastContainsWall(rays)) return false;
-
-        Vector3 newFrom2 = from + (this.runtimeStats.BulletSize * perpendicular2);
-        raycastDirection = (to - newFrom2).normalized;
-        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, Vector3.Distance(newFrom2, to));
-        if (RaycastContainsWall(rays)) return false;
-
-        return true;
+        Vector3 direction = (to - from).normalized;
+        float radius = (this.runtimeStats.BulletSize / 2.66f) / 2; // A bullet is 6 pixels, which means that 2.66 bullets is 1 in game distance unit, then devide to get radius.
+        LayerMask obstacleLayerMask = LayerMask.GetMask("Wall");
+        RaycastHit2D hit = Physics2D.CircleCast(from, radius, direction, distance, obstacleLayerMask);
+        return hit.collider == null;
     }
 
     protected bool RaycastContainsWall(RaycastHit2D[] rays)
