@@ -1,7 +1,7 @@
 {
     "roomLocation": {
-            "x": 0,
-            "y": 11,
+            "x": 26,
+            "y": 0,
             "z": 0
     },
     "cameraLocation": {
@@ -14,7 +14,7 @@
         "y": 0,
         "z": 0
     },
-    "roomWidth":  9.5,
+    "roomWidth":  11.5,
     "roomHeight": 5.5,
     "spawnLocations": [
         { "x": -1.5, "y": -3.5, "z": 0 }, { "x": -0.5, "y": -3.5, "z": 0 }, { "x": 0.5, "y": -3.5, "z": 0 }, { "x": 1.5, "y": -3.5, "z": 0 },
@@ -36,6 +36,10 @@
             "waveNumber": 2,
             "enemies": [
                 {
+                    "type": "FastEnemy",
+                    "amount": 1
+                },
+                {
                     "type": "ShotgunEnemy",
                     "amount": 1
                 }
@@ -44,6 +48,10 @@
         {
             "waveNumber": 3,
             "enemies": [
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 2
+                },
                 {
                     "type": "ShotgunEnemy",
                     "amount": 2
@@ -58,7 +66,7 @@
                     "amount": 2
                 },
                 {
-                    "type": "RangedEnemy",
+                    "type": "SniperEnemy",
                     "amount": 2
                 }
             ]
@@ -67,12 +75,12 @@
             "waveNumber": 5,
             "enemies": [
                 {
-                    "type": "ShotgunEnemy",
-                    "amount": 2
+                    "type": "MeleeEnemy",
+                    "amount": 3
                 },
                 {
                     "type": "RangedEnemy",
-                    "amount": 3
+                    "amount": 4
                 }
             ]
         },
@@ -80,8 +88,12 @@
             "waveNumber": 6,
             "enemies": [
                 {
-                    "type": "FastEnemy",
+                    "type": "Spider",
                     "amount": 6
+                },
+                {
+                    "type": "Plus",
+                    "amount": 4
                 }
             ]
         },
@@ -89,12 +101,12 @@
             "waveNumber": 7,
             "enemies": [
                 {
-                    "type": "ShotgunEnemy",
-                    "amount": 3
+                    "type": "Spider",
+                    "amount": 4
                 },
                 {
-                    "type": "RangedEnemy",
-                    "amount": 3
+                    "type": "HeavyEnemy",
+                    "amount": 1
                 }
             ]
         },
@@ -110,7 +122,7 @@
                     "amount": 2
                 },
                 {
-                    "type": "RangedEnemy",
+                    "type": "HeavyEnemy",
                     "amount": 2
                 }
             ]
@@ -123,12 +135,12 @@
                     "amount": 3
                 },
                 {
-                    "type": "RangedEnemy",
+                    "type": "Shotgun",
                     "amount": 3
                 },
                 {
-                    "type": "FastEnemy",
-                    "amount": 3
+                    "type": "Sniper",
+                    "amount": 2
                 }
             ]
         },

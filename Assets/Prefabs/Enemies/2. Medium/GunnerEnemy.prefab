@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 5941949313622277503}
   - component: {fileID: -8286488011305890946}
   - component: {fileID: 8228712908524213173}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: GunnerEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -330,7 +330,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 20
   m_LinearDrag: 5
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -417,10 +417,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &-8286488011305890946
 MonoBehaviour:
   m_ObjectHideFlags: 0

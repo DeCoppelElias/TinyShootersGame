@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 7052203415476833862}
   - component: {fileID: 8947136591138831557}
   - component: {fileID: 5494964774439201206}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: DodgeMeleeEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -162,6 +162,7 @@ MonoBehaviour:
   chargeDuration: 0
   dashSpeed: 8
   contactDamageIncrease: 1
+  dashEffectPrefab: {fileID: 0}
   onPerformed:
     m_PersistentCalls:
       m_Calls: []
@@ -181,10 +182,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!58 &2661872802162995546
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -230,8 +234,6 @@ MonoBehaviour:
   spawnBody: 1
   debug: 0
   knockbackImmune: 0
-  damagePixelPrefab: {fileID: 4646526515456893302, guid: 9f57144ea1e9d1b46a0297c6c3428fd7, type: 3}
-  scoreDisplayPrefab: {fileID: 5739372400424013240, guid: d39106598a90e864a8fd9921f79b3a5f, type: 3}
 --- !u!114 &8947136591138831557
 MonoBehaviour:
   m_ObjectHideFlags: 0

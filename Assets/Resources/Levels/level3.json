@@ -1,7 +1,7 @@
 {
     "roomLocation": {
-            "x": 0,
-            "y": 22,
+            "x": 52,
+            "y": 0,
             "z": 0
     },
     "cameraLocation": {
@@ -14,7 +14,7 @@
         "y": 0,
         "z": 0
     },
-    "roomWidth":  9.5,
+    "roomWidth":  11.5,
     "roomHeight": 5.5,
     "spawnLocations": [
         { "x": -7.5, "y": -3.5, "z": 0 }, { "x": -6.5, "y": -3.5, "z": 0 }, { "x": 6.5, "y": -3.5, "z": 0 }, { "x": 7.5, "y": -3.5, "z": 0 },
@@ -27,8 +27,12 @@
             "waveNumber": 1,
             "enemies": [
                 {
+                    "type": "Spider",
+                    "amount": 3
+                },
+                {
                     "type": "MeleeEnemy",
-                    "amount": 6
+                    "amount": 5
                 }
             ]
         },
@@ -36,8 +40,12 @@
             "waveNumber": 2,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 3
+                    "type": "Spider",
+                    "amount": 4
+                },
+                {
+                    "type": "Plus",
+                    "amount": 2
                 },
                 {
                     "type": "DodgeMeleeEnemy",
@@ -51,6 +59,10 @@
                 {
                     "type": "DodgeMeleeEnemy",
                     "amount": 4
+                },
+                {
+                    "type": "GunnerEnemy",
+                    "amount": 2
                 }
             ]
         },
@@ -64,6 +76,10 @@
                 {
                     "type": "ChargeMeleeEnemy",
                     "amount": 2
+                },
+                {
+                    "type": "HeavyEnemy",
+                    "amount": 2
                 }
             ]
         },
@@ -73,6 +89,14 @@
                 {
                     "type": "ChargeMeleeEnemy",
                     "amount": 4
+                },
+                {
+                    "type": "SniperEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 1
                 }
             ]
         },
@@ -86,6 +110,10 @@
                 {
                     "type": "ChargeMeleeEnemy",
                     "amount": 3
+                },
+                {
+                    "type": "Spider",
+                    "amount": 3
                 }
             ]
         },
@@ -93,12 +121,16 @@
             "waveNumber": 7,
             "enemies": [
                 {
-                    "type": "ShotgunEnemy",
+                    "type": "MeleeEnemy",
+                    "amount": 5
+                },
+                {
+                    "type": "FastEnemy",
                     "amount": 3
                 },
                 {
-                    "type": "DodgeMeleeEnemy",
-                    "amount": 3
+                    "type": "RangedEnemy",
+                    "amount": 5
                 }
             ]
         },
@@ -135,7 +167,7 @@
                     "amount": 2
                 },
                 {
-                    "type": "MeleeEnemy",
+                    "type": "GunnerEnemy",
                     "amount": 2
                 }
             ]

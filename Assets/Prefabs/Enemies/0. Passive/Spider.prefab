@@ -322,7 +322,7 @@ GameObject:
   - component: {fileID: 3394572812005454854}
   - component: {fileID: 201740266062877922}
   - component: {fileID: 5869828916203284582}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Spider
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -425,10 +425,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &5869828916203284582
 MonoBehaviour:
   m_ObjectHideFlags: 0

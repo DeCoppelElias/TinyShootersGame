@@ -14,6 +14,7 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int levelIndex = 0;
     [SerializeField] private int totalLevels = 3;
     [SerializeField] private int waveCooldown = 5;
+    [SerializeField] private int levelCooldown = 5;
 
     private Dictionary<int,Level> levels = new Dictionary<int,Level>();
 
@@ -28,9 +29,9 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private Tilemap warningTilemap;
     [SerializeField] private Tile warningTile;
 
-    private enum WaveState { Fighting, Ready, Spawning, Cooldown, Done }
+    private enum WaveState { Fighting, Ready, Spawning, WaveCooldown, LevelCooldown, Done }
     [Header("State")]
-    [SerializeField] private WaveState waveState = WaveState.Cooldown;
+    [SerializeField] private WaveState waveState = WaveState.WaveCooldown;
     [SerializeField] private GameObject enemies;
 
     private UIManager uiManager;
@@ -79,12 +80,20 @@ public class WaveManager : MonoBehaviour
                     EndWave();
                 }
             }
-            else if (waveState == WaveState.Cooldown)
+            else if (waveState == WaveState.WaveCooldown)
             {
                 if (Time.time - lastWaveTime > waveCooldown)
                 {
                     waveState = WaveState.Ready;
                     uiManager.DisableWaveUI();
+                }
+            }
+            else if (waveState == WaveState.LevelCooldown)
+            {
+                if (Time.time - lastWaveTime > levelCooldown)
+                {
+                    waveState = WaveState.Ready;
+                    NextLevel();
                 }
             }
         }
@@ -98,24 +107,36 @@ public class WaveManager : MonoBehaviour
             scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
         }
 
-        if (CheckLastWave())
+        if (CheckLastLevel() && CheckLastWave())
         {
             waveState = WaveState.Done;
             uiManager.EnableLevelCompletedText(levelIndex + 1);
-            if (CheckLastLevel())
+            StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
+        }
+        else if (!CheckLastLevel() && CheckLastWave())
+        {
+            waveState = WaveState.LevelCooldown;
+            lastWaveTime = Time.time;
+
+            classUpgradeCounter++;
+            if (classUpgradeCounter == classUpgradeCooldown)
             {
-                StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
+                classUpgradeCounter = 0;
+                uiManager.EnableUpgradeUI();
             }
-            else
+
+            powerupCounter++;
+            if (powerupCounter == powerupCooldown)
             {
-                StartCoroutine(PerformAfterDelay(5, NextLevel));
+                powerupCounter = 0;
+                uiManager.EnablePowerupUI();
             }
         }
-        else
+        else if (!CheckLastLevel() && !CheckLastWave())
         {
             waveIndex++;
 
-            waveState = WaveState.Cooldown;
+            waveState = WaveState.WaveCooldown;
             lastWaveTime = Time.time;
 
             Level level = GetLevel(this.levelIndex);
@@ -230,7 +251,7 @@ public class WaveManager : MonoBehaviour
 
     public void NextLevel()
     {
-        waveState = WaveState.Cooldown;
+        waveState = WaveState.WaveCooldown;
         lastWaveTime = Time.time;
 
         waveIndex = 0;

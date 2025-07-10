@@ -156,7 +156,7 @@ public class Enemy : Entity
 
         for (int i = 0; i < amount; i++)
         {
-            particleManager.CreateParticle(particleType, transform.position, Quaternion.identity, Color.red);
+            particleManager.CreateParticle(particleType, transform.position, Quaternion.identity, this.transform.localScale, Color.red);
         }
     }
 

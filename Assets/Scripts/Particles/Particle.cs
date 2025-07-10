@@ -13,7 +13,7 @@ public abstract class Particle : MonoBehaviour
     }
 
     public abstract void Play();
-    public abstract void Initialise(Vector3 position, Quaternion rotation, Color color);
+    public abstract void Initialise(Vector3 position, Quaternion rotation, Vector3 scale, Color color);
 
     protected void Complete()
     {

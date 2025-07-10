@@ -34,6 +34,7 @@ public class Bullet : MonoBehaviour
     private BulletManager bulletManager;
 
     private ParticleSystem trailParticleSystem;
+    private ParticleSystem.MainModule mainModule;
     private ParticleManager particleManager;
 
     private void Start()
@@ -45,6 +46,7 @@ public class Bullet : MonoBehaviour
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
 
         this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
+        this.mainModule = this.trailParticleSystem.main;
         this.particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }
 
@@ -76,8 +78,15 @@ public class Bullet : MonoBehaviour
         if (this.trailParticleSystem == null) this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
         if (this.trailParticleSystem != null)
         {
-            ParticleSystem.MainModule main = trailParticleSystem.main;
-            main.startColor = color;
+            this.mainModule = this.trailParticleSystem.main;
+            this.mainModule.startColor = color;
+
+            float scaleChange = 1 + ((scale.x - 1) / 2f);
+            ParticleSystem.MinMaxCurve lifetimeCurve = new ParticleSystem.MinMaxCurve(0.2f * scaleChange, 0.2f * scaleChange);
+            this.mainModule.startLifetime = lifetimeCurve;
+
+            ParticleSystem.MinMaxCurve sizeCurve = new ParticleSystem.MinMaxCurve(0.1f * scaleChange, 0.1f * scaleChange);
+            this.mainModule.startSize = sizeCurve;
         }
     }
 
@@ -139,7 +148,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("Wall"))
         {
-            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.color);
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
             Complete();
             return;
         }
@@ -149,7 +158,7 @@ public class Bullet : MonoBehaviour
             Object obj = collision.GetComponent<Object>();
             if (obj != null) obj.OnBulletHit(damage, rb.velocity.normalized);
 
-            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.color);
+            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
             Complete();
             return;
         }
@@ -162,7 +171,7 @@ public class Bullet : MonoBehaviour
             pierce--;
             if (pierce == 0)
             {
-                GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.color);
+                GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
                 Complete();
             }
             else if (splitOnHit)

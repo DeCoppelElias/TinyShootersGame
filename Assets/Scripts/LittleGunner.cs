@@ -56,8 +56,11 @@ public class LittleGunner : MonoBehaviour
         else
         {
             gunnerShootingAbility.shooting = false;
-            lastRefresh = Time.time;
-            target = FindTarget();
+            if (Time.time - lastRefresh > refreshCooldown)
+            {
+                lastRefresh = Time.time;
+                target = FindTarget();
+            }
         }
     }
 

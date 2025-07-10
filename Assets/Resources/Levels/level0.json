@@ -50,7 +50,7 @@
                 },
                 {
                     "type": "Plus",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },
@@ -107,11 +107,11 @@
             "enemies": [
                 {
                     "type": "Plus",
-                    "amount": 3
+                    "amount": 2
                 },
                 {
                     "type": "MeleeEnemy",
-                    "amount": 2
+                    "amount": 3
                 }
             ]
         },

@@ -37,7 +37,7 @@ public class BloodParticle : Particle
         }
     }
 
-    public override void Initialise(Vector3 position, Quaternion rotation, Color color)
+    public override void Initialise(Vector3 position, Quaternion rotation, Vector3 scale, Color color)
     {
         int childCount = this.transform.childCount;
         if (childCount == 0) return;
@@ -56,11 +56,11 @@ public class BloodParticle : Particle
             spriteRenderer.color = currentColor;
 
             Vector2 offset = UnityEngine.Random.insideUnitCircle * 0.3f;
-            float scale = UnityEngine.Random.Range(0.5f, 1.5f);
+            float childScale = UnityEngine.Random.Range(0.5f, 1.5f);
             float rotationZ = UnityEngine.Random.Range(0f, 360f);
 
             child.position = position + new Vector3(offset.x, offset.y, 0);
-            child.localScale = child.transform.localScale * scale;
+            child.localScale = new Vector3(childScale, childScale, childScale);
             child.rotation = Quaternion.Euler(0, 0, rotationZ);
         }
         

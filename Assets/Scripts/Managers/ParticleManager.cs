@@ -20,13 +20,13 @@ public class ParticleManager : MonoBehaviour
         }
     }
 
-    public GameObject CreateParticle(ParticleType particleType, Vector3 position, Quaternion rotation, Color color)
+    public GameObject CreateParticle(ParticleType particleType, Vector3 position, Quaternion rotation, Vector3 scale, Color color)
     {
         ParticlePool particlePool = GetParticlePool(particleType);
         Particle particle = particlePool.GetParticle();
         if (particle == null) return null;
 
-        particle.Initialise(position, rotation, color);
+        particle.Initialise(position, rotation, scale, color);
         particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
         particle.Play();
 

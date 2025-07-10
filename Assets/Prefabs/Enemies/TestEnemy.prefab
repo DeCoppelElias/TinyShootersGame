@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 8317446749952802072}
   - component: {fileID: -5147722406520991190}
   - component: {fileID: -3134140967621000427}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: TestEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -154,10 +154,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!58 &8317446749952802072
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -192,16 +195,17 @@ MonoBehaviour:
   contactDamage: 10
   contactHitCooldown: 1
   onDeathScore: 100
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
-  damageColor: {r: 1, g: 0, b: 0, a: 1}
-  colorChangeDuration: 1
-  colorChangeState: 0
+  spawnBody: 1
   debug: 1
+  knockbackImmune: 0
 --- !u!114 &-3134140967621000427
 MonoBehaviour:
   m_ObjectHideFlags: 0

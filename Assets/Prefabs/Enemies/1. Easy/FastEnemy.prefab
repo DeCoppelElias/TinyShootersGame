@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: -6131695965287517290}
   - component: {fileID: 3773596934133626727}
   - component: {fileID: 5218863758776532670}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: FastEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -149,8 +149,6 @@ MonoBehaviour:
   spawnBody: 1
   debug: 0
   knockbackImmune: 0
-  damagePixelPrefab: {fileID: 4646526515456893302, guid: 9f57144ea1e9d1b46a0297c6c3428fd7, type: 3}
-  scoreDisplayPrefab: {fileID: 5739372400424013240, guid: d39106598a90e864a8fd9921f79b3a5f, type: 3}
 --- !u!50 &1129325351206503047
 Rigidbody2D:
   serializedVersion: 4
@@ -185,10 +183,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!58 &3773596934133626727
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 1642511522402942191}
   - component: {fileID: 2656858135957064604}
   - component: {fileID: 3060827980115169825}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Plus
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -151,10 +151,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &3881175678972051988
 MonoBehaviour:
   m_ObjectHideFlags: 0

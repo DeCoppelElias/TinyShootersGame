@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Vector3 trailDirection = (this.transform.position - trailStartPosition).normalized;
             Quaternion trailRotation = Quaternion.FromToRotation(Vector3.up, trailDirection);
-            this.particleManager.CreateParticle(ParticleManager.ParticleType.Trail, this.transform.position, trailRotation, player.Color);
+            this.particleManager.CreateParticle(ParticleManager.ParticleType.Trail, this.transform.position, trailRotation, this.transform.localScale, player.Color);
 
             trailState = TrailState.Idle;
             previousTrailPosition = this.transform.position;

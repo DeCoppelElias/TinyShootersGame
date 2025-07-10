@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -4786226812440007271}
   - component: {fileID: -1593966228736957697}
   - component: {fileID: -7073006898407734445}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: RangedEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 20
   m_LinearDrag: 5
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -139,10 +139,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &-1593966228736957697
 MonoBehaviour:
   m_ObjectHideFlags: 0

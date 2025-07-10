@@ -13,7 +13,7 @@ public class TrailParticle : Particle
     private float idleStartTime;
     private float fadeoutDuration = 1;
     private float fadoutStartTime;
-    public override void Initialise(Vector3 position, Quaternion rotation, Color color)
+    public override void Initialise(Vector3 position, Quaternion rotation, Vector3 scale, Color color)
     {
         this.transform.position = position;
         this.transform.rotation = rotation;

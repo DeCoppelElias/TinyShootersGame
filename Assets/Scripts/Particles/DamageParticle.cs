@@ -32,7 +32,7 @@ public class DamageParticle : Particle
         }
     }
 
-    public override void Initialise(Vector3 position, Quaternion rotation, Color color)
+    public override void Initialise(Vector3 position, Quaternion rotation, Vector3 scale, Color color)
     {
         this.transform.position = position;
 

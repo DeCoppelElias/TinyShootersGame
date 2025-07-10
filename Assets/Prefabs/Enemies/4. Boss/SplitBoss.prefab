@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: -6738169185948307475}
   - component: {fileID: -5998817716612518527}
   - component: {fileID: 8105387792493017650}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SplitBoss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -196,10 +196,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSize: 0
-  size: 0
+  diameter: 0
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!58 &-5998817716612518527
 CircleCollider2D:
   m_ObjectHideFlags: 0

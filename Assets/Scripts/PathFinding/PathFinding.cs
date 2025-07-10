@@ -140,6 +140,10 @@ public class PathFinding : MonoBehaviour
         if (Physics2D.OverlapCircle(position, radius, pushableLayerMask) != null)
             return 3;
 
+        LayerMask entityLayerMask = LayerMask.GetMask("Entity");
+        if (Physics2D.OverlapCircle(position, radius, entityLayerMask) != null)
+            return 2;
+
         // Add random noise to make paths more random
         float noise = UnityEngine.Random.Range(0,1f) * 0.2f;
         return 1f + noise;
