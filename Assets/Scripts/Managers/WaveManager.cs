@@ -141,9 +141,9 @@ public class WaveManager : MonoBehaviour
         if (classUpgradeCounter == classUpgradeCooldown)
         {
             classUpgradeCounter = 0;
-            bool success = uiManager.EnableUpgradeUI();
 
-            if (!success) uiManager.EnablePowerupUI();
+            if (player.GetUpgrades().Count > 0) uiManager.EnableUpgradeUI();
+            else uiManager.EnablePowerupUI();
         }
 
         powerupCounter++;

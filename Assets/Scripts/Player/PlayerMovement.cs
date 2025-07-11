@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 previousTrailPosition;
     private Vector3 trailStartPosition;
     private ParticleManager particleManager;
+    private Rigidbody2D rb;
 
     private void Start()
     {
@@ -55,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
         this.previousTrailPosition = this.transform.position;
         this.particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
+        this.rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -91,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
         // If knockback, move in knockback direction
         if (this.movementState == MovementState.Knockback)
         {
-            Vector2 knockbackVelocity = knockbackDirection * knockbackSpeed;
+            /*Vector2 knockbackVelocity = knockbackDirection * knockbackSpeed;
             Vector2 inputVelocity = currentMoveDirection * moveSpeed * 0.5f;
 
             playerRB.velocity = knockbackVelocity + inputVelocity;
@@ -100,6 +102,14 @@ public class PlayerMovement : MonoBehaviour
             if (Time.time - knockbackStart > knockbackDuration || playerRB.velocity == Vector2.zero)
             {
                 this.movementState = MovementState.Normal;
+            }*/
+            Vector2 inputForce = currentMoveDirection * 0.5f;
+            playerRB.AddForce(inputForce, ForceMode2D.Force);
+
+            // Exit knockback when player has mostly stopped (or nearly so)
+            if (playerRB.velocity.magnitude < this.moveSpeed)
+            {
+                movementState = MovementState.Normal;
             }
         }
         else if (this.movementState == MovementState.Normal)
@@ -150,14 +160,9 @@ public class PlayerMovement : MonoBehaviour
     {
         this.currentLookInput = lookInput;
     }
-
-    public void ApplyKnockBack(Vector3 knockbackDirection, float knockbackSpeed, float knockbackRange)
+    public void ApplyKnockBack(Vector2 force)
     {
-        this.knockbackDirection = knockbackDirection;
-        this.knockbackSpeed = knockbackSpeed;
-        this.knockbackDuration = knockbackRange / knockbackSpeed;
-        this.knockbackStart = Time.time;
-        playerRB.velocity = knockbackDirection * knockbackSpeed;
+        if (rb != null) rb.AddForce(force, ForceMode2D.Impulse);
         this.movementState = MovementState.Knockback;
     }
 

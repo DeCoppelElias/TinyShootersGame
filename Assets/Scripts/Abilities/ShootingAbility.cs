@@ -27,12 +27,14 @@ public class ShootingAbility : MonoBehaviour
     public UnityEvent onShoot;
 
     private BulletManager bulletManager;
+    private AudioManager audioManager;
 
     private void Start()
     {
         if (owner == null) owner = GetComponent<Entity>();
 
         bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 
         if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
 
@@ -107,6 +109,9 @@ public class ShootingAbility : MonoBehaviour
             ParticleSystem muzzleFlash = this.muzzleFlashes[i];
             if (muzzleFlash != null) muzzleFlash.Play();
         }
+
+        // Play sound effect
+        if (audioManager != null) audioManager.PlayShootSound();
     }
 
     private void ShootFromFirepoint(Transform firepoint)
@@ -185,9 +190,9 @@ public class ShootingAbility : MonoBehaviour
         bullet.Shoot();
 
         // Give Knockback to self
-        Vector2 knockbackDirection = -(Vector2)(finalRotation * Vector3.up);
-        float knockbackForce = 0.1f;
-        if (this.owner != null) this.owner.AddKnockback(knockbackForce, knockbackDirection);
+        Vector2 knockbackDirection = -(Vector2)(finalRotation * Vector3.up).normalized;
+        float knockbackForce = this.runtimeStats.Damage * this.runtimeStats.BulletVelocity / 1.5f;
+        if (this.owner != null) this.owner.AddKnockback(knockbackForce * knockbackDirection);
     }
 
     public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage)

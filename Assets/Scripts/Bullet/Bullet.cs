@@ -148,7 +148,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("Wall"))
         {
-            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
+            this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
             Complete();
             return;
         }
@@ -158,7 +158,7 @@ public class Bullet : MonoBehaviour
             Object obj = collision.GetComponent<Object>();
             if (obj != null) obj.OnBulletHit(damage, rb.velocity.normalized);
 
-            GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
+            this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
             Complete();
             return;
         }
@@ -166,12 +166,12 @@ public class Bullet : MonoBehaviour
         Entity entity = collision.GetComponent<Entity>();
         if (entity != null && ownerTag != collision.tag && entity.Health > 0)
         {
-            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged, rb.velocity.normalized);
+            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged, rb.velocity);
 
             pierce--;
             if (pierce == 0)
             {
-                GameObject bulletExplosionGO = this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
+                this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
                 Complete();
             }
             else if (splitOnHit)

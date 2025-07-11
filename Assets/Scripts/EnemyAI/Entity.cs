@@ -18,6 +18,7 @@ public abstract class Entity : MonoBehaviour
     private float lastContactHit = 0;
 
     public int onDeathScore = 100;
+    [SerializeField] private Color entityColor = Color.red;
 
     [Header("On-Hit Color Change Settings")]
     [SerializeField] private Color damageColor = Color.red;
@@ -44,6 +45,7 @@ public abstract class Entity : MonoBehaviour
 
     protected AudioManager audioManager;
     private WaveManager waveManager;
+    private ParticleManager particleManager;
 
     private Transform healthBar;
     private Transform emptyHealthBar;
@@ -53,6 +55,9 @@ public abstract class Entity : MonoBehaviour
 
     protected Rigidbody2D rb;
 
+    private UnityAction<Entity> onHit;
+
+
     private void Start()
     {
         walls = GameObject.Find("Walls")?.GetComponent<Tilemap>();
@@ -60,6 +65,7 @@ public abstract class Entity : MonoBehaviour
         audioManager = GameObject.Find("AudioManager")?.GetComponent<AudioManager>();
         waveManager = GameObject.Find("WaveManager")?.GetComponent<WaveManager>();
         spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
+        particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
 
         emptyHealthBar = transform.Find("EmptyHealthBar");
         healthBar = emptyHealthBar.GetChild(0);
@@ -139,6 +145,13 @@ public abstract class Entity : MonoBehaviour
     public virtual void OnDeath()
     {
         this.entityState = EntityState.Dead;
+
+        // visual effects
+        particleManager.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, 10);
+        particleManager.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
+
+        // sound
+        audioManager.PlayDieSound();
     }
 
     public virtual void UpdateEntity()
@@ -151,17 +164,32 @@ public abstract class Entity : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
+    public virtual void TakeDamage(float damage, string sourceTag, DamageType damageType, Vector2 velocity)
     {
-        if (amount <= 0) return;
+        if (damage <= 0) return;
 
-        this.Health -= amount;
+        this.Health -= damage;
 
         lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
-        lastDamageDirection = direction;
+        lastDamageDirection = velocity.normalized;
 
+        // Give knockback
+        AddKnockback(damage * velocity);
+
+        // Color change
         StartColorChange();
+
+        // Create damage particles
+        int damageParticleAmount = UnityEngine.Random.Range(1, 3);
+        particleManager.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, damageParticleAmount);
+
+        // Create blood
+        float r = UnityEngine.Random.Range(0, 1f);
+        if (r < 0.05f) particleManager.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
+
+        // Play damage sound effect
+        this.audioManager.PlayDamageSound();
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -171,14 +199,21 @@ public abstract class Entity : MonoBehaviour
         // An enemy comes in contact with an other enemy => no damage is taken.
         if (collision.transform.CompareTag("Enemy") && this.transform.CompareTag("Enemy")) return;
 
-        Entity entity = collision.gameObject.GetComponent<Entity>();
-        if (entity != null && Time.time - lastContactHit > ContactHitCooldown)
+        Entity other = collision.gameObject.GetComponent<Entity>();
+        if (other != null && Time.time - lastContactHit > ContactHitCooldown)
         {
             lastContactHit = Time.time;
 
             Vector2 direction = (collision.transform.position - this.transform.position).normalized;
-            entity.TakeDamage(contactDamage, this.tag, DamageType.Melee, direction);
+            Vector2 velocity = direction * other.rb.velocity;
+            HitEntity(other, contactDamage, DamageType.Melee, velocity);
         }
+    }
+
+    protected void HitEntity(Entity other, float damage, DamageType damageType, Vector3 velocity)
+    {
+        other.TakeDamage(damage, this.tag, damageType, velocity);
+        if (this.onHit != null) this.onHit.Invoke(other);
     }
 
     private bool CheckOutOfBounds()
@@ -268,8 +303,19 @@ public abstract class Entity : MonoBehaviour
         colorChangeState = ColorChangeState.ToDamageColor;
     }
 
-    public virtual void AddKnockback(float force, Vector3 direction)
+    public virtual void AddKnockback(Vector2 force)
     {
-        if (rb != null) rb.AddForce(100 * force * direction, ForceMode2D.Impulse);
+        // if (rb != null) rb.AddForce(100 * force * direction, ForceMode2D.Impulse);
+        if (rb != null) rb.AddForce(force, ForceMode2D.Impulse);
+    }
+
+    public void AddOnHit(UnityAction<Entity> onHit)
+    {
+        this.onHit += onHit;
+    }
+
+    public void RemoveOnHit(UnityAction<Entity> onHit)
+    {
+        this.onHit -= onHit;
     }
 }

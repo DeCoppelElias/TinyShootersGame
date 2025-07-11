@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(Entity))]
 public class DashAbility : MonoBehaviour
 {
     [Header("Dash Ability Settings")]
@@ -26,17 +27,20 @@ public class DashAbility : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    private Entity entity;
+    private Entity owner;
 
     public UnityEvent onPerformed;
     public UnityEvent onReady;
 
     private System.Action onComplete;
 
+    private AudioManager audioManager;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        entity = GetComponent<Entity>();
+        owner = GetComponent<Entity>();
+        this.audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 
         InstantiateDashEffect();
     }
@@ -78,14 +82,17 @@ public class DashAbility : MonoBehaviour
                 rb.velocity = dashDirection * dashSpeed;
                 dashStart = Time.time;
 
-                // Increase contact damage
-                if (entity != null)
+                if (owner != null)
                 {
-                    entity.ContactDamage *= contactDamageIncrease;
+                    // Increase contact damage
+                    owner.ContactDamage *= contactDamageIncrease;
                 }
 
                 // Enable the dashing effect
-                this.dashEffect.SetActive(true);
+                if (this.dashEffect != null) this.dashEffect.SetActive(true);
+
+                // Play sound effect
+                if (audioManager != null) audioManager.PlayDashSound();
             }
             else
             {
@@ -105,11 +112,16 @@ public class DashAbility : MonoBehaviour
                 }
                 onComplete?.Invoke();
 
-                // Decrease contact damage again
-                if (entity != null)
+                // Give some leeway
+                StartCoroutine(PerformAfterDelay(0.25f, () =>
                 {
-                    entity.ContactDamage /= contactDamageIncrease;
-                }
+                    if (owner != null)
+                    {
+                        // Decrease contact damage again
+                        owner.ContactDamage /= contactDamageIncrease;
+                    }
+                }));
+                
 
                 // Disable dashing effect
                 this.dashEffect.SetActive(false);
@@ -187,5 +199,12 @@ public class DashAbility : MonoBehaviour
         if (this.dashEffect == null) InstantiateDashEffect();
         this.dashEffect.GetComponentInChildren<TrailRenderer>().startColor = color;
         this.dashEffect.GetComponentInChildren<TrailRenderer>().endColor = color;
+    }
+
+    private IEnumerator PerformAfterDelay(float delay, System.Action action)
+    {
+        yield return new WaitForSeconds(delay);
+
+        action();
     }
 }

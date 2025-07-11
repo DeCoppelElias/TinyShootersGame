@@ -26,7 +26,6 @@ public class Player : Entity
     [SerializeField] private List<Sprite> alternativeSprites = new List<Sprite>();
     private int alternativeSpriteIndex = 0;
 
-    private ParticleManager particleManager;
     private PlayerMovement playerMovement;
 
     public Color Color { get; set; }
@@ -34,8 +33,6 @@ public class Player : Entity
     public override void StartEntity()
     {
         base.StartEntity();
-
-        particleManager = GameObject.Find("Particles")?.GetComponent<ParticleManager>();
 
         shootingAbility = GetComponent<ShootingAbility>();
         dashAbility = GetComponent<DashAbility>();
@@ -75,6 +72,22 @@ public class Player : Entity
                 }
             }
         }
+    }
+
+    public List<PlayerClass> GetUpgrades()
+    {
+        List<PlayerClass> upgrades = new List<PlayerClass>();
+        if (this.playerClass == null)
+        {
+            if (this.baseStats == null) return upgrades;
+
+            upgrades = this.baseStats.upgrades;
+        }
+        else
+        {
+            upgrades = this.playerClass.upgrades;
+        }
+        return upgrades;
     }
 
     public void ApplyClass(PlayerClass playerClass)
@@ -176,20 +189,11 @@ public class Player : Entity
     public override void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
         if (amount <= 0) return;
-        if (Time.time - invulnerableStart < invulnerableDuration) return;
         if (dashAbility != null && dashAbility.Dashing()) return;
-
-        this.Health -= amount;
-
-        StartColorChange();
-
+        if (Time.time - invulnerableStart < invulnerableDuration) return;
         invulnerableStart = Time.time;
 
-        int damageParticleAmount = UnityEngine.Random.Range(1, 3);
-        AddParticles(ParticleManager.ParticleType.Damage, damageParticleAmount);
-
-        float r = UnityEngine.Random.Range(0, 1f);
-        if (r < 0.05f) AddParticles(ParticleManager.ParticleType.Blood, 1);
+        base.TakeDamage(amount, sourceTag, damageType, direction);
 
         if (onHitEvent != null) onHitEvent.Invoke();
     }
@@ -197,30 +201,12 @@ public class Player : Entity
     public override void OnDeath()
     {
         base.OnDeath();
-
-        // Add damage pixels
-        AddParticles(ParticleManager.ParticleType.Damage, 10);
-
-        // Drop Blood
-        AddParticles(ParticleManager.ParticleType.Blood, 1);
-
-        audioManager.PlayDieSound();
         onDeath.Invoke();
     }
 
-    private void AddParticles(ParticleManager.ParticleType particleType, int amount)
+    public override void AddKnockback(Vector2 force)
     {
-        if (particleManager == null) return;
-
-        for (int i = 0; i < amount; i++)
-        {
-            particleManager.CreateParticle(particleType, transform.position, Quaternion.identity, this.transform.localScale, Color.blue);
-        }
-    }
-
-    public override void AddKnockback(float force, Vector3 direction)
-    {
-        if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(direction, force / 0.1f, 0.1f);
+        if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(force);
     }
 
     private void SetupColor(Color color)

@@ -20,17 +20,17 @@ public class ParticleManager : MonoBehaviour
         }
     }
 
-    public GameObject CreateParticle(ParticleType particleType, Vector3 position, Quaternion rotation, Vector3 scale, Color color)
+    public void CreateParticle(ParticleType particleType, Vector3 position, Quaternion rotation, Vector3 scale, Color color, int amount = 1)
     {
-        ParticlePool particlePool = GetParticlePool(particleType);
-        Particle particle = particlePool.GetParticle();
-        if (particle == null) return null;
+        for (int i = 0; i < amount; i++)
+        {
+            ParticlePool particlePool = GetParticlePool(particleType);
+            Particle particle = particlePool.GetParticle();
 
-        particle.Initialise(position, rotation, scale, color);
-        particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
-        particle.Play();
-
-        return particle.gameObject;
+            particle.Initialise(position, rotation, scale, color);
+            particle.AssignOnComplete(() => particlePool.ReturnParticle(particle));
+            particle.Play();
+        }
     }
 
     private ParticlePool GetParticlePool(ParticleType particleType)
