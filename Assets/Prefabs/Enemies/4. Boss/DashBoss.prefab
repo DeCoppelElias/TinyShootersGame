@@ -160,7 +160,7 @@ MonoBehaviour:
   chargeDuration: 0.5
   dashSpeed: 5
   contactDamageIncrease: 2
-  dashEffectPrefab: {fileID: 0}
+  dashEffectPrefab: {fileID: 8509839074665756491, guid: 25b2c8541e7128742807d8a6df1bd063, type: 3}
   onPerformed:
     m_PersistentCalls:
       m_Calls: []

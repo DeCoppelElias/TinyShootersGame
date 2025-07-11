@@ -118,21 +118,9 @@ public class WaveManager : MonoBehaviour
             waveState = WaveState.LevelCooldown;
             lastWaveTime = Time.time;
 
-            classUpgradeCounter++;
-            if (classUpgradeCounter == classUpgradeCooldown)
-            {
-                classUpgradeCounter = 0;
-                uiManager.EnableUpgradeUI();
-            }
-
-            powerupCounter++;
-            if (powerupCounter == powerupCooldown)
-            {
-                powerupCounter = 0;
-                uiManager.EnablePowerupUI();
-            }
+            RewardPlayer();
         }
-        else if (!CheckLastLevel() && !CheckLastWave())
+        else if (!CheckLastWave())
         {
             waveIndex++;
 
@@ -143,19 +131,26 @@ public class WaveManager : MonoBehaviour
             Wave wave = level.GetWave(waveIndex);
             uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
 
-            classUpgradeCounter++;
-            if (classUpgradeCounter == classUpgradeCooldown)
-            {
-                classUpgradeCounter = 0;
-                uiManager.EnableUpgradeUI();
-            }
+            RewardPlayer();
+        }
+    }
 
-            powerupCounter++;
-            if (powerupCounter == powerupCooldown)
-            {
-                powerupCounter = 0;
-                uiManager.EnablePowerupUI();
-            }
+    private void RewardPlayer()
+    {
+        classUpgradeCounter++;
+        if (classUpgradeCounter == classUpgradeCooldown)
+        {
+            classUpgradeCounter = 0;
+            bool success = uiManager.EnableUpgradeUI();
+
+            if (!success) uiManager.EnablePowerupUI();
+        }
+
+        powerupCounter++;
+        if (powerupCounter == powerupCooldown)
+        {
+            powerupCounter = 0;
+            uiManager.EnablePowerupUI();
         }
     }
 

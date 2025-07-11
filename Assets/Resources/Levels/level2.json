@@ -135,11 +135,11 @@
                     "amount": 3
                 },
                 {
-                    "type": "Shotgun",
+                    "type": "ShotgunEnemy",
                     "amount": 3
                 },
                 {
-                    "type": "Sniper",
+                    "type": "SniperEnemy",
                     "amount": 2
                 }
             ]

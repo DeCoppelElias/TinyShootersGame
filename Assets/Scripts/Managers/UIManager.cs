@@ -133,12 +133,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void EnableUpgradeUI()
+    public bool EnableUpgradeUI()
     {
         List<PlayerClass> upgrades = new List<PlayerClass>();
         if (player.playerClass == null)
         {
-            if (player.baseStats == null) return;
+            if (player.baseStats == null) return false;
 
             upgrades = player.baseStats.upgrades;
         }
@@ -146,7 +146,7 @@ public class UIManager : MonoBehaviour
         {
             upgrades = player.playerClass.upgrades;
         }
-        if (upgrades.Count == 0) return;
+        if (upgrades.Count == 0) return false;
 
         LowerMusicVolume();
         gameStateManager.ToPaused();
@@ -192,6 +192,8 @@ public class UIManager : MonoBehaviour
 
         upgradeUI.SetActive(true);
         SetFirstSelectedIfGamepad(buttons.GetChild(0).gameObject);
+
+        return true;
     }
 
     public void DisableUpgradeUI()

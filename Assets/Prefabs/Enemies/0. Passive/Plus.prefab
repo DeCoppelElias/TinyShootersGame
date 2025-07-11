@@ -176,7 +176,7 @@ MonoBehaviour:
   targetPosition: {x: 0, y: 0, z: 0}
   walkToPositionState: 0
   debug: 0
-  minimumMovementCooldown: 1
+  minimumMovementCooldown: 2
   maximumMovementCooldown: 2
   minimumForceApplied: 3500
   maximumForceApplied: 4000
@@ -246,7 +246,7 @@ MonoBehaviour:
   health: 75
   contactDamage: 10
   contactHitCooldown: 1
-  onDeathScore: 100
+  onDeathScore: 10
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
