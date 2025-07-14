@@ -206,6 +206,7 @@ public class Player : Entity
 
     public override void AddKnockback(Vector2 force)
     {
+        if (knockbackImmune) return;
         if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(force);
     }
 

@@ -44,6 +44,7 @@ public class DashAbility : MonoBehaviour
 
         InstantiateDashEffect();
     }
+
     public void Dash(Vector2 direction, System.Action action = null)
     {
         if (dashingState != DashingState.Ready) return;
@@ -52,6 +53,8 @@ public class DashAbility : MonoBehaviour
         this.onComplete = action;
         dashingState = DashingState.Charging;
         this.dashDirection = direction;
+
+        rb.AddForce(0.1f * dashSpeed * rb.mass * -dashDirection.normalized, ForceMode2D.Impulse);
         chargeStart = Time.time;
     }
 
@@ -60,7 +63,7 @@ public class DashAbility : MonoBehaviour
         return dashingState == DashingState.Ready;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (dashingState == DashingState.Cooldown)
         {
@@ -79,7 +82,10 @@ public class DashAbility : MonoBehaviour
             if (Time.time - chargeStart > chargeDuration)
             {
                 dashingState = DashingState.Dashing;
-                rb.velocity = dashDirection * dashSpeed;
+
+                // Perform dash
+                rb.velocity = Vector2.zero;
+                rb.AddForce(dashSpeed * rb.mass * dashDirection.normalized, ForceMode2D.Impulse);
                 dashStart = Time.time;
 
                 if (owner != null)
@@ -93,23 +99,20 @@ public class DashAbility : MonoBehaviour
 
                 // Play sound effect
                 if (audioManager != null) audioManager.PlayDashSound();
-            }
-            else
-            {
-                rb.velocity = 0.1f * dashSpeed * -dashDirection;
+
+                // Make knockback immune
+                this.owner.knockbackImmune = true;
             }
         }
         else if (dashingState == DashingState.Dashing)
         {
+            // End dash
             if (Time.time - dashStart > dashDuration || rb.velocity == Vector2.zero)
             {
                 dashingState = DashingState.Cooldown;
                 lastDash = Time.time;
 
-                if (onPerformed != null)
-                {
-                    onPerformed.Invoke();
-                }
+                onPerformed?.Invoke();
                 onComplete?.Invoke();
 
                 // Give some leeway
@@ -121,21 +124,24 @@ public class DashAbility : MonoBehaviour
                         owner.ContactDamage /= contactDamageIncrease;
                     }
                 }));
-                
 
                 // Disable dashing effect
                 this.dashEffect.SetActive(false);
-            }
-            else
-            {
-                rb.velocity = dashDirection * dashSpeed;
+
+                // Enable knockback again
+                this.owner.knockbackImmune = false;
             }
         }
     }
 
     public float GetDashingDistance()
     {
-        return dashSpeed * dashDuration;
+        float force = dashSpeed * rb.mass;
+        if (rb.drag <= 0f)
+            return (force / rb.mass) * dashDuration;
+
+        float v0 = force / rb.mass;
+        return v0 / rb.drag * (1f - Mathf.Exp(-rb.drag * dashDuration));
     }
 
     public int GetDashCooldown()

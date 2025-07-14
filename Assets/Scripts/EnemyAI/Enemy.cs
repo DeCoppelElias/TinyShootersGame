@@ -20,12 +20,6 @@ public class Enemy : Entity
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
 
-    [Header("Knockback Settings")]
-    [SerializeField] private bool knockbackImmune = false;
-    private int knockbackForce = 30;
-    private float knockbackCooldown = 0.3f;
-    private float lastKnockback;
-
     public override void StartEntity()
     {
         base.StartEntity();

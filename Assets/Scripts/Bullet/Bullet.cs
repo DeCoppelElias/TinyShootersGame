@@ -166,7 +166,17 @@ public class Bullet : MonoBehaviour
         Entity entity = collision.GetComponent<Entity>();
         if (entity != null && ownerTag != collision.tag && entity.Health > 0)
         {
-            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged, rb.velocity);
+            Vector2 direction = (entity.transform.position - this.transform.position).normalized;
+            float baseKnockbackForce = 30;
+            float velocity = Vector2.Dot(rb.velocity, direction);
+
+            Vector2 knockbackForce = direction.normalized * (
+                baseKnockbackForce +
+                0.4f * damage +
+                0.4f * velocity
+            );
+
+            entity.TakeDamage(damage, ownerTag, Entity.DamageType.Ranged, knockbackForce);
 
             pierce--;
             if (pierce == 0)

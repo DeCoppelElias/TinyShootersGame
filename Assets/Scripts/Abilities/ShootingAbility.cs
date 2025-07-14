@@ -24,7 +24,10 @@ public class ShootingAbility : MonoBehaviour
 
     public Entity owner;
 
-    public UnityEvent onShoot;
+    public UnityAction OnShootStart;
+    public UnityAction OnShootEnd;
+
+    public UnityAction onShoot;
 
     private BulletManager bulletManager;
     private AudioManager audioManager;
@@ -75,11 +78,13 @@ public class ShootingAbility : MonoBehaviour
     public void StartShooting()
     {
         shooting = true;
+        OnShootStart.Invoke();
     }
 
     public void StopShooting()
     {
         shooting = false;
+        OnShootEnd.Invoke();
     }
 
     public void TryShootOnce()
@@ -190,9 +195,16 @@ public class ShootingAbility : MonoBehaviour
         bullet.Shoot();
 
         // Give Knockback to self
-        Vector2 knockbackDirection = -(Vector2)(finalRotation * Vector3.up).normalized;
-        float knockbackForce = this.runtimeStats.Damage * this.runtimeStats.BulletVelocity / 1.5f;
-        if (this.owner != null) this.owner.AddKnockback(knockbackForce * knockbackDirection);
+        Vector2 direction = -(Vector2)(finalRotation * Vector3.up).normalized;
+        float baseKnockbackForce = 20;
+        float velocity = bulletSpeed;
+
+        Vector2 knockbackForce = direction.normalized * (
+            baseKnockbackForce +
+            0.4f * damage +
+            0.4f * velocity
+        );
+        if (this.owner != null) this.owner.AddKnockback(knockbackForce);
     }
 
     public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage)

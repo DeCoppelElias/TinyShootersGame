@@ -10,8 +10,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Parameters")]
     [SerializeField] private float moveSpeed = 4;
     [SerializeField] private float currentVelocity;
+    [SerializeField] private float targetVelocity;
     [SerializeField] private float acceleration = 5;
-    private enum MovementState { Normal, Knockback, Reduced, }
+    private enum MovementState { Normal, Knockback }
     [SerializeField] private MovementState movementState = MovementState.Normal;
 
     private Vector2 currentMoveDirection = Vector2.zero;
@@ -27,11 +28,6 @@ public class PlayerMovement : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
-    private Vector3 knockbackDirection;
-    private float knockbackSpeed = 10;
-    private float knockbackStart = 0;
-    private float knockbackDuration = 1;
-
     [SerializeField] private Camera customCamera;
 
     private enum TrailState { Idle, Trailing}
@@ -41,6 +37,9 @@ public class PlayerMovement : MonoBehaviour
     private ParticleManager particleManager;
     private Rigidbody2D rb;
 
+    private float knockbackStart;
+    private float knockbackDuration;
+
     private void Start()
     {
         this.player = this.GetComponent<Player>();
@@ -49,8 +48,20 @@ public class PlayerMovement : MonoBehaviour
 
         this.dashAbility = this.GetComponent<DashAbility>();
         this.shootAbility = this.GetComponent<ShootingAbility>();
+        if (shootAbility)
+        {
+            shootAbility.OnShootStart += () => {
+                targetVelocity = shootAbility.GetShootingMoveSpeed();
+                currentVelocity = shootAbility.GetShootingMoveSpeed();
+            };
+
+            shootAbility.OnShootEnd += () => {
+                targetVelocity = moveSpeed;
+            };
+        }
 
         this.currentVelocity = moveSpeed;
+        this.targetVelocity = moveSpeed;
 
         this.spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
 
@@ -60,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Move();
         Look();
@@ -87,52 +98,25 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        // Don't move if dashing
         if (dashAbility != null && (dashAbility.Dashing() || dashAbility.Charging())) return;
 
-        // If knockback, move in knockback direction
-        if (this.movementState == MovementState.Knockback)
+        currentVelocity = Mathf.MoveTowards(currentVelocity, targetVelocity, acceleration * Time.deltaTime);
+
+        if (movementState == MovementState.Knockback)
         {
-            /*Vector2 knockbackVelocity = knockbackDirection * knockbackSpeed;
-            Vector2 inputVelocity = currentMoveDirection * moveSpeed * 0.5f;
-
-            playerRB.velocity = knockbackVelocity + inputVelocity;
-
-            // If knockback is over, return to normal movement
-            if (Time.time - knockbackStart > knockbackDuration || playerRB.velocity == Vector2.zero)
+            if (playerRB.velocity.magnitude > moveSpeed)
             {
-                this.movementState = MovementState.Normal;
-            }*/
-            Vector2 inputForce = currentMoveDirection * 0.5f;
-            playerRB.AddForce(inputForce, ForceMode2D.Force);
-
-            // Exit knockback when player has mostly stopped (or nearly so)
-            if (playerRB.velocity.magnitude < this.moveSpeed)
+                Vector2 inputForce = currentMoveDirection * rb.mass;
+                playerRB.AddForce(inputForce, ForceMode2D.Force);
+            }
+            else
             {
                 movementState = MovementState.Normal;
             }
         }
-        else if (this.movementState == MovementState.Normal)
-        {
-            currentVelocity = Mathf.Min(currentVelocity + (acceleration * Time.deltaTime), moveSpeed);
-            playerRB.velocity = currentMoveDirection * currentVelocity;
-
-            // Slow down if shooting
-            if (shootAbility != null && shootAbility.shooting)
-            {
-                this.movementState = MovementState.Reduced;
-                currentVelocity = shootAbility.GetShootingMoveSpeed();
-            }
-        }
-        else if (this.movementState == MovementState.Reduced)
+        else
         {
             playerRB.velocity = currentMoveDirection * currentVelocity;
-
-            // If shooting is done, accelerate to normal movespeed
-            if (shootAbility != null && !shootAbility.shooting)
-            {
-                this.movementState = MovementState.Normal;
-            }
         }
     }
 
@@ -162,8 +146,11 @@ public class PlayerMovement : MonoBehaviour
     }
     public void ApplyKnockBack(Vector2 force)
     {
-        if (rb != null) rb.AddForce(force, ForceMode2D.Impulse);
-        this.movementState = MovementState.Knockback;
+        if (rb != null && !dashAbility.Dashing())
+        {
+            rb.AddForce(force, ForceMode2D.Impulse);
+            this.movementState = MovementState.Knockback;
+        }
     }
 
     public void ApplyStats(PlayerStats playerStats)

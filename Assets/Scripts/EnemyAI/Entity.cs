@@ -17,6 +17,8 @@ public abstract class Entity : MonoBehaviour
     [SerializeField] private float contactHitCooldown = 1f;
     private float lastContactHit = 0;
 
+    public bool knockbackImmune = false;
+
     public int onDeathScore = 100;
     [SerializeField] private Color entityColor = Color.red;
 
@@ -54,8 +56,6 @@ public abstract class Entity : MonoBehaviour
     private Tilemap pits;
 
     protected Rigidbody2D rb;
-
-    private UnityAction<Entity> onHit;
 
 
     private void Start()
@@ -164,7 +164,7 @@ public abstract class Entity : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(float damage, string sourceTag, DamageType damageType, Vector2 velocity)
+    public virtual void TakeDamage(float damage, string sourceTag, DamageType damageType, Vector2 knockback)
     {
         if (damage <= 0) return;
 
@@ -172,10 +172,10 @@ public abstract class Entity : MonoBehaviour
 
         lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
-        lastDamageDirection = velocity.normalized;
+        lastDamageDirection = knockback.normalized;
 
         // Give knockback
-        AddKnockback(damage * velocity);
+        AddKnockback(knockback);
 
         // Color change
         StartColorChange();
@@ -205,15 +205,18 @@ public abstract class Entity : MonoBehaviour
             lastContactHit = Time.time;
 
             Vector2 direction = (collision.transform.position - this.transform.position).normalized;
-            Vector2 velocity = direction * other.rb.velocity;
-            HitEntity(other, contactDamage, DamageType.Melee, velocity);
-        }
-    }
+            float baseKnockbackForce = 50;
+            float damage = contactDamage;
+            float velocity = Vector2.Dot(rb.velocity, direction);
 
-    protected void HitEntity(Entity other, float damage, DamageType damageType, Vector3 velocity)
-    {
-        other.TakeDamage(damage, this.tag, damageType, velocity);
-        if (this.onHit != null) this.onHit.Invoke(other);
+            Vector2 knockbackForce = direction.normalized * (
+                baseKnockbackForce +
+                0.1f * damage +
+                0.5f * velocity
+            );
+
+            other.TakeDamage(contactDamage, this.tag, DamageType.Melee, knockbackForce);
+        }
     }
 
     private bool CheckOutOfBounds()
@@ -305,17 +308,7 @@ public abstract class Entity : MonoBehaviour
 
     public virtual void AddKnockback(Vector2 force)
     {
-        // if (rb != null) rb.AddForce(100 * force * direction, ForceMode2D.Impulse);
+        if (knockbackImmune) return;
         if (rb != null) rb.AddForce(force, ForceMode2D.Impulse);
-    }
-
-    public void AddOnHit(UnityAction<Entity> onHit)
-    {
-        this.onHit += onHit;
-    }
-
-    public void RemoveOnHit(UnityAction<Entity> onHit)
-    {
-        this.onHit -= onHit;
     }
 }
