@@ -21,7 +21,7 @@ MonoBehaviour:
   invulnerableDurationDelta: 0
   contactDamageDelta: 0
   contactHitCooldownDelta: 0
-  damageDelta: -5
+  damageDelta: 0
   attackCooldownDelta: 0
   rangeDelta: 0
   pierceDelta: 0
@@ -30,11 +30,11 @@ MonoBehaviour:
   bulletSizeDelta: 0
   bulletSpeedDelta: 0
   splitOnHit: 1
-  splitAmountDelta: 3
+  splitAmountDelta: 5
   splitRangeDelta: 0
   splitBulletSizeDelta: 0
   splitBulletSpeedDelta: 0
-  splitDamagePercentageDelta: 0
+  splitDamagePercentageDelta: -0.1
   dashCooldownDelta: 0
   dashDurationDelta: 0
   chargeDurationDelta: 0

@@ -16,13 +16,13 @@ MonoBehaviour:
   rarity: 1
   healthDelta: 0
   recoverHealth: 0
-  normalMoveSpeedDelta: -1
-  shootingMoveSpeedDelta: -0.8
+  normalMoveSpeedDelta: -0.5
+  shootingMoveSpeedDelta: -0.4
   invulnerableDurationDelta: 0
   contactDamageDelta: 0
   contactHitCooldownDelta: 0
   damageDelta: 10
-  attackCooldownDelta: 0.2
+  attackCooldownDelta: 0.1
   rangeDelta: 0
   pierceDelta: 0
   totalSplitDelta: 0

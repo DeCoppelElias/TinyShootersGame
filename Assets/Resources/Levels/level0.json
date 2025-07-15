@@ -120,7 +120,7 @@
             "enemies": [
                 {
                     "type": "Spider",
-                    "amount": 6
+                    "amount": 4
                 },
                 {
                     "type": "RangedEnemy",
@@ -132,7 +132,7 @@
             "waveNumber": 10,
             "enemies": [
                 {
-                    "type": "SplitBoss",
+                    "type": "Mother",
                     "amount": 1
                 }
             ],

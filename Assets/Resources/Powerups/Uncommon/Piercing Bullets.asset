@@ -21,7 +21,7 @@ MonoBehaviour:
   invulnerableDurationDelta: 0
   contactDamageDelta: 0
   contactHitCooldownDelta: 0
-  damageDelta: -5
+  damageDelta: 0
   attackCooldownDelta: 0
   rangeDelta: 0
   pierceDelta: 1

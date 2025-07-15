@@ -66,9 +66,9 @@ public class PseudoRandomMovementBehaviour : MovementBehaviour
         Vector2 direction = Random.insideUnitCircle.normalized;
         Vector3 direction3D = new Vector3(direction.x, direction.y, 0);
 
-        float counter = 5;
+        float counter = 10;
         Vector3 endpoint = this.transform.position + direction3D * counter;
-        while (this.pathFinder.IsObstacleInBetween(this.transform.position, endpoint) && counter <= 0)
+        while (this.pathFinder.IsObstacleInBetween(this.transform.position, endpoint) || counter <= 0)
         {
             direction = Random.insideUnitCircle.normalized;
             direction3D = new Vector3(direction.x, direction.y, 0);

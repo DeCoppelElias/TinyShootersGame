@@ -195,7 +195,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 20
+  m_Mass: 40
   m_LinearDrag: 5
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -281,6 +281,7 @@ MonoBehaviour:
   health: 100
   contactDamage: 10
   contactHitCooldown: 1
+  knockbackImmune: 0
   onDeathScore: 100
   entityColor: {r: 1, g: 0, b: 0, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
@@ -293,7 +294,6 @@ MonoBehaviour:
   refreshPlayerTargetCooldown: 2
   spawnBody: 1
   debug: 0
-  knockbackImmune: 0
 --- !u!114 &4410656640601244863
 MonoBehaviour:
   m_ObjectHideFlags: 0

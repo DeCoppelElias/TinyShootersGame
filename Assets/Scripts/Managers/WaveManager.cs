@@ -233,12 +233,12 @@ public class WaveManager : MonoBehaviour
             {
                 if (!enemyCount.customSpawn)
                 {
-                    CreateEnemy(prefab, spawnLocations[count]);
+                    CreateLevelEnemy(prefab, spawnLocations[count]);
                     count += 1;
                 }
                 else
                 {
-                    CreateEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3());
+                    CreateLevelEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3());
                 }
             }
         }
@@ -295,10 +295,30 @@ public class WaveManager : MonoBehaviour
         return spawnLocations.OrderBy(x => UnityEngine.Random.Range(0, spawnLocations.Count)).Take(amount).ToList();
     }
 
-    private void CreateEnemy(GameObject prefab, Vector3 spawnLocation)
+    /// <summary>
+    /// Create an enemy as part of the level (will give score)
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="spawnLocation"></param>
+    private void CreateLevelEnemy(GameObject prefab, Vector3 spawnLocation)
     {
         warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), warningTile);
         StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation));
+    }
+
+    /// <summary>
+    /// Create an enemy as not part of level (will not give score)
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="spawnLocation"></param>
+    /// <returns></returns>
+    public GameObject CreateEnemy(GameObject prefab, Vector3 spawnLocation)
+    {
+        GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
+        enemy.transform.SetParent(enemies.transform);
+        enemy.GetComponent<Enemy>().onDeathScore = 0;
+
+        return enemy;
     }
 
     private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation)

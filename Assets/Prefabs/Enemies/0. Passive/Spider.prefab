@@ -363,6 +363,7 @@ MonoBehaviour:
   health: 50
   contactDamage: 10
   contactHitCooldown: 1
+  knockbackImmune: 0
   onDeathScore: 10
   entityColor: {r: 1, g: 0, b: 0, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
@@ -375,7 +376,6 @@ MonoBehaviour:
   refreshPlayerTargetCooldown: 2
   spawnBody: 1
   debug: 0
-  knockbackImmune: 0
 --- !u!50 &1506833388709921254
 Rigidbody2D:
   serializedVersion: 4
@@ -453,5 +453,5 @@ MonoBehaviour:
   debug: 0
   minimumMovementCooldown: 1
   maximumMovementCooldown: 2
-  minimumForceApplied: 3500
-  maximumForceApplied: 4000
+  minimumForceApplied: 1300
+  maximumForceApplied: 1800

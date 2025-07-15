@@ -217,7 +217,9 @@ MonoBehaviour:
   health: 100
   contactDamage: 10
   contactHitCooldown: 1
+  knockbackImmune: 0
   onDeathScore: 100
+  entityColor: {r: 1, g: 0, b: 0, a: 1}
   damageColor: {r: 0, g: 0, b: 1, a: 1}
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
@@ -265,6 +267,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 4
   currentVelocity: 0
+  targetVelocity: 0
   acceleration: 4
   movementState: 0
   customCamera: {fileID: 0}
@@ -351,9 +354,6 @@ MonoBehaviour:
   bulletColor: {r: 1, g: 1, b: 1, a: 1}
   firepoints: []
   owner: {fileID: 0}
-  onShoot:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!50 &2952285022420082845
 Rigidbody2D:
   serializedVersion: 4

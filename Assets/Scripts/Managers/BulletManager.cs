@@ -53,6 +53,10 @@ public class BulletManager : MonoBehaviour
     {
         if (bullet == null) return;
 
+        bullet.transform.position = Vector3.zero;
+        bullet.transform.localScale = Vector3.one;
+        bullet.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+
         this.availableBullets.Enqueue(bullet);
         bullet.gameObject.SetActive(false);
     }

@@ -71,7 +71,7 @@
                 },
                 {
                     "type": "GunnerEnemy",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },
@@ -84,7 +84,7 @@
                 },
                 {
                     "type": "GunnerEnemy",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },
@@ -140,11 +140,11 @@
                 },
                 {
                     "type": "GunnerEnemy",
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "type": "SniperEnemy",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },

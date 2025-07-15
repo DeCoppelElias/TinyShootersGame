@@ -237,8 +237,8 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 20
-  m_LinearDrag: 3
+  m_Mass: 30
+  m_LinearDrag: 5
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -279,6 +279,7 @@ MonoBehaviour:
   health: 150
   contactDamage: 10
   contactHitCooldown: 1
+  knockbackImmune: 0
   onDeathScore: 100
   entityColor: {r: 1, g: 0, b: 0, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
@@ -291,7 +292,6 @@ MonoBehaviour:
   refreshPlayerTargetCooldown: 2
   spawnBody: 1
   debug: 0
-  knockbackImmune: 0
 --- !u!114 &3365228449301371230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,9 +378,6 @@ MonoBehaviour:
   bulletColor: {r: 1, g: 1, b: 1, a: 1}
   firepoints: []
   owner: {fileID: 0}
-  onShoot:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &7835559864624660483
 GameObject:
   m_ObjectHideFlags: 0
