@@ -162,7 +162,7 @@ MonoBehaviour:
   chargeDuration: 0
   dashSpeed: 8
   contactDamageIncrease: 1
-  dashEffectPrefab: {fileID: 0}
+  dashEffectPrefab: {fileID: 8509839074665756491, guid: 25b2c8541e7128742807d8a6df1bd063, type: 3}
   onPerformed:
     m_PersistentCalls:
       m_Calls: []
@@ -222,6 +222,7 @@ MonoBehaviour:
   health: 300
   contactDamage: 20
   contactHitCooldown: 1
+  knockbackImmune: 0
   onDeathScore: 200
   entityColor: {r: 1, g: 0, b: 0, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
@@ -234,7 +235,6 @@ MonoBehaviour:
   refreshPlayerTargetCooldown: 2
   spawnBody: 1
   debug: 0
-  knockbackImmune: 0
 --- !u!114 &8947136591138831557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +251,9 @@ MonoBehaviour:
   currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  canSeeTargetPosition: 1
+  lastTargetPositionVisionCheck: 0
+  targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
   debug: 0
 --- !u!114 &5494964774439201206
@@ -386,7 +389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_InstanceId
-      value: -83548
+      value: -97746
       objectReference: {fileID: 0}
     - target: {fileID: 8478164273474325271, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_Name

@@ -321,6 +321,9 @@ MonoBehaviour:
   currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  canSeeTargetPosition: 1
+  lastTargetPositionVisionCheck: 0
+  targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
   debug: 0
   shootingMoveSpeedReduction: 0.8
@@ -424,7 +427,7 @@ MonoBehaviour:
   chargeDuration: 0
   dashSpeed: 6
   contactDamageIncrease: 5
-  dashEffectPrefab: {fileID: 0}
+  dashEffectPrefab: {fileID: 8509839074665756491, guid: 25b2c8541e7128742807d8a6df1bd063, type: 3}
   onPerformed:
     m_PersistentCalls:
       m_Calls: []

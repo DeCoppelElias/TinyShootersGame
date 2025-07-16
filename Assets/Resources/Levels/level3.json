@@ -49,7 +49,7 @@
                 },
                 {
                     "type": "DodgeMeleeEnemy",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },
@@ -58,11 +58,11 @@
             "enemies": [
                 {
                     "type": "DodgeMeleeEnemy",
-                    "amount": 4
+                    "amount": 2
                 },
                 {
                     "type": "GunnerEnemy",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },
@@ -75,11 +75,11 @@
                 },
                 {
                     "type": "ChargeMeleeEnemy",
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "type": "HeavyEnemy",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },
@@ -88,11 +88,11 @@
             "enemies": [
                 {
                     "type": "ChargeMeleeEnemy",
-                    "amount": 4
+                    "amount": 2
                 },
                 {
                     "type": "SniperEnemy",
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "type": "ShotgunEnemy",
@@ -105,15 +105,15 @@
             "enemies": [
                 {
                     "type": "DodgeMeleeEnemy",
-                    "amount": 3
+                    "amount": 1
                 },
                 {
                     "type": "ChargeMeleeEnemy",
-                    "amount": 3
+                    "amount": 2
                 },
                 {
                     "type": "Spider",
-                    "amount": 3
+                    "amount": 2
                 }
             ]
         },
@@ -125,12 +125,8 @@
                     "amount": 5
                 },
                 {
-                    "type": "FastEnemy",
-                    "amount": 3
-                },
-                {
                     "type": "RangedEnemy",
-                    "amount": 5
+                    "amount": 3
                 }
             ]
         },
@@ -139,7 +135,7 @@
             "enemies": [
                 {
                     "type": "ShotgunEnemy",
-                    "amount": 3
+                    "amount": 1
                 },
                 {
                     "type": "DodgeMeleeEnemy",
@@ -156,7 +152,7 @@
             "enemies": [
                 {
                     "type": "ShotgunEnemy",
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "type": "DodgeMeleeEnemy",
@@ -168,7 +164,7 @@
                 },
                 {
                     "type": "GunnerEnemy",
-                    "amount": 2
+                    "amount": 1
                 }
             ]
         },
