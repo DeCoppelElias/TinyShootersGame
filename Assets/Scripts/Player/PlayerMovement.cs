@@ -37,9 +37,6 @@ public class PlayerMovement : MonoBehaviour
     private ParticleManager particleManager;
     private Rigidbody2D rb;
 
-    private float knockbackStart;
-    private float knockbackDuration;
-
     private void Start()
     {
         this.player = this.GetComponent<Player>();

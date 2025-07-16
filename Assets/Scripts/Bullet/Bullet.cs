@@ -109,7 +109,8 @@ public class Bullet : MonoBehaviour
         bulletState = BulletState.Shoot;
 
         if (rb == null) rb = GetComponent<Rigidbody2D>();
-        rb.AddForce(transform.up * velocity, ForceMode2D.Impulse);
+        // rb.AddForce(transform.up * velocity, ForceMode2D.Impulse);
+        rb.velocity = transform.up * velocity;
     }
 
     private void Complete()
@@ -144,6 +145,7 @@ public class Bullet : MonoBehaviour
             }
         }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Wall"))

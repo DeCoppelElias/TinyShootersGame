@@ -23,6 +23,10 @@ public class PseudoRandomMovementBehaviour : MovementBehaviour
 
     private Enemy owner;
 
+    [SerializeField] private bool canSeePlayer = true;
+    [SerializeField] private float lastPlayerVisionCheck;
+    [SerializeField] private float playerVisionCooldown = 0.5f;
+
     protected override void Start()
     {
         base.Start();
@@ -40,9 +44,12 @@ public class PseudoRandomMovementBehaviour : MovementBehaviour
     {
         base.Update();
 
-        if (Time.time - this.lastMovement > movementCooldown && Time.time - startTiming > movementOffset)
+        Player player = this.owner.GetTargetPlayer();
+        if (player == null) MoveRandomly();
+
+        if (Time.time - lastMovement > movementCooldown && Time.time - startTiming > movementOffset)
         {
-            if (this.pathFinder.IsObstacleInBetween(this.transform.position, this.owner.GetTargetPlayer().transform.position)) MoveRandomly();
+            if (!canSeePlayer) MoveRandomly();
             else
             {
                 float r = Random.Range(0, 1f);
@@ -59,6 +66,12 @@ public class PseudoRandomMovementBehaviour : MovementBehaviour
             this.lastMovement = Time.time;
             this.movementCooldown = Random.Range(this.minimumMovementCooldown, this.maximumMovementCooldown);
         }
+
+        if (Time.time - lastPlayerVisionCheck > playerVisionCooldown)
+        {
+            lastPlayerVisionCheck = Time.time;
+            canSeePlayer = !pathFinder.IsObstacleInBetween(transform.position, this.owner.GetTargetPlayer().transform.position);
+        }
     }
 
     private void MoveRandomly()
@@ -68,7 +81,7 @@ public class PseudoRandomMovementBehaviour : MovementBehaviour
 
         float counter = 10;
         Vector3 endpoint = this.transform.position + direction3D * counter;
-        while (this.pathFinder.IsObstacleInBetween(this.transform.position, endpoint) || counter <= 0)
+        while (this.pathFinder.IsObstacleInBetween(this.transform.position, endpoint) && counter > 0)
         {
             direction = Random.insideUnitCircle.normalized;
             direction3D = new Vector3(direction.x, direction.y, 0);
@@ -82,8 +95,11 @@ public class PseudoRandomMovementBehaviour : MovementBehaviour
 
     private void MoveTowardsPlayer()
     {
+        Player player = this.owner.GetTargetPlayer();
+        if (player == null) return;
+
         int randomForce = Random.Range(minimumForceApplied, maximumForceApplied);
-        Vector3 direction = (this.owner.GetTargetPlayer().transform.position - this.transform.position).normalized;
+        Vector3 direction = (player.transform.position - this.transform.position).normalized;
         rb.AddForce(randomForce * this.moveSpeed * direction);
     }
 }

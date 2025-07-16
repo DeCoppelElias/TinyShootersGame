@@ -42,6 +42,7 @@ public class WaveManager : MonoBehaviour
 
     private float lastWaveTime = 0;
     private float playerHealthBeforeWave = 0;
+    private float betweenEnemySpawnDelay = 0.2f;
     private float enemySpawnDelay = 1;
 
     private float classUpgradeCooldown = 10;
@@ -210,7 +211,6 @@ public class WaveManager : MonoBehaviour
         if (waveState != WaveState.Ready) return;
 
         waveState = WaveState.Spawning;
-        StartCoroutine(PerformAfterDelay(this.enemySpawnDelay, () => waveState = WaveState.Fighting));
 
         playerHealthBeforeWave = player.Health;
 
@@ -223,9 +223,13 @@ public class WaveManager : MonoBehaviour
         {
             if (!enemyCount.customSpawn) totalCount += enemyCount.amount;
         }
+
+        StartCoroutine(PerformAfterDelay((this.betweenEnemySpawnDelay * totalCount) + this.enemySpawnDelay, () => waveState = WaveState.Fighting));
+
         List<Vector3> spawnLocations = FindSpawnLocations(totalCount);
 
-        int count = 0;
+        int spawnLocationCounter = 0;
+        int spawnCounter = 0;
         foreach (EnemyCount enemyCount in enemies)
         {
             GameObject prefab = StringToPrefab(enemyCount.type);
@@ -233,13 +237,14 @@ public class WaveManager : MonoBehaviour
             {
                 if (!enemyCount.customSpawn)
                 {
-                    CreateLevelEnemy(prefab, spawnLocations[count]);
-                    count += 1;
+                    StartCoroutine(CreateLevelEnemy(prefab, spawnLocations[spawnLocationCounter], spawnCounter * this.betweenEnemySpawnDelay));
+                    spawnLocationCounter += 1;
                 }
                 else
                 {
-                    CreateLevelEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3());
+                    StartCoroutine(CreateLevelEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3(), spawnCounter * this.betweenEnemySpawnDelay));
                 }
+                spawnCounter++;
             }
         }
     }
@@ -249,8 +254,8 @@ public class WaveManager : MonoBehaviour
         waveState = WaveState.WaveCooldown;
         lastWaveTime = Time.time;
 
-        waveIndex = 0;
-        levelIndex++;
+        this.waveIndex = 0;
+        this.levelIndex++;
 
         Level level = GetLevel(levelIndex);
         Wave wave = level.GetWave(waveIndex);
@@ -300,10 +305,12 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     /// <param name="prefab"></param>
     /// <param name="spawnLocation"></param>
-    private void CreateLevelEnemy(GameObject prefab, Vector3 spawnLocation)
+    private IEnumerator CreateLevelEnemy(GameObject prefab, Vector3 spawnLocation, float delay)
     {
+        yield return new WaitForSeconds(delay);
+
         warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), warningTile);
-        StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation));
+        StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation, this.enemySpawnDelay));
     }
 
     /// <summary>
@@ -321,9 +328,9 @@ public class WaveManager : MonoBehaviour
         return enemy;
     }
 
-    private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation)
+    private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation, float delay)
     {
-        yield return new WaitForSeconds(this.enemySpawnDelay);
+        yield return new WaitForSeconds(delay);
 
         GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
         enemy.transform.SetParent(enemies.transform);

@@ -13,6 +13,9 @@ public abstract class MovementBehaviour : MonoBehaviour
 
     [Header("Walking To Position State")]
     [SerializeField] private Vector3 targetPosition;
+    [SerializeField] private bool canSeeTargetPosition = true;
+    [SerializeField] private float lastTargetPositionVisionCheck;
+    [SerializeField] private float targetPositionVisionCooldown = 0.5f;
     private enum WalkToPositionState { Normal, DodgingObstacle, NoPathToPosition }
     [SerializeField] private WalkToPositionState walkToPositionState = WalkToPositionState.Normal;
     protected PathFinding pathFinder;
@@ -37,7 +40,12 @@ public abstract class MovementBehaviour : MonoBehaviour
     {
         if (movementBehaviourState == MovementBehaviourState.WalkingToPosition)
         {
-            WalkToPositionUpdate(targetPosition);
+            WalkToTargetPosition();
+        }
+        if (Time.time - lastTargetPositionVisionCheck > targetPositionVisionCooldown)
+        {
+            lastTargetPositionVisionCheck = Time.time;
+            canSeeTargetPosition = !pathFinder.IsObstacleInBetween(transform.position, targetPosition);
         }
     }
 
@@ -80,18 +88,18 @@ public abstract class MovementBehaviour : MonoBehaviour
         else movementBehaviourState = MovementBehaviourState.Enabled;
     }
 
-    private void WalkToPositionUpdate(Vector3 position)
+    private void WalkToTargetPosition()
     {
         float step = currentMoveSpeed * Time.deltaTime;
         // If there are no obstacles between enemy and player, move towards player
         if (walkToPositionState == WalkToPositionState.Normal)
         {
-            transform.position = Vector2.MoveTowards(transform.position, position, step);
+            transform.position = Vector2.MoveTowards(transform.position, targetPosition, step);
 
             // If there is an obstacle blocking the way, try to find a path to player and change state
-            if (pathFinder.IsObstacleInBetween(transform.position, position, 1))
+            if (!canSeeTargetPosition)
             {
-                currentPath = pathFinder.FindPath(transform.position, position);
+                currentPath = pathFinder.FindPath(transform.position, targetPosition);
                 lastPathFindingRefresh = Time.time;
 
                 // There is an existing path
@@ -111,7 +119,7 @@ public abstract class MovementBehaviour : MonoBehaviour
         else if (walkToPositionState == WalkToPositionState.DodgingObstacle)
         {
             // If path is empty or there are no obstacles to the player, then return no normal state
-            if (currentPath.Count == 0 || !pathFinder.IsObstacleInBetween(transform.position, position))
+            if (currentPath.Count == 0 || canSeeTargetPosition)
             {
                 currentPath.Clear();
                 walkToPositionState = WalkToPositionState.Normal;
@@ -128,7 +136,7 @@ public abstract class MovementBehaviour : MonoBehaviour
                 // Refresh route every few seconds
                 if (Time.time - lastPathFindingRefresh > pathFindingRefreshCooldown)
                 {
-                    currentPath = pathFinder.FindPath(transform.position, position);
+                    currentPath = pathFinder.FindPath(transform.position, targetPosition);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path
@@ -147,16 +155,19 @@ public abstract class MovementBehaviour : MonoBehaviour
         }
         else if (walkToPositionState == WalkToPositionState.NoPathToPosition)
         {
+            // Do nothing
+
+            // Try to find path
             if (Time.time - lastPathFindingRefresh > pathFindingRefreshCooldown)
             {
-                if (!pathFinder.IsObstacleInBetween(transform.position, position))
+                if (canSeeTargetPosition)
                 {
                     currentPath.Clear();
                     walkToPositionState = WalkToPositionState.Normal;
                 }
                 else
                 {
-                    currentPath = pathFinder.FindPath(transform.position, position);
+                    currentPath = pathFinder.FindPath(transform.position, targetPosition);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path

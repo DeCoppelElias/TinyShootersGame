@@ -132,17 +132,24 @@ public class PathFinding : MonoBehaviour
     {
         float radius = 0.5f * diameter;
 
-        LayerMask obstacleLayerMask = LayerMask.GetMask("Wall", "Pit");
-        if (Physics2D.OverlapCircle(position, radius, obstacleLayerMask) != null)
-            return Mathf.Infinity;
-
-        LayerMask pushableLayerMask = LayerMask.GetMask("Pushable");
-        if (Physics2D.OverlapCircle(position, radius, pushableLayerMask) != null)
-            return 3;
-
-        LayerMask entityLayerMask = LayerMask.GetMask("Entity");
-        if (Physics2D.OverlapCircle(position, radius, entityLayerMask) != null)
-            return 2;
+        LayerMask combinedLayerMask = LayerMask.GetMask("Wall", "Pit", "Pushable", "Entity");
+        Collider2D hit = Physics2D.OverlapCircle(position, radius, combinedLayerMask);
+        if (hit != null)
+        {
+            string tag = hit.tag;
+            if (tag == "Wall" || tag == "Pit")
+            {
+                return Mathf.Infinity;
+            }
+            else if (tag == "Pushable")
+            {
+                return 5;
+            }
+            else if (tag == "Entity")
+            {
+                return 5;
+            }
+        }
 
         // Add random noise to make paths more random
         float noise = UnityEngine.Random.Range(0,1f) * 0.2f;
@@ -290,23 +297,30 @@ public class PathFinding : MonoBehaviour
     /// </summary>
     /// <param name="route"></param>
     /// <returns></returns>
-    public List<Vector3> SmoothRoute(List<Vector3> route)
+    public List<Vector3> SmoothRoute(List<Vector3> route, int maxLookahead = 8)
     {
-        List<Vector3> newRoute = new List<Vector3>();
         if (route.Count <= 2) return route;
 
+        List<Vector3> newRoute = new List<Vector3>();
         newRoute.Add(route[0]);
-        int i = 0;
-        while (i < route.Count - 2)
-        {
-            int j = i + 2;
 
-            while (j < route.Count && !IsObstacleInBetween(route[i], route[j]))
+        int i = 0;
+        while (i < route.Count - 1)
+        {
+            int bestJ = i + 1;
+            int maxJ = Mathf.Min(i + maxLookahead, route.Count - 1);
+
+            for (int j = maxJ; j > i + 1; j--)
             {
-                j++;
+                if (!IsObstacleInBetween(route[i], route[j]))
+                {
+                    bestJ = j;
+                    break;
+                }
             }
-            newRoute.Add(route[j - 1]);
-            i = j - 1;
+
+            newRoute.Add(route[bestJ]);
+            i = bestJ;
         }
 
         return newRoute;
@@ -314,6 +328,7 @@ public class PathFinding : MonoBehaviour
 
     /// <summary>
     /// Checks whether there is an obstacle in between two points.
+    /// Try to call this method as little as possible as it has a large performance impact.
     /// </summary>
     /// <param name="from"></param>
     /// <param name="to"></param>
