@@ -24,6 +24,10 @@ Here are the main things I'm proud of:
 - **Player Classes**: The game contains multiple unique player classes. Adding a new class can be simply done by creating a new class ScriptableObject template. This template contains multiple options about player health, damage, ability cooldowns, etc. Making it easy to create a new unique class.
 - **Online Leaderboard**: The online leaderboard was implemented by integrating the [Leaderboard Creator Tool by Danial Jumagaliyev](https://danqzq.itch.io/leaderboard-creator). This has the advantage that I do not have to manage a leaderboard server by myself. The disadvantage is that I am dependent on Danial to keep the leaderboard active.
 
+### License
+[![License: CC BY-NC 4.0](https://licensebuttons.net/l/by-nc/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc/4.0/)
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+
 ### Media
 #### Video Compilation
 ![Tiny Shooters Video Compilation](Media/TinyShootersCompilation.gif)
