@@ -158,6 +158,7 @@ MonoBehaviour:
   health: 25
   contactDamage: 10
   contactHitCooldown: 1
+  knockbackImmune: 0
   onDeathScore: 50
   entityColor: {r: 1, g: 0, b: 0, a: 1}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
@@ -170,7 +171,6 @@ MonoBehaviour:
   refreshPlayerTargetCooldown: 2
   spawnBody: 1
   debug: 0
-  knockbackImmune: 0
 --- !u!114 &-6131695965287517290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +223,12 @@ MonoBehaviour:
   currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  canSeeTargetPosition: 1
+  targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
+  pathFindingRefreshCooldown: 3
+  avoidanceRadius: 1
+  avoidanceStrength: 0.1
   debug: 0
 --- !u!1001 &663409597109771511
 PrefabInstance:

@@ -252,9 +252,11 @@ MonoBehaviour:
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
   canSeeTargetPosition: 1
-  lastTargetPositionVisionCheck: 0
   targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
+  pathFindingRefreshCooldown: 3
+  avoidanceRadius: 1
+  avoidanceStrength: 0.1
   debug: 0
 --- !u!114 &5494964774439201206
 MonoBehaviour:

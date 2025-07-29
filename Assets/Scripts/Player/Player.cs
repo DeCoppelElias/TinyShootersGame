@@ -10,6 +10,7 @@ public class Player : Entity
     public PlayerClass playerClass;
     public PlayerStats baseStats = null;
 
+    [SerializeField] private bool invulnerable = false;
     [SerializeField] private float invulnerableDuration = 0.5f;
     private float invulnerableStart;
 
@@ -36,6 +37,9 @@ public class Player : Entity
 
         shootingAbility = GetComponent<ShootingAbility>();
         dashAbility = GetComponent<DashAbility>();
+        dashAbility.onStartDash.AddListener(() => invulnerable = true);
+        dashAbility.onLateComplete.AddListener(() => invulnerable = false);
+
         playerController = GetComponent<PlayerController>();
         playerMovement = GetComponent<PlayerMovement>();
 
@@ -189,7 +193,7 @@ public class Player : Entity
     public override void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
         if (amount <= 0) return;
-        if (dashAbility != null && dashAbility.Dashing()) return;
+        if (invulnerable) return;
         if (Time.time - invulnerableStart < invulnerableDuration) return;
         invulnerableStart = Time.time;
 

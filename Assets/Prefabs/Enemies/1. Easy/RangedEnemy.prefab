@@ -123,7 +123,12 @@ MonoBehaviour:
   currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  canSeeTargetPosition: 1
+  targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
+  pathFindingRefreshCooldown: 3
+  avoidanceRadius: 1
+  avoidanceStrength: 0.1
   debug: 0
   shootingMoveSpeedReduction: 0.8
   movementTargetDistance: 0.8

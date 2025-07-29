@@ -449,9 +449,17 @@ MonoBehaviour:
   currentMoveSpeed: 0
   movementBehaviourState: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  canSeeTargetPosition: 1
+  targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
+  pathFindingRefreshCooldown: 3
+  avoidanceRadius: 1
+  avoidanceStrength: 0.1
   debug: 0
   minimumMovementCooldown: 1
   maximumMovementCooldown: 2
   minimumForceApplied: 1300
   maximumForceApplied: 1800
+  canSeePlayer: 1
+  lastPlayerVisionCheck: 0
+  playerVisionCooldown: 0.5

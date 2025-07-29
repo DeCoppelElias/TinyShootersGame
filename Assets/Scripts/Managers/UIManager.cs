@@ -53,7 +53,6 @@ public class UIManager : MonoBehaviour
         upgradeUI.SetActive(false);
 
         powerupUI = GameObject.Find("PowerupUI");
-        powerupUI?.SetActive(false);
         powerupManager = GameObject.Find("PowerupManager")?.GetComponent<PowerupManager>();
 
         pauseUI = GameObject.Find("PauseUI");
@@ -197,45 +196,29 @@ public class UIManager : MonoBehaviour
 
     public void EnablePowerupUI()
     {
-        List<Powerup> powerups = powerupManager.ChooseRandomPowerups(3);
-        if (powerups.Count != 3) return;
-
-        LowerMusicVolume();
-        gameStateManager.ToPaused();
-
-        Transform buttons = powerupUI.transform.Find("Buttons");
-
-        // Link each button to upgrading the player to that class
-        for (int i = 0; i < buttons.childCount; i++)
-        {
-            Transform buttonTransform = buttons.GetChild(i);
-            Powerup currentPowerup = powerups[i];
-
-            Text title = buttonTransform.Find("Title").GetComponent<Text>();
-            title.text = currentPowerup.powerupName;
-
-            Text description = buttonTransform.Find("Description").GetComponent<Text>();
-            description.text = currentPowerup.GenerateUIDescription();
-
-            Button button = buttonTransform.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => {
-                player.ApplyPowerup(currentPowerup);
-                DisablePowerupUI();
-            });
-        }
-
-        powerupUI.SetActive(true);
-        SetFirstSelectedIfGamepad(buttons.GetChild(0).gameObject);
+        UIElement powerupUIElement = this.powerupUI.GetComponent<UIElement>();
+        EnableUI(powerupUIElement);
     }
 
     public void DisablePowerupUI()
     {
-        ReturnMusicVolume();
+        UIElement powerupUIElement = this.powerupUI.GetComponent<UIElement>();
+        DisableUI(powerupUIElement);
+    }
 
+    public void DisableUI(UIElement uiElement)
+    {
+        ReturnMusicVolume();
         gameStateManager.ToRunning();
-        powerupUI.SetActive(false);
         RemoveFirstSelected();
+        uiElement.Disable();
+    }
+
+    public void EnableUI(UIElement uiElement)
+    {
+        LowerMusicVolume();
+        gameStateManager.ToPaused();
+        uiElement.Enable();
     }
 
     public void DisableDashAbility()
@@ -244,7 +227,7 @@ public class UIManager : MonoBehaviour
         dashAbilityEnabled = false;
 
         DashAbility dashAbility = player.GetComponent<DashAbility>();
-        int cooldown = dashAbility.GetDashCooldown();
+        int cooldown = Mathf.RoundToInt(dashAbility.GetDashCooldown());
 
         Image image = dashAbilityUI.GetComponent<Image>();
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
@@ -349,7 +332,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void SetFirstSelectedIfGamepad(GameObject obj)
+    public void SetFirstSelectedIfGamepad(GameObject obj)
     {
         firstSelected = obj;
 

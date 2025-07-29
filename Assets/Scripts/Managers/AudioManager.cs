@@ -11,6 +11,7 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource effectsAudioSource;
     [SerializeField] private AudioSource musicAudioSource;
+    private float previousMusicAudioVolume;
 
     [Header("UI Sounds")]
     [SerializeField] private AudioClip uiNavigationSound;
@@ -98,5 +99,16 @@ public class AudioManager : MonoBehaviour
         musicAudioSource.loop = true;
         musicAudioSource.volume = musicVolume * MUSIC_VOLUME_SCALE;
         musicAudioSource.Play();
+    }
+
+    public void LowerMusicVolume()
+    {
+        previousMusicAudioVolume = musicAudioSource.volume;
+        musicAudioSource.volume *= 0.5f;
+    }
+
+    public void ReturnMusicVolume()
+    {
+        musicAudioSource.volume = previousMusicAudioVolume;
     }
 }

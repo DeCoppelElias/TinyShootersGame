@@ -19,8 +19,6 @@ public class PathFinding : MonoBehaviour
 
     private WaveManager waveManager;
 
-    public LayerMask layerMask;
-
     private void Start()
     {
         // Initialise size
@@ -132,20 +130,18 @@ public class PathFinding : MonoBehaviour
     {
         float radius = 0.5f * diameter;
 
-        LayerMask combinedLayerMask = LayerMask.GetMask("Wall", "Pit", "Pushable", "Entity");
+        LayerMask combinedLayerMask = LayerMask.GetMask("Wall", "Pit", "Pushable");
         Collider2D hit = Physics2D.OverlapCircle(position, radius, combinedLayerMask);
         if (hit != null)
         {
-            string tag = hit.tag;
-            if (tag == "Wall" || tag == "Pit")
+            int layerIndex = hit.gameObject.layer;
+            string layerName = LayerMask.LayerToName(layerIndex);
+
+            if (layerName == "Wall" || layerName == "Pit")
             {
                 return Mathf.Infinity;
             }
-            else if (tag == "Pushable")
-            {
-                return 5;
-            }
-            else if (tag == "Entity")
+            else if (layerName == "Pushable")
             {
                 return 5;
             }

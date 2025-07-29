@@ -10,7 +10,7 @@ public class DashAbility : MonoBehaviour
     [SerializeField] private DashingState dashingState = DashingState.Ready;
     private enum DashingState { Ready, Charging, Dashing, Cooldown };
 
-    [SerializeField] private int dashCooldown = 2;
+    [SerializeField] private float dashCooldown = 2;
     [SerializeField] private float dashDuration = 0.1f;
     [SerializeField] private float chargeDuration = 0f;
     [SerializeField] private float dashSpeed = 20;
@@ -29,8 +29,10 @@ public class DashAbility : MonoBehaviour
 
     private Entity owner;
 
+    public UnityEvent onStartDash;
     public UnityEvent onPerformed;
     public UnityEvent onReady;
+    public UnityEvent onLateComplete;
 
     private System.Action onComplete;
 
@@ -54,7 +56,7 @@ public class DashAbility : MonoBehaviour
         dashingState = DashingState.Charging;
         this.dashDirection = direction;
 
-        rb.AddForce(0.1f * dashSpeed * rb.mass * -dashDirection.normalized, ForceMode2D.Impulse);
+        rb.AddForce(0.1f * DashSpeed * rb.mass * -dashDirection.normalized, ForceMode2D.Impulse);
         chargeStart = Time.time;
     }
 
@@ -67,7 +69,7 @@ public class DashAbility : MonoBehaviour
     {
         if (dashingState == DashingState.Cooldown)
         {
-            if (Time.time - lastDash > dashCooldown)
+            if (Time.time - lastDash > DashCooldown)
             {
                 dashingState = DashingState.Ready;
 
@@ -79,19 +81,19 @@ public class DashAbility : MonoBehaviour
         }
         else if (dashingState == DashingState.Charging)
         {
-            if (Time.time - chargeStart > chargeDuration)
+            if (Time.time - chargeStart > ChargeDuration)
             {
                 dashingState = DashingState.Dashing;
 
                 // Perform dash
                 rb.velocity = Vector2.zero;
-                rb.AddForce(dashSpeed * rb.mass * dashDirection.normalized, ForceMode2D.Impulse);
+                rb.AddForce(DashSpeed * rb.mass * dashDirection.normalized, ForceMode2D.Impulse);
                 dashStart = Time.time;
 
                 if (owner != null)
                 {
                     // Increase contact damage
-                    owner.ContactDamage *= contactDamageIncrease;
+                    owner.ContactDamage *= ContactDamageIncrease;
                 }
 
                 // Enable the dashing effect
@@ -102,12 +104,15 @@ public class DashAbility : MonoBehaviour
 
                 // Make knockback immune
                 this.owner.knockbackImmune = true;
+
+                // Callback
+                this.onStartDash.Invoke();
             }
         }
         else if (dashingState == DashingState.Dashing)
         {
             // End dash
-            if (Time.time - dashStart > dashDuration || rb.velocity == Vector2.zero)
+            if (Time.time - dashStart > DashDuration || rb.velocity == Vector2.zero)
             {
                 dashingState = DashingState.Cooldown;
                 lastDash = Time.time;
@@ -121,7 +126,9 @@ public class DashAbility : MonoBehaviour
                     if (owner != null)
                     {
                         // Decrease contact damage again
-                        owner.ContactDamage /= contactDamageIncrease;
+                        owner.ContactDamage /= ContactDamageIncrease;
+
+                        this.onLateComplete.Invoke();
                     }
                 }));
 
@@ -136,17 +143,17 @@ public class DashAbility : MonoBehaviour
 
     public float GetDashingDistance()
     {
-        float force = dashSpeed * rb.mass;
+        float force = DashSpeed * rb.mass;
         if (rb.drag <= 0f)
-            return (force / rb.mass) * dashDuration;
+            return (force / rb.mass) * DashDuration;
 
         float v0 = force / rb.mass;
-        return v0 / rb.drag * (1f - Mathf.Exp(-rb.drag * dashDuration));
+        return v0 / rb.drag * (1f - Mathf.Exp(-rb.drag * DashDuration));
     }
 
-    public int GetDashCooldown()
+    public float GetDashCooldown()
     {
-        return this.dashCooldown;
+        return this.DashCooldown;
     }
 
     public void ApplyStats(PlayerStats playerStats) 
@@ -154,10 +161,10 @@ public class DashAbility : MonoBehaviour
         if (playerStats == null) return;
         if (!playerStats.hasDashAbility) return;
 
-        dashCooldown = playerStats.dashCooldown;
-        dashDuration = playerStats.dashDuration;
-        chargeDuration = playerStats.chargeDuration;
-        dashSpeed = playerStats.dashSpeed;
+        DashCooldown = playerStats.dashCooldown;
+        DashDuration = playerStats.dashDuration;
+        ChargeDuration = playerStats.chargeDuration;
+        DashSpeed = playerStats.dashSpeed;
     }
 
     public void ApplyClass(PlayerClass playerClass)
@@ -165,20 +172,21 @@ public class DashAbility : MonoBehaviour
         if (playerClass == null) return;
         if (!playerClass.hasDashAbility) return;
 
-        dashCooldown += playerClass.dashCooldownDelta;
-        dashDuration += playerClass.dashDurationDelta;
-        chargeDuration += playerClass.chargeDurationDelta;
-        dashSpeed += playerClass.dashSpeedDelta;
+        DashCooldown += playerClass.dashCooldownDelta;
+        DashDuration += playerClass.dashDurationDelta;
+        ChargeDuration += playerClass.chargeDurationDelta;
+        DashSpeed += playerClass.dashSpeedDelta;
     }
 
     public void ApplyPowerup(Powerup powerup)
     {
         if (powerup == null) return;
 
-        dashCooldown += powerup.dashCooldownDelta;
-        dashDuration += powerup.dashDurationDelta;
-        chargeDuration += powerup.chargeDurationDelta;
-        dashSpeed += powerup.dashSpeedDelta;
+        DashCooldown += powerup.dashCooldownDelta;
+        DashDuration += powerup.dashDurationDelta;
+        ChargeDuration += powerup.chargeDurationDelta;
+        DashSpeed += powerup.dashSpeedDelta;
+        ContactDamageIncrease += powerup.contactDamageIncreaseDelta;
     }
 
     public bool Dashing()
@@ -213,4 +221,32 @@ public class DashAbility : MonoBehaviour
 
         action();
     }
+
+    #region Properties
+    public float DashCooldown
+    {
+        get { return dashCooldown; }
+        set { dashCooldown = Mathf.Max(value, 0.5f); }
+    }
+    public float DashDuration
+    {
+        get { return dashDuration; }
+        set { dashDuration = Mathf.Clamp(value, 0, 0.5f); }
+    }
+    public float ChargeDuration
+    {
+        get { return chargeDuration; }
+        set { chargeDuration = Mathf.Clamp(value, 0, 5); }
+    }
+    public float DashSpeed
+    {
+        get { return dashSpeed; }
+        set { dashSpeed = Mathf.Clamp(value, 5, 50); }
+    }
+    public float ContactDamageIncrease
+    {
+        get { return contactDamageIncrease; }
+        set { contactDamageIncrease = Mathf.Max(value, 1); }
+    }
+    #endregion
 }

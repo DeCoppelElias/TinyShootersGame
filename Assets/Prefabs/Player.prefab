@@ -311,7 +311,7 @@ MonoBehaviour:
   dashCooldown: 5
   dashDuration: 0.1
   chargeDuration: 0
-  dashSpeed: 20
+  dashSpeed: 30
   contactDamageIncrease: 5
   dashEffectPrefab: {fileID: 8509839074665756491, guid: 25b2c8541e7128742807d8a6df1bd063, type: 3}
   onPerformed:

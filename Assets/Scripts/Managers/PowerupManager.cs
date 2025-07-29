@@ -36,7 +36,7 @@ public class PowerupManager : MonoBehaviour
         for(int i = 0; i < number; i++)
         {
             float random = Random.Range(0f, 1f);
-            if (random < 0.7)
+            if ((random < 0.7 || uncommonPowerups.Count == 0) && commonPowerups.Count > 0)
             {
                 Powerup selectedPowerup = commonPowerups[Random.Range(0, commonPowerups.Count)];
                 while (randomPowerups.Contains(selectedPowerup))
@@ -45,7 +45,7 @@ public class PowerupManager : MonoBehaviour
                 }
                 randomPowerups.Add(selectedPowerup);
             }
-            else
+            else if (uncommonPowerups.Count > 0)
             {
                 Powerup selectedPowerup = uncommonPowerups[Random.Range(0, uncommonPowerups.Count)];
                 while (randomPowerups.Contains(selectedPowerup))

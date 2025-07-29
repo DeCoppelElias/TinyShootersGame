@@ -14,14 +14,18 @@ public abstract class MovementBehaviour : MonoBehaviour
     [Header("Walking To Position State")]
     [SerializeField] private Vector3 targetPosition;
     [SerializeField] private bool canSeeTargetPosition = true;
-    [SerializeField] private float lastTargetPositionVisionCheck;
     [SerializeField] private float targetPositionVisionCooldown = 0.5f;
+    private float lastTargetPositionVisionCheck;
     private enum WalkToPositionState { Normal, DodgingObstacle, NoPathToPosition }
     [SerializeField] private WalkToPositionState walkToPositionState = WalkToPositionState.Normal;
     protected PathFinding pathFinder;
     private List<Vector3> currentPath;
     private float lastPathFindingRefresh = 0;
-    private float pathFindingRefreshCooldown = 3f;
+    [SerializeField] private float pathFindingRefreshCooldown = 3f;
+    
+    /*[Header("Avoidance Settings")]
+    [SerializeField] private float avoidanceRadius = 1;
+    [SerializeField] private float avoidanceStrength = 0.1f;*/
 
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
@@ -91,10 +95,18 @@ public abstract class MovementBehaviour : MonoBehaviour
     private void WalkToTargetPosition()
     {
         float step = currentMoveSpeed * Time.deltaTime;
+
         // If there are no obstacles between enemy and player, move towards player
         if (walkToPositionState == WalkToPositionState.Normal)
         {
-            transform.position = Vector2.MoveTowards(transform.position, targetPosition, step);
+            Vector2 direction = (targetPosition - transform.position).normalized;
+
+            /*// Avoid other entities
+            Vector2 avoidance = CalculateAvoidanceForce();
+            Vector2 finalDirection = (direction + avoidance).normalized;
+            transform.position += (Vector3)(finalDirection * step);*/
+
+            transform.position += (Vector3)(direction * step);
 
             // If there is an obstacle blocking the way, try to find a path to player and change state
             if (!canSeeTargetPosition)
@@ -127,7 +139,15 @@ public abstract class MovementBehaviour : MonoBehaviour
             // Otherwise, move to next point in route
             else
             {
-                transform.position = Vector2.MoveTowards(transform.position, currentPath[0], step);
+                Vector2 direction = ((Vector2)currentPath[0] - (Vector2)transform.position).normalized;
+
+                /*// Avoid other entities
+                Vector2 avoidance = CalculateAvoidanceForce();
+                Vector2 finalDirection = (direction + avoidance).normalized;
+                transform.position += (Vector3)(finalDirection * step);*/
+
+                transform.position += (Vector3)(direction * step);
+
                 if (Vector3.Distance(transform.position, currentPath[0]) <= 0.1f * pathFinder.GetSize())
                 {
                     currentPath.RemoveAt(0);
@@ -182,4 +202,26 @@ public abstract class MovementBehaviour : MonoBehaviour
             }
         }
     }
+
+    /*private Vector2 CalculateAvoidanceForce()
+    {
+        Vector2 avoidance = Vector2.zero;
+
+        LayerMask enemyLayerMask = LayerMask.GetMask("Entity");
+        Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, avoidanceRadius, enemyLayerMask);
+        foreach (Collider2D col in nearby)
+        {
+            if (col.gameObject != gameObject)
+            {
+                Vector2 diff = (transform.position - col.transform.position);
+                float distance = diff.magnitude;
+                if (distance > 0)
+                {
+                    avoidance += diff.normalized / distance;
+                }
+            }
+        }
+
+        return avoidance * avoidanceStrength;
+    }*/
 }
