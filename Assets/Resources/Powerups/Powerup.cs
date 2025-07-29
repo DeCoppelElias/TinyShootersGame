@@ -42,10 +42,11 @@ public class Powerup : ScriptableObject
     public float splitDamagePercentageDelta = 0;
 
     [Header("Dash Upgrade")]
-    public int dashCooldownDelta = 0;
+    public float dashCooldownDelta = 0;
     public float dashDurationDelta = 0;
     public float chargeDurationDelta = 0;
     public float dashSpeedDelta = 0;
+    public float contactDamageIncreaseDelta = 0;
 
     public string GenerateUIDescription()
     {
@@ -61,6 +62,10 @@ public class Powerup : ScriptableObject
             if (value is float floatVal && Mathf.Abs(floatVal) > 0)
             {
                 sb.AppendLine($"{SplitCamelCase(field.Name)}: {(floatVal > 0 ? "+" : "")}{floatVal}");
+            }
+            if (value is int intVal && Mathf.Abs(intVal) > 0)
+            {
+                sb.AppendLine($"{SplitCamelCase(field.Name)}: {(intVal > 0 ? "+" : "")}{intVal}");
             }
             if (field.Name == nameof(recoverHealth) && value is true)
             {

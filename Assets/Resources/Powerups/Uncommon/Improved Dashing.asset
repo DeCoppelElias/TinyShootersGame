@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7cfbf085f8ab4e4458f25df88ba73e24, type: 3}
-  m_Name: Thick Armor
+  m_Name: Improved Dashing
   m_EditorClassIdentifier: 
-  powerupName: Thick Armor
-  rarity: 0
-  healthDelta: 50
+  powerupName: Improved Dashing
+  rarity: 1
+  healthDelta: 0
   recoverHealth: 0
   normalMoveSpeedDelta: 0
   shootingMoveSpeedDelta: 0
   invulnerableDurationDelta: 0
-  contactDamageDelta: 5
+  contactDamageDelta: 0
   contactHitCooldownDelta: 0
   damageDelta: 0
   attackCooldownDelta: 0
@@ -35,8 +35,8 @@ MonoBehaviour:
   splitBulletSizeDelta: 0
   splitBulletSpeedDelta: 0
   splitDamagePercentageDelta: 0
-  dashCooldownDelta: 0
-  dashDurationDelta: 0
+  dashCooldownDelta: -0.5
+  dashDurationDelta: 0.1
   chargeDurationDelta: 0
-  dashSpeedDelta: 0
-  contactDamageIncreaseDelta: 0
+  dashSpeedDelta: 10
+  contactDamageIncreaseDelta: 1
