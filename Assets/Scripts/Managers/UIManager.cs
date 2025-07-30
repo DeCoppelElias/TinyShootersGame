@@ -17,7 +17,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject upgradeButtonPrefab;
 
     private GameObject powerupUI;
-    private PowerupManager powerupManager;
 
     private GameObject abilityUI;
     private GameObject dashAbilityUI;
@@ -50,10 +49,8 @@ public class UIManager : MonoBehaviour
         canvas = GameObject.Find("Canvas");
 
         upgradeUI = GameObject.Find("UpgradeUI");
-        upgradeUI.SetActive(false);
 
         powerupUI = GameObject.Find("PowerupUI");
-        powerupManager = GameObject.Find("PowerupManager")?.GetComponent<PowerupManager>();
 
         pauseUI = GameObject.Find("PauseUI");
         pauseUI.SetActive(false);
@@ -134,64 +131,14 @@ public class UIManager : MonoBehaviour
 
     public void EnableUpgradeUI()
     {
-        List<PlayerClass> upgrades = player.GetUpgrades();
-        if (upgrades.Count == 0) return;
-
-        LowerMusicVolume();
-        gameStateManager.ToPaused();
-
-        Transform buttons = upgradeUI.transform.Find("Buttons");
-        // First make sure that the amount of buttons and upgrades are the same
-        if (buttons.childCount > upgrades.Count)
-        {
-            for (int i = upgrades.Count; i < buttons.childCount; i++)
-            {
-                GameObject child = buttons.GetChild(i).gameObject;
-                child.transform.SetParent(null);
-                if (child != null) Destroy(child);
-            }
-        }
-        else
-        {
-            for (int i = buttons.childCount; i < upgrades.Count; i++)
-            {
-                Instantiate(upgradeButtonPrefab, buttons);
-            }
-        }
-
-        // Link each button to upgrading the player to that class
-        for (int i = 0; i < buttons.childCount; i++)
-        {
-            Transform buttonTransform = buttons.GetChild(i);
-            PlayerClass currentPlayerClass = upgrades[i];
-
-            Text text = buttonTransform.GetComponentInChildren<Text>();
-            text.text = currentPlayerClass.className;
-
-            Image image = buttonTransform.Find("Sprite").GetComponent<Image>();
-            image.sprite = currentPlayerClass.UISprite;
-
-            Button button = buttonTransform.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => { 
-                player.ApplyClass(currentPlayerClass);
-                DisableUpgradeUI();
-            });
-        }
-
-        upgradeUI.SetActive(true);
-        SetFirstSelectedIfGamepad(buttons.GetChild(0).gameObject);
-
-        return;
+        UIElement upgradeUIElement = this.upgradeUI.GetComponent<UIElement>();
+        EnableUI(upgradeUIElement);
     }
 
     public void DisableUpgradeUI()
     {
-        ReturnMusicVolume();
-
-        gameStateManager.ToRunning();
-        upgradeUI.SetActive(false);
-        RemoveFirstSelected();
+        UIElement upgradeUIElement = this.upgradeUI.GetComponent<UIElement>();
+        DisableUI(upgradeUIElement);
     }
 
     public void EnablePowerupUI()

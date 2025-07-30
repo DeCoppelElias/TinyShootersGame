@@ -12,6 +12,8 @@ public class PlayerClass : ScriptableObject
 {
     [Header("General Settings")]
     public string className;
+    [TextArea(15, 20)]
+    public string classDescription;
     public RuntimeAnimatorController animatorController;
     public Sprite UISprite;
 

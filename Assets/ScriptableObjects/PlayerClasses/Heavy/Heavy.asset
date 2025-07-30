@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Heavy
   m_EditorClassIdentifier: 
   className: Heavy
+  classDescription: A walking tank built to take and deal massive damage. The Heavy
+    trades speed for raw power and resilience, making them a force to be reckoned
+    with on the front lines.
   animatorController: {fileID: 9100000, guid: 1ae993f5e1b95a24583f87f309b1d48d, type: 2}
   UISprite: {fileID: 21300000, guid: 1aca28879e46a0a4caeda669de110f8e, type: 3}
   healthDelta: 100

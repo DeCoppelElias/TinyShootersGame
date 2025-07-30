@@ -9,8 +9,6 @@ using UnityEngine.UI;
 public class PowerupUI : UIElement
 {
     private PowerupManager powerupManager;
-    private Player player;
-    private UIManager uiManager;
     private UITransition uiTransition;
 
     private List<Button> buttons = new List<Button>();
@@ -22,16 +20,15 @@ public class PowerupUI : UIElement
 
     private bool initialised = false;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         if (!initialised) Init();
     }
 
     private void Init()
     {
         powerupManager = GameObject.Find("PowerupManager").GetComponent<PowerupManager>();
-        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        player = GameObject.Find("Player").GetComponent<Player>();
         uiTransition = GetComponent<UITransition>();
 
         buttons.Clear();
@@ -83,7 +80,6 @@ public class PowerupUI : UIElement
         }
 
         uiManager.SetFirstSelectedIfGamepad(button.gameObject);
-
         uiTransition.FadeIn();
     }
 
