@@ -99,10 +99,9 @@ public class UIManager : MonoBehaviour
 
     public void EnablePauseUI()
     {
-        if (upgradeUI.activeSelf) return;
+        if (pauseUI.activeSelf) return;
 
         LowerMusicVolume();
-
         gameStateManager.ToPaused();
         pauseUI.SetActive(true);
         SetFirstSelectedIfGamepad(pauseUI.transform.Find("ResumeButton").gameObject);
@@ -110,8 +109,9 @@ public class UIManager : MonoBehaviour
 
     public void DisablePauseUI()
     {
-        ReturnMusicVolume();
+        if (!pauseUI.activeSelf) return;
 
+        ReturnMusicVolume();
         gameStateManager.ToRunning();
         pauseUI.SetActive(false);
         RemoveFirstSelected();
