@@ -137,6 +137,8 @@ public abstract class Entity : MonoBehaviour
 
     private void UpdateHealthBar()
     {
+        if (healthBar == null) return;
+
         float scale = Health / MaxHealth;
         healthBar.localScale = new Vector3(scale, 1, 1);
     }

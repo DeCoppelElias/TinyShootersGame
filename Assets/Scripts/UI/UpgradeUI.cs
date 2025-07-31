@@ -79,4 +79,8 @@ public class UpgradeUI : UIElement
         uiTransition.FadeOut();
         return this;
     }
+    public override bool Enabled()
+    {
+        return uiTransition.Enabled();
+    }
 }

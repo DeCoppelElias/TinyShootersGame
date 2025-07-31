@@ -117,6 +117,7 @@ public class WaveManager : MonoBehaviour
         else if (!CheckLastLevel() && CheckLastWave())
         {
             waveState = WaveState.LevelCooldown;
+            uiManager.EnableLevelCompletedText(levelIndex + 1);
             lastWaveTime = Time.time;
 
             RewardPlayer();

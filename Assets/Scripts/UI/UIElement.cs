@@ -23,4 +23,9 @@ public abstract class UIElement : MonoBehaviour
         this.gameObject.SetActive(false);
         return this;
     }
+
+    public virtual bool Enabled()
+    {
+        return this.gameObject.activeSelf;
+    }
 }

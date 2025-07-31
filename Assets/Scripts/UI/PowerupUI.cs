@@ -88,4 +88,9 @@ public class PowerupUI : UIElement
         uiTransition.FadeOut();
         return this;
     }
+
+    public override bool Enabled()
+    {
+        return uiTransition.Enabled();
+    }
 }

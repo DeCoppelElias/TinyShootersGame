@@ -24,12 +24,12 @@ public class TutorialManager : MonoBehaviour
     private Text doneText;
     private Text explanationSubTitle;
 
-    private TutorialUIManager tutorialUIManager;
+    private UIManager uiManager;
 
     private void Start()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
-        tutorialUIManager = GameObject.Find("TutorialUIManager").GetComponent<TutorialUIManager>();
+        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
 
         explanationUI = GameObject.Find("ExplanationUI");
         explanationTitle = explanationUI.transform.Find("TitleContainer").Find("Title").GetComponent<Text>();
@@ -41,6 +41,12 @@ public class TutorialManager : MonoBehaviour
         StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
         {
             ToMovement();
+        }));
+
+        StartCoroutine(PerformAfterDelay(0.1f, () =>
+        {
+            uiManager.EnableAbilityUI(false);
+            uiManager.EnableScoreUI(false);
         }));
     }
 
@@ -173,7 +179,7 @@ public class TutorialManager : MonoBehaviour
     private void ToDash()
     {
         tutorialState = TutorialState.Dash;
-        tutorialUIManager.EnableAbilityUI();
+        uiManager.EnableAbilityUI(true);
 
         explanationTitle.text = "Dashing (3/7)";
         explanationSubTitle.text = "Dashing will perform a quick movement in the direction you are moving.\n" +
@@ -196,7 +202,7 @@ public class TutorialManager : MonoBehaviour
     private void ToEnemyTest()
     {
         tutorialState = TutorialState.Combat;
-        tutorialUIManager.EnableScoreUI();
+        uiManager.EnableScoreUI(true);
 
         explanationTitle.text = "Combat (5/7)";
         explanationSubTitle.text = "Test your skills against a real enemy!\n" +
@@ -215,7 +221,7 @@ public class TutorialManager : MonoBehaviour
         explanationSubTitle.text = "From time to time, you will be able to upgrade your character!\n" +
             "You can then choose between different classes, each with their own advantages and dissadvantages!";
 
-        tutorialUIManager.EnableUpgradeUI();
+        uiManager.EnableUpgradeUI();
 
         CreateRandomEnemyForTutorial();
         startTime = Time.time;

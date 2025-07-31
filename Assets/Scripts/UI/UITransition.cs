@@ -31,4 +31,9 @@ public class UITransition : MonoBehaviour
                 canvasGroup.blocksRaycasts = false;
             });
     }
+
+    public bool Enabled()
+    {
+        return canvasGroup.interactable;
+    }
 }

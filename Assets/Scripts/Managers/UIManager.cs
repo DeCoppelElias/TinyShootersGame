@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
 
     private GameObject canvas;
     private GameObject pauseUI;
+    private GameObject scoreUI;
 
     private GameObject upgradeUI;
     [SerializeField] private GameObject upgradeButtonPrefab;
@@ -49,11 +50,9 @@ public class UIManager : MonoBehaviour
         canvas = GameObject.Find("Canvas");
 
         upgradeUI = GameObject.Find("UpgradeUI");
-
         powerupUI = GameObject.Find("PowerupUI");
-
         pauseUI = GameObject.Find("PauseUI");
-        pauseUI.SetActive(false);
+        scoreUI = GameObject.Find("ScoreUI");
 
         abilityUI = GameObject.Find("AbilityUI");
         dashAbilityUI = GameObject.Find("DashAbility");
@@ -88,7 +87,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (playerInput == null) playerInput = GetComponent<PlayerInput>();
+        if (playerInput == null) playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
 
         if (playerInput.currentControlScheme != currentControlScheme)
         {
@@ -99,27 +98,20 @@ public class UIManager : MonoBehaviour
 
     public void EnablePauseUI()
     {
-        if (pauseUI.activeSelf) return;
-
-        LowerMusicVolume();
-        gameStateManager.ToPaused();
-        pauseUI.SetActive(true);
-        SetFirstSelectedIfGamepad(pauseUI.transform.Find("ResumeButton").gameObject);
+        UIElement pauseUIElement = this.pauseUI.GetComponent<UIElement>();
+        EnableUI(pauseUIElement);
     }
 
     public void DisablePauseUI()
     {
-        if (!pauseUI.activeSelf) return;
-
-        ReturnMusicVolume();
-        gameStateManager.ToRunning();
-        pauseUI.SetActive(false);
-        RemoveFirstSelected();
+        UIElement pauseUIElement = this.pauseUI.GetComponent<UIElement>();
+        DisableUI(pauseUIElement);
     }
 
     public void TogglePauseUI()
     {
-        if (pauseUI.activeSelf)
+        UIElement pauseUIElement = this.pauseUI.GetComponent<UIElement>();
+        if (pauseUIElement.Enabled())
         {
             DisablePauseUI();
         }
@@ -426,5 +418,15 @@ public class UIManager : MonoBehaviour
     private void ReturnMusicVolume()
     {
         GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume *= 2;
+    }
+
+    public void EnableAbilityUI(bool enable)
+    {
+        abilityUI.SetActive(enable);
+    }
+
+    public void EnableScoreUI(bool enable)
+    {
+        scoreUI.SetActive(enable);
     }
 }
