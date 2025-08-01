@@ -5,12 +5,19 @@ using UnityEngine;
 
 public class ParticleManager : MonoBehaviour
 {
+    public static ParticleManager Instance { get; private set; }
+
     [SerializeField] private int particleLimit = 100;
     public enum ParticleType { Damage, Blood, BulletExplosion, Trail}
 
     [SerializeField] public GameObject scoreTextPrefab;
 
     [SerializeField] private List<ParticlePool> particlePools = new List<ParticlePool>();
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {

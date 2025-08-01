@@ -122,7 +122,7 @@ public class Player : Entity
         if (abilityBehaviour != null && playerClass.classAbility != null && playerController != null)
         {
             abilityBehaviour.LinkAbility(playerClass.classAbility);
-            playerController.classAbility = abilityBehaviour.UseAbility;
+            playerController.onClassAbility = abilityBehaviour.UseAbility;
         }
 
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();
@@ -158,7 +158,7 @@ public class Player : Entity
         if (abilityBehaviour != null && playerStats.classAbility != null && playerController != null)
         {
             abilityBehaviour.LinkAbility(playerStats.classAbility);
-            playerController.classAbility = abilityBehaviour.UseAbility;
+            playerController.onClassAbility = abilityBehaviour.UseAbility;
         }
 
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();

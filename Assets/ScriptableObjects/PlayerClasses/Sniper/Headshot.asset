@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Headshot
   m_EditorClassIdentifier: 
   className: Headshot
+  classDescription: Cold, calculated, and lethal. The Headshot Sniper fires slowly,
+    but each shot delivers devastating damage with unmatched speed and pinpoint range.
   animatorController: {fileID: 9100000, guid: 5b88cd74f24e66a4dacac6f220b69c22, type: 2}
   UISprite: {fileID: 21300000, guid: ebe586905f7785e4e9dccc17ddb1b089, type: 3}
-  healthDelta: 0
-  pvpHealthDelta: 0
+  healthDelta: 50
+  pvpHealthDelta: 50
   normalMoveSpeedDelta: 0
   shootingMoveSpeedDelta: 0
   invulnerableDurationDelta: 0

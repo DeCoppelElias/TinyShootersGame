@@ -165,7 +165,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2952285022420082855}
   - component: {fileID: 2952285022420082844}
-  - component: {fileID: 6450769166791752440}
   - component: {fileID: 2612322234304606013}
   - component: {fileID: 2952285022420082850}
   - component: {fileID: 2952285022420082849}
@@ -174,6 +173,7 @@ GameObject:
   - component: {fileID: 3658583319059543542}
   - component: {fileID: 4128045392292169300}
   - component: {fileID: 7197117156557015083}
+  - component: {fileID: 5516830407000856918}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -241,19 +241,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2c11a0ae6303b9144857a956b021fecd, type: 3}
   - {fileID: 21300000, guid: df7bdee88f54a7c4b9003cc6656f7457, type: 3}
   - {fileID: 21300000, guid: 03c18aa859647ad4d9dc500b4a919ca2, type: 3}
---- !u!114 &6450769166791752440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2952285022420082854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 851803754f2131540bb53153a31b6757, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  collectInput: 1
 --- !u!114 &2612322234304606013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,7 +398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: aa0f0911c4a093f44b7c43c1273c3970, type: 3}
-  m_NotificationBehavior: 2
+  m_NotificationBehavior: 3
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -425,7 +412,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6450769166791752440}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: Move
         m_Mode: 0
@@ -441,7 +428,7 @@ MonoBehaviour:
     m_ActionName: Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6450769166791752440}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: Look
         m_Mode: 0
@@ -457,7 +444,7 @@ MonoBehaviour:
     m_ActionName: Player/Look[/Mouse/delta]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6450769166791752440}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: Shoot
         m_Mode: 0
@@ -513,7 +500,7 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6450769166791752440}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: Reflect
         m_Mode: 0
@@ -529,7 +516,7 @@ MonoBehaviour:
     m_ActionName: Player/Reflect[/Keyboard/space,/XInputControllerWindows/leftShoulder]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6450769166791752440}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: Dash
         m_Mode: 0
@@ -549,7 +536,7 @@ MonoBehaviour:
     m_ActionName: Player/Pause[/Keyboard/escape,/XInputControllerWindows/start]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6450769166791752440}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: ClassAbility
         m_Mode: 0
@@ -563,6 +550,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: acc0bc59-cbb1-401e-8be1-c0751b0c7f29
     m_ActionName: Player/ClassAbility[/Mouse/rightButton,/XInputControllerWindows/rightShoulder]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3c734e75-637b-4caf-aefa-eaa7b6ed3bc0
+    m_ActionName: UI/Ready[/Keyboard/x,/XInputControllerWindows/select]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
@@ -588,6 +579,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onLinkAbility:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5516830407000856918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952285022420082854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb02562ec42555d45a99d3ed38c2206e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collectInput: 1
+  onPause:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &7383428955388207862
@@ -863,7 +870,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_InstanceId
-      value: -199646
+      value: -282342
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_ShapePath.Array.data[7].x

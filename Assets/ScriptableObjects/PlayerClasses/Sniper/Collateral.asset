@@ -13,10 +13,13 @@ MonoBehaviour:
   m_Name: Collateral
   m_EditorClassIdentifier: 
   className: Collateral
+  classDescription: Precision meets chaos. The Collateral Sniper fires piercing rounds
+    that explode on impact, turning tight enemy formations into instant shrapnel
+    zones.
   animatorController: {fileID: 9100000, guid: 5b88cd74f24e66a4dacac6f220b69c22, type: 2}
   UISprite: {fileID: 21300000, guid: ebe586905f7785e4e9dccc17ddb1b089, type: 3}
-  healthDelta: 0
-  pvpHealthDelta: 0
+  healthDelta: 50
+  pvpHealthDelta: 50
   normalMoveSpeedDelta: 0
   shootingMoveSpeedDelta: 0
   invulnerableDurationDelta: 0

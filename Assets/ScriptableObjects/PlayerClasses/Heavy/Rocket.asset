@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Rocket
   m_EditorClassIdentifier: 
   className: Rocket
+  classDescription: Slow, brutal, and utterly destructive. The Rocket Heavy launches
+    explosive rounds that deal massive area damage, crushing enemies with each thunderous
+    shot.
   animatorController: {fileID: 9100000, guid: 1ae993f5e1b95a24583f87f309b1d48d, type: 2}
   UISprite: {fileID: 21300000, guid: 1aca28879e46a0a4caeda669de110f8e, type: 3}
   healthDelta: 50

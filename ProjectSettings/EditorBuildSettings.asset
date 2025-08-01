@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/PVP.unity
     guid: 4f1fca9ca47e0874e803be04ef59dc2e
   - enabled: 1
@@ -20,5 +20,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tutorial.unity
     guid: 97d2904e47a8fec4fb8f6ecbc0ebdc64
+  - enabled: 1
+    path: Assets/Scenes/PVPBattle.unity
+    guid: 3fced083e96720c489e6dabb77871bfc
+  - enabled: 1
+    path: Assets/Scenes/PVPLobby.unity
+    guid: 921e53e3fdaec6b4a965ae1bd6053d00
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 8620505a7b5bf294ea15774608c4708b, type: 2}

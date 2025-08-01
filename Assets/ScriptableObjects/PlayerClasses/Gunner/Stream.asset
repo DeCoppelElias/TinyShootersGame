@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Stream
   m_EditorClassIdentifier: 
   className: Stream
+  classDescription: A torrent of bullets in motion. The Stream Gunner fires at blistering
+    speed, trading raw damage for relentless output and unmatched agility while on
+    the move.
   animatorController: {fileID: 9100000, guid: e37d3cc0182d00348beaafbfa2d332be, type: 2}
   UISprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
   healthDelta: 50

@@ -47,7 +47,6 @@ public abstract class Entity : MonoBehaviour
 
     protected AudioManager audioManager;
     private WaveManager waveManager;
-    private ParticleManager particleManager;
 
     private Transform healthBar;
     private Transform emptyHealthBar;
@@ -65,7 +64,6 @@ public abstract class Entity : MonoBehaviour
         audioManager = GameObject.Find("AudioManager")?.GetComponent<AudioManager>();
         waveManager = GameObject.Find("WaveManager")?.GetComponent<WaveManager>();
         spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
-        particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
 
         emptyHealthBar = transform.Find("EmptyHealthBar");
         healthBar = emptyHealthBar.GetChild(0);
@@ -149,8 +147,8 @@ public abstract class Entity : MonoBehaviour
         this.entityState = EntityState.Dead;
 
         // visual effects
-        particleManager.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, 10);
-        particleManager.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
+        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, 10);
+        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
 
         // sound
         audioManager.PlayDieSound();
@@ -184,11 +182,11 @@ public abstract class Entity : MonoBehaviour
 
         // Create damage particles
         int damageParticleAmount = UnityEngine.Random.Range(1, 3);
-        particleManager.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, damageParticleAmount);
+        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, damageParticleAmount);
 
         // Create blood
         float r = UnityEngine.Random.Range(0, 1f);
-        if (r < 0.05f) particleManager.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
+        if (r < 0.05f) ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
 
         // Play damage sound effect
         this.audioManager.PlayDamageSound();

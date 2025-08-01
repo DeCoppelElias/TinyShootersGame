@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using TMPro;
 
 public class TutorialManager : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class TutorialManager : MonoBehaviour
     private GameObject explanationUI;
     private Text explanationTitle;
     private Text doneText;
-    private Text explanationSubTitle;
+    private TextMeshProUGUI explanationSubTitle;
 
     private UIManager uiManager;
 
@@ -35,7 +36,7 @@ public class TutorialManager : MonoBehaviour
         explanationTitle = explanationUI.transform.Find("TitleContainer").Find("Title").GetComponent<Text>();
         doneText = explanationUI.transform.Find("TitleContainer").Find("Done").GetComponent<Text>();
         doneText.text = "";
-        explanationSubTitle = explanationUI.transform.Find("SubTitle").GetComponent<Text>();
+        explanationSubTitle = explanationUI.transform.Find("SubTitle").GetComponent<TextMeshProUGUI>();
         tutorialState = TutorialState.Explanation;
 
         StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
@@ -54,20 +55,7 @@ public class TutorialManager : MonoBehaviour
     {
         if (player.Health < player.MaxHealth / 2) player.Health = player.MaxHealth;
 
-        if (tutorialState == TutorialState.Movement)
-        {
-            if (player.GetComponent<Rigidbody2D>().velocity != Vector2.zero)
-            {
-                tutorialState = TutorialState.Pause;
-                doneText.text = "Done!";
-                StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
-                {
-                    doneText.text = "";
-                    ToShooting();
-                }));
-            }
-        }
-        else if (tutorialState == TutorialState.Shoot)
+        if (tutorialState == TutorialState.Shoot)
         {
             if (player.GetComponent<ShootingAbility>().shooting)
             {
@@ -166,7 +154,23 @@ public class TutorialManager : MonoBehaviour
 
         explanationTitle.text = "Movement (1/7)";
         explanationSubTitle.text = "You can move your character (the blue tank) by using WASD (Keyboard)\n or the left stick (Gamepad).";
+
+        void OnMoveCallback()
+        {
+            tutorialState = TutorialState.Pause;
+            doneText.text = "Done!";
+            StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
+            {
+                doneText.text = "";
+                ToShooting();
+            }));
+            player.GetComponent<PlayerController>().RemoveOnMoveCallback(OnMoveCallback);
+        }
+
+        player.GetComponent<PlayerController>().AddOnMoveCallback(OnMoveCallback);
     }
+
+
 
     private void ToShooting()
     {

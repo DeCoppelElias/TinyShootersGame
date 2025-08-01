@@ -166,7 +166,7 @@ public class Bullet : MonoBehaviour
         }
 
         Entity entity = collision.GetComponent<Entity>();
-        if (entity != null && ownerTag != collision.tag && entity.Health > 0)
+        if (entity != null && (ownerTag != collision.tag || ownerTag == "Player" && collision.tag == "Player") && entity.Health > 0)
         {
             Vector2 direction = (entity.transform.position - this.transform.position).normalized;
             float baseKnockbackForce = 30;

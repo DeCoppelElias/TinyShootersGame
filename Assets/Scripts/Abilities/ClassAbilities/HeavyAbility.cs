@@ -10,7 +10,7 @@ public class HeavyAbility : ClassAbility
     private CameraManager cameraManager;
     public override void PerformAbility(Player player)
     {
-        shootingAbility.ShootBullet(10, 2, 5, 10, shootingAbility.GetDamage() * 2);
+        shootingAbility.ShootBullet(10, 2, 5, 10, shootingAbility.GetDamage() * 2, 5);
 
         // Add screen shake after use
         if (this.cameraManager != null) cameraManager.ShakeScreen();

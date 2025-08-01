@@ -39,7 +39,6 @@ public class UIManager : MonoBehaviour
     private PlayerInput playerInput;
 
     private GameObject firstSelected = null;
-    private string currentControlScheme;
 
     private Player player;
 
@@ -75,25 +74,6 @@ public class UIManager : MonoBehaviour
         playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
 
         player = GameObject.Find("Player").GetComponent<Player>();
-    }
-
-    public void Pause(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            TogglePauseUI();
-        }
-    }
-
-    private void Update()
-    {
-        if (playerInput == null) playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
-
-        if (playerInput.currentControlScheme != currentControlScheme)
-        {
-            currentControlScheme = playerInput.currentControlScheme;
-            OnControlsChanged();
-        }
     }
 
     public void EnablePauseUI()
@@ -228,7 +208,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            ColorUtility.TryParseHtmlString("#FFFFFF", out Color newColor);
+            ColorUtility.TryParseHtmlString("#E6E6E6", out Color newColor);
             waveText.color = newColor;
             waveText.text = "Next wave starts in: ";
         }
@@ -300,6 +280,7 @@ public class UIManager : MonoBehaviour
     public void SetClassAbilityUI(AbilityBehaviour abilityBehaviour)
     {
         if (classAbilityUI == null) classAbilityUI = GameObject.Find("ClassAbility");
+
         classAbilityUI.SetActive(true);
         classAbilityInitialised = true;
     }

@@ -63,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
         this.spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
 
         this.previousTrailPosition = this.transform.position;
-        this.particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
+        this.particleManager = FindObjectOfType<ParticleManager>();
         this.rb = GetComponent<Rigidbody2D>();
     }
 

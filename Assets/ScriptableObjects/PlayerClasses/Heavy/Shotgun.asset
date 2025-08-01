@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: 
   className: Shotgun
+  classDescription: A close-range powerhouse with a rapid trigger. The Shotgun Heavy
+    fires bursts of multiple pellets at high speed, trading long-range reach for
+    devastating short-range control.
   animatorController: {fileID: 9100000, guid: 9c65113a4bf725746a360cfb83c1830f, type: 2}
   UISprite: {fileID: 21300000, guid: 1aca28879e46a0a4caeda669de110f8e, type: 3}
   healthDelta: 50
