@@ -8,8 +8,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(UITransition))]
 public class PowerupUI : UIElement
 {
-    private PowerupManager powerupManager;
     private UITransition uiTransition;
+    private Player player;
 
     private List<Button> buttons = new List<Button>();
 
@@ -28,7 +28,7 @@ public class PowerupUI : UIElement
 
     private void Init()
     {
-        powerupManager = GameObject.Find("PowerupManager").GetComponent<PowerupManager>();
+        player = GetComponentInParent<Player>();
         uiTransition = GetComponent<UITransition>();
 
         buttons.Clear();
@@ -45,20 +45,33 @@ public class PowerupUI : UIElement
     public override void Enable()
     {
         if (!initialised) Init();
+        if (PowerupManager.Instance == null) return;
 
-        List<Powerup> powerups = powerupManager.ChooseRandomPowerups(3);
+        List<Powerup> powerups = PowerupManager.Instance.ChooseRandomPowerups(3);
         if (powerups.Count != 3)
         {
-            uiManager.DisableUI(this);
+            Disable();
             return;
         }
 
-        Button button = this.buttons[0];
         // Link each button to upgrading the player to that class
         for (int i = 0; i < buttons.Count; i++)
         {
-            button = this.buttons[i];
+            Button button = this.buttons[i];
             Powerup currentPowerup = powerups[i];
+
+            Text rarity = button.transform.Find("Rarity").GetComponent<Text>();
+            rarity.text = currentPowerup.rarity.ToString();
+            Color baseColor;
+            if (currentPowerup.rarity == Powerup.Rarity.Uncommon) baseColor = uncommonColor;
+            else if (currentPowerup.rarity == Powerup.Rarity.Rare) baseColor = rareColor;
+            else baseColor = commonColor;
+
+            // Brighten the color for text
+            Color.RGBToHSV(baseColor, out float h, out float s, out float v);
+            v = Mathf.Clamp01(v + 0.5f);
+            Color textColor = Color.HSVToRGB(h, s, v);
+            rarity.color = textColor;
 
             Text title = button.transform.Find("Title").GetComponent<Text>();
             title.text = currentPowerup.powerupName;
@@ -69,7 +82,7 @@ public class PowerupUI : UIElement
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
                 player.ApplyPowerup(currentPowerup);
-                uiManager.DisableUI(this);
+                Disable();
             });
 
             // Change color depending on rarity of powerup
@@ -79,13 +92,30 @@ public class PowerupUI : UIElement
             else buttonImage.color = commonColor;
         }
 
-        uiManager.SetFirstSelectedIfGamepad(button.gameObject);
+        // Make navigation of buttons
+        for (int i = 0; i < buttons.Count; i++)
+        {
+            Button button = buttons[i];
+            Navigation navigation = button.navigation;
+            navigation.mode = Navigation.Mode.Explicit;
+
+            // Assign left and right navigation to neighboring buttons
+            if (i > 0)
+                navigation.selectOnLeft = buttons[i - 1].GetComponent<Selectable>();
+            if (i < buttons.Count - 1)
+                navigation.selectOnRight = buttons[i + 1].GetComponent<Selectable>();
+
+            button.navigation = navigation;
+        }
+
+        firstSelected = buttons[0].gameObject;
         uiTransition.FadeIn();
     }
 
     public override UIElement Disable()
     {
         uiTransition.FadeOut();
+        onDisable.Invoke();
         return this;
     }
 

@@ -10,11 +10,14 @@ public class UpgradeUI : UIElement
     [SerializeField] private GameObject classUpgradeButtonPrefab;
     private UITransition uiTransition;
 
+    protected Player player;
+
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         uiTransition = GetComponent<UITransition>();
+        player = GetComponentInParent<Player>();
     }
 
     public override void Enable()
@@ -22,7 +25,7 @@ public class UpgradeUI : UIElement
         List<PlayerClass> upgrades = player.GetUpgrades();
         if (upgrades.Count == 0)
         {
-            uiManager.DisableUI(this);
+            Disable();
             return;
         }
 
@@ -45,6 +48,22 @@ public class UpgradeUI : UIElement
             }
         }
 
+        // Make navigation of buttons
+        for (int i = 0; i < buttons.childCount; i++)
+        {
+            Button button = buttons.GetChild(i).GetComponent<Button>();
+            Navigation navigation = button.navigation;
+            navigation.mode = Navigation.Mode.Explicit;
+
+            // Assign left and right navigation to neighboring buttons
+            if (i > 0)
+                navigation.selectOnLeft = buttons.GetChild(i - 1).GetComponent<Selectable>();
+            if (i < buttons.childCount - 1)
+                navigation.selectOnRight = buttons.GetChild(i + 1).GetComponent<Selectable>();
+
+            button.navigation = navigation;
+        }
+
         // Link each button to upgrading the player to that class
         for (int i = 0; i < buttons.childCount; i++)
         {
@@ -64,11 +83,11 @@ public class UpgradeUI : UIElement
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
                 player.ApplyClass(currentPlayerClass);
-                uiManager.DisableUI(this);
+                Disable();
             });
         }
 
-        uiManager.SetFirstSelectedIfGamepad(buttons.GetChild(0).gameObject);
+        firstSelected = buttons.GetChild(0).gameObject;
         uiTransition.FadeIn();
 
         return;
@@ -77,6 +96,7 @@ public class UpgradeUI : UIElement
     public override UIElement Disable()
     {
         uiTransition.FadeOut();
+        onDisable.Invoke();
         return this;
     }
     public override bool Enabled()

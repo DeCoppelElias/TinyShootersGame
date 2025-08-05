@@ -29,25 +29,6 @@ public class ShootingAbility : MonoBehaviour
 
     public UnityAction onShoot;
 
-    private BulletManager bulletManager;
-    private AudioManager audioManager;
-
-    #region Properties
-    private BulletManager BulletManager
-    {
-        get
-        {
-            if (bulletManager == null)
-            {
-                bulletManager = FindObjectOfType<BulletManager>();
-            }
-            return bulletManager;
-        }
-        set { bulletManager = value; }
-    }
-
-    #endregion
-
     private void Start()
     {
         Initialize();
@@ -56,8 +37,6 @@ public class ShootingAbility : MonoBehaviour
     public void Initialize()
     {
         if (owner == null) owner = GetComponent<Entity>();
-        BulletManager = FindObjectOfType<BulletManager>();
-        audioManager = FindObjectOfType<AudioManager>();
 
         if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
 
@@ -136,7 +115,7 @@ public class ShootingAbility : MonoBehaviour
         }
 
         // Play sound effect
-        if (audioManager != null) audioManager.PlayShootSound();
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayShootSound();
     }
 
     private void ShootFromFirepoint(Transform firepoint, float knockbackMultiplier=1)
@@ -205,12 +184,12 @@ public class ShootingAbility : MonoBehaviour
 
     private void CreateBullet(Transform firepoint, float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, Vector3 position, float rotation, float knockbackMultiplier=1)
     {
-        Bullet bullet = BulletManager.TryGetBullet();
+        Bullet bullet = BulletManager.Instance.TryGetBullet();
         if (bullet == null) return;
-        bullet.AssignOnComplete(() => BulletManager.ReturnBullet(bullet));
+        bullet.AssignOnComplete(() => BulletManager.Instance.ReturnBullet(bullet));
 
         Quaternion finalRotation = Quaternion.Euler(0, 0, firepoint.eulerAngles.z + rotation);
-        bullet.Initialize(owner.tag, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
+        bullet.Initialize(owner.tag, owner.gameObject, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
         if (this.runtimeStats.Explode) bullet.InitializeSplitting(this.runtimeStats.ExplodeBulletAmount, this.runtimeStats.ExplodeBulletRange, this.runtimeStats.ExplodeBulletSize, this.runtimeStats.ExplodeBulletVelocity, this.runtimeStats.ExplodeDamagePercentage);
         bullet.Shoot();
 

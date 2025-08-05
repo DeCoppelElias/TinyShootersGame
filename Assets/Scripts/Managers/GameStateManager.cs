@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class GameStateManager : MonoBehaviour
 {
+    public static GameStateManager Instance { get; private set; }
     private enum State {RUNNING, SLOWINGDOWN, SLOWMO, SPEEDUP, PAUSED}
 
     [SerializeField]
@@ -27,7 +28,10 @@ public class GameStateManager : MonoBehaviour
 
     private float startTime;
 
-    private AudioManager audioManager;
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -176,7 +180,7 @@ public class GameStateManager : MonoBehaviour
         ToPaused();
 
         bool beatHighScore = SaveHighScore();
-        int currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
+        int currentScore = ScoreManager.Instance.GetScore();
 
         onLose.Invoke(beatHighScore, currentScore);
     }
@@ -189,7 +193,7 @@ public class GameStateManager : MonoBehaviour
         float currentTime = Time.time - startTime;
 
         bool beatHighScore = SaveHighScore();
-        float currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
+        float currentScore = ScoreManager.Instance.GetScore();
 
         onWin.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
     }
@@ -200,9 +204,7 @@ public class GameStateManager : MonoBehaviour
     /// <returns></returns>
     private bool SaveHighScore()
     {
-        GameObject scoreManagerObject = GameObject.Find("ScoreManager");
-        if (scoreManagerObject == null) return false;
-        float currentScore = scoreManagerObject.GetComponent<ScoreManager>().GetScore();
+        float currentScore = ScoreManager.Instance.GetScore();
         if (PlayerPrefs.HasKey("HighScore"))
         {
             float highScore = PlayerPrefs.GetFloat("HighScore");

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+	public static CameraManager Instance { get; private set; }
+
 	[Header("Camera State")]
 	[SerializeField] private CameraState cameraState = CameraState.Idle;
 	private enum CameraState { Idle, Shaking, Transition }
@@ -20,6 +22,11 @@ public class CameraManager : MonoBehaviour
 	[SerializeField] private float transitionDuration = 0.5f;
 	private Vector3 transitionTarget;
 	private float transitionSpeed = 1;
+
+    private void Awake()
+    {
+		Instance = this;
+    }
 
     private void Start()
     {

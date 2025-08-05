@@ -79,13 +79,8 @@ public class Enemy : Entity
         // Give on death score to last damage source
         if (lastDamageSourceTag == "Player")
         {
-            GameObject scoreManagerObj = GameObject.Find("ScoreManager");
-            if (scoreManagerObj != null)
-            {
-                ScoreManager scoreManager = scoreManagerObj.GetComponent<ScoreManager>();
-                scoreManager.AddScore(ScoreManager.ScoreReason.EnemyKill, this.onDeathScore);
-                if (lastDamageType == DamageType.Melee) scoreManager.AddScore(ScoreManager.ScoreReason.MeleeKill, this.onDeathScore * 2);
-            }
+            ScoreManager.Instance.AddScore(ScoreManager.ScoreReason.EnemyKill, this.onDeathScore);
+            if (lastDamageType == DamageType.Melee) ScoreManager.Instance.AddScore(ScoreManager.ScoreReason.MeleeKill, this.onDeathScore * 2);
         }
 
         // Display score

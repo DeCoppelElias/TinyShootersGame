@@ -20,7 +20,6 @@ public class ClassEditor : Editor
         playerClass.animatorController = (AnimatorController)EditorGUILayout.ObjectField("Animation Controller", playerClass.animatorController, typeof(AnimatorController), false);
         playerClass.UISprite = (Sprite)EditorGUILayout.ObjectField("UI sprite", playerClass.UISprite, typeof(Sprite), false);
         playerClass.maxHealth = EditorGUILayout.FloatField("Max Health", playerClass.maxHealth);
-        playerClass.pvpMaxHealth = EditorGUILayout.FloatField("PVP Max Health", playerClass.pvpMaxHealth);
         playerClass.health = EditorGUILayout.FloatField("Health", playerClass.health);
         playerClass.damage = EditorGUILayout.FloatField("Damage", playerClass.damage);
         playerClass.normalMoveSpeed = EditorGUILayout.FloatField("Normal Move Speed", playerClass.normalMoveSpeed);

@@ -30,7 +30,7 @@ public class PlayerReady : MonoBehaviour
 
             playerInput.onActionTriggered -= OnActionTriggered;
 
-            FindObjectOfType<PVPLobbyManager>().TryStartGame();
+            FindObjectOfType<PVPLobbyManager>().TryStartGame(playerInput);
         }
     }
 }

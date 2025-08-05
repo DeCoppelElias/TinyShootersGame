@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
+    public static ScoreManager Instance { get; private set; }
+
     private int score = 0;
     private int displayedScore = 0;
 
@@ -20,6 +22,11 @@ public class ScoreManager : MonoBehaviour
 
     public enum ScoreReason { EnemyKill, PerfectWave, MeleeKill, NoShotsMissed}
     private Dictionary<ScoreReason, ScoreEntry> entries = new Dictionary<ScoreReason, ScoreEntry>();
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     public void AddScore(ScoreReason reason, int amount)
     {

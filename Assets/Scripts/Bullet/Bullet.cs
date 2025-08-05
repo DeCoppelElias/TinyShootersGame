@@ -26,16 +26,15 @@ public class Bullet : MonoBehaviour
     public bool reflected = false;
 
     public string ownerTag;
+    public GameObject owner;
 
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
 
     private System.Action onComplete;
-    private BulletManager bulletManager;
 
     private ParticleSystem trailParticleSystem;
     private ParticleSystem.MainModule mainModule;
-    private ParticleManager particleManager;
 
     private void Start()
     {
@@ -43,11 +42,9 @@ public class Bullet : MonoBehaviour
         if (this.spriteRenderer) spriteRenderer.color = color;
 
         rb = GetComponent<Rigidbody2D>();
-        bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
 
         this.trailParticleSystem = this.transform.Find("Trail").GetComponent<ParticleSystem>();
         this.mainModule = this.trailParticleSystem.main;
-        this.particleManager = GameObject.Find("Particles").GetComponent<ParticleManager>();
     }
 
     public void AssignOnComplete(System.Action action)
@@ -55,9 +52,10 @@ public class Bullet : MonoBehaviour
         this.onComplete = action;
     }
 
-    public void Initialize(string ownerTag, Vector3 position, Quaternion rotation, Vector3 scale, float damage, float airTime, float velocity, int pierce, Color color)
+    public void Initialize(string ownerTag, GameObject owner, Vector3 position, Quaternion rotation, Vector3 scale, float damage, float airTime, float velocity, int pierce, Color color)
     {
         this.ownerTag = ownerTag;
+        this.owner = owner;
 
         this.transform.position = position;
         this.transform.rotation = rotation;
@@ -150,7 +148,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.CompareTag("Wall"))
         {
-            this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
+            ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
             Complete();
             return;
         }
@@ -160,13 +158,13 @@ public class Bullet : MonoBehaviour
             Object obj = collision.GetComponent<Object>();
             if (obj != null) obj.OnBulletHit(damage, rb.velocity.normalized);
 
-            this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
+            ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
             Complete();
             return;
         }
 
         Entity entity = collision.GetComponent<Entity>();
-        if (entity != null && (ownerTag != collision.tag || ownerTag == "Player" && collision.tag == "Player") && entity.Health > 0)
+        if (entity != null && !GameObject.ReferenceEquals(owner, collision.gameObject) && (ownerTag != collision.tag || ownerTag == "Player" && collision.tag == "Player") && entity.Health > 0)
         {
             Vector2 direction = (entity.transform.position - this.transform.position).normalized;
             float baseKnockbackForce = 30;
@@ -183,7 +181,7 @@ public class Bullet : MonoBehaviour
             pierce--;
             if (pierce == 0)
             {
-                this.particleManager.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
+                ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.BulletExplosion, this.transform.position, Quaternion.identity, this.transform.localScale, this.color);
                 Complete();
             }
             else if (splitOnHit)
@@ -211,12 +209,12 @@ public class Bullet : MonoBehaviour
 
     private void CreateSplitBullet(float angle)
     {
-        Bullet bullet = bulletManager.TryGetBullet();
+        Bullet bullet = BulletManager.Instance.TryGetBullet();
         if (bullet == null) return;
-        bullet.AssignOnComplete(() => bulletManager.ReturnBullet(bullet));
+        bullet.AssignOnComplete(() => BulletManager.Instance.ReturnBullet(bullet));
 
         Vector3 direction = Quaternion.Euler(0, 0, angle) * Vector3.up;
-        bullet.Initialize(this.ownerTag, transform.position + direction / 3, Quaternion.Euler(0, 0, angle), new Vector3(splitBulletSize, splitBulletSize, 1), damage * splitDamagePercentage, splitRange / splitBulletSpeed, splitBulletSpeed, 1, this.color);
+        bullet.Initialize(this.ownerTag, this.owner, transform.position + direction / 3, Quaternion.Euler(0, 0, angle), new Vector3(splitBulletSize, splitBulletSize, 1), damage * splitDamagePercentage, splitRange / splitBulletSpeed, splitBulletSpeed, 1, this.color);
         bullet.Shoot();
     }
 }

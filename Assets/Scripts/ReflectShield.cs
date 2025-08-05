@@ -8,16 +8,17 @@ public class ReflectShield : MonoBehaviour
     [Header("Reflect Shield Settings")]
     [SerializeField] private Sprite bulletSprite;
     [SerializeField] private string ownerTag;
+    private GameObject owner;
     private Color ownerBulletColor = Color.white;
-
-    private BulletManager bulletManager;
 
     private void Start()
     {
         Entity entity = GetComponentInParent<Entity>();
-        if (entity != null) ownerTag = entity.tag;
-
-        bulletManager = GameObject.Find("Bullets").GetComponent<BulletManager>();
+        if (entity != null)
+        {
+            ownerTag = entity.tag;
+            owner = entity.gameObject;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -25,11 +26,11 @@ public class ReflectShield : MonoBehaviour
         Bullet oldBullet = collision.GetComponent<Bullet>();
         if (oldBullet != null)
         {
-            if (oldBullet.ownerTag != ownerTag)
+            if ((ownerTag != oldBullet.ownerTag || ownerTag == "Player" && oldBullet.ownerTag == "Player") && !GameObject.ReferenceEquals(owner, oldBullet.owner))
             {
-                Bullet reflectedBullet = bulletManager.TryGetBullet();
+                Bullet reflectedBullet = BulletManager.Instance.TryGetBullet();
                 if (reflectedBullet == null) return;
-                reflectedBullet.AssignOnComplete(() => bulletManager.ReturnBullet(reflectedBullet));
+                reflectedBullet.AssignOnComplete(() => BulletManager.Instance.ReturnBullet(reflectedBullet));
 
                 float reflectedDamage = oldBullet.damage;
                 float reflectedVelocity = oldBullet.velocity;
@@ -45,7 +46,7 @@ public class ReflectShield : MonoBehaviour
                 float reflectedZ = oldBullet.transform.eulerAngles.z + 180f;
                 Quaternion reflectedRotation = Quaternion.Euler(0, 0, reflectedZ);
 
-                reflectedBullet.Initialize(ownerTag, oldBullet.transform.position, reflectedRotation, oldBullet.transform.localScale, reflectedDamage, oldBullet.airTime, reflectedVelocity, oldBullet.pierce, ownerBulletColor);
+                reflectedBullet.Initialize(ownerTag, owner, oldBullet.transform.position, reflectedRotation, oldBullet.transform.localScale, reflectedDamage, oldBullet.airTime, reflectedVelocity, oldBullet.pierce, ownerBulletColor);
                 if (oldBullet.splitOnHit) reflectedBullet.InitializeSplitting(oldBullet.splitAmount, oldBullet.splitRange, oldBullet.splitBulletSize, oldBullet.splitBulletSpeed, oldBullet.splitDamagePercentage);
 
                 reflectedBullet.Shoot();

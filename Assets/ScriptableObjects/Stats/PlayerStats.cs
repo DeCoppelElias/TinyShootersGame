@@ -14,7 +14,6 @@ public class PlayerStats : ScriptableObject
     public Sprite UISprite;
 
     public float maxHealth = 100;
-    public float pvpMaxHealth = 100;
     public float health = 100;
     public float damage = 10;
 

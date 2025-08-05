@@ -36,13 +36,10 @@ public class DashAbility : MonoBehaviour
 
     private System.Action onComplete;
 
-    private AudioManager audioManager;
-
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         owner = GetComponent<Entity>();
-        this.audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 
         InstantiateDashEffect();
     }
@@ -56,8 +53,11 @@ public class DashAbility : MonoBehaviour
         dashingState = DashingState.Charging;
         this.dashDirection = direction;
 
-        rb.AddForce(0.1f * DashSpeed * rb.mass * -dashDirection.normalized, ForceMode2D.Impulse);
         chargeStart = Time.time;
+        if (chargeDuration > 0)
+        {
+            rb.AddForce(0.1f * DashSpeed * rb.mass * -dashDirection.normalized, ForceMode2D.Impulse);
+        }
     }
 
     public bool Ready()
@@ -100,7 +100,7 @@ public class DashAbility : MonoBehaviour
                 if (this.dashEffect != null) this.dashEffect.SetActive(true);
 
                 // Play sound effect
-                if (audioManager != null) audioManager.PlayDashSound();
+                if (AudioManager.Instance != null) AudioManager.Instance.PlayDashSound();
 
                 // Make knockback immune
                 this.owner.knockbackImmune = true;

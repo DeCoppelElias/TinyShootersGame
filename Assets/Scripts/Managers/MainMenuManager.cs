@@ -63,7 +63,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void PlayPVP()
     {
-        SceneManager.LoadScene("PVP");
+        SceneManager.LoadScene("PVPLobby");
     }
 
     public void ToLeaderboard()

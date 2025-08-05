@@ -16,13 +16,14 @@ public class PauseUI : UIElement
 
     public override void Enable()
     {
-        uiManager.SetFirstSelectedIfGamepad(this.transform.Find("ResumeButton").gameObject);
+        firstSelected = this.transform.Find("ResumeButton").gameObject;
         uiTransition.FadeIn();
     }
 
     public override UIElement Disable()
     {
         uiTransition.FadeOut();
+        onDisable.Invoke();
         return this;
     }
 

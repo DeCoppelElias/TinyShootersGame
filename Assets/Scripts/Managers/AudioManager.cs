@@ -11,7 +11,7 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource effectsAudioSource;
     [SerializeField] private AudioSource musicAudioSource;
-    private float previousMusicAudioVolume;
+    private float currentMusicVolume;
 
     [Header("UI Sounds")]
     [SerializeField] private AudioClip uiNavigationSound;
@@ -50,16 +50,19 @@ public class AudioManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public void PlayHoverSound(PlayerInput input)
+    private void Start()
     {
-        if (input.currentControlScheme == "Keyboard&Mouse")
-            PlayEffect(uiNavigationSound, UI_VOLUME_SCALE);
+        currentMusicVolume = musicAudioSource.volume;
     }
 
-    public void PlayNavigateSound(PlayerInput input)
+    public void PlayHoverSound()
     {
-        if (input.currentControlScheme == "Gamepad")
-            PlayEffect(uiNavigationSound, UI_VOLUME_SCALE);
+        PlayEffect(uiNavigationSound, UI_VOLUME_SCALE);
+    }
+
+    public void PlayNavigateSound()
+    {
+        PlayEffect(uiNavigationSound, UI_VOLUME_SCALE);
     }
 
     public void PlayClickSound() => PlayEffect(uiClickSound, UI_VOLUME_SCALE);
@@ -86,7 +89,7 @@ public class AudioManager : MonoBehaviour
 
     private bool IsGameplayScene(string sceneName)
     {
-        return sceneName == "Game" || sceneName == "PVP" || sceneName == "Testing";
+        return sceneName == "Game" || sceneName == "PVP" || sceneName == "Testing" || sceneName == "PVPBattle";
     }
 
     private void PlayMusic(AudioClip clip)
@@ -101,14 +104,8 @@ public class AudioManager : MonoBehaviour
         musicAudioSource.Play();
     }
 
-    public void LowerMusicVolume()
+    public void ChangeMusicVolume(float amount)
     {
-        previousMusicAudioVolume = musicAudioSource.volume;
-        musicAudioSource.volume *= 0.5f;
-    }
-
-    public void ReturnMusicVolume()
-    {
-        musicAudioSource.volume = previousMusicAudioVolume;
+        musicAudioSource.volume = musicAudioSource.volume * amount;
     }
 }

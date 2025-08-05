@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public abstract class UIElement : MonoBehaviour
 {
-    protected Player player;
-    protected UIManager uiManager;
+    protected GameObject firstSelected;
+
+    public UnityEvent onDisable;
 
     protected virtual void Start()
     {
-        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        player = GameObject.Find("Player").GetComponent<Player>();
+        
     }
     public virtual void Enable()
     {
@@ -21,11 +22,17 @@ public abstract class UIElement : MonoBehaviour
     public virtual UIElement Disable()
     {
         this.gameObject.SetActive(false);
+        onDisable.Invoke();
         return this;
     }
 
     public virtual bool Enabled()
     {
         return this.gameObject.activeSelf;
+    }
+
+    public virtual GameObject GetFirstSelected()
+    {
+        return firstSelected;
     }
 }

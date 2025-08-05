@@ -34,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
     private TrailState trailState = TrailState.Idle;
     private Vector3 previousTrailPosition;
     private Vector3 trailStartPosition;
-    private ParticleManager particleManager;
     private Rigidbody2D rb;
 
     private void Start()
@@ -63,7 +62,6 @@ public class PlayerMovement : MonoBehaviour
         this.spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
 
         this.previousTrailPosition = this.transform.position;
-        this.particleManager = FindObjectOfType<ParticleManager>();
         this.rb = GetComponent<Rigidbody2D>();
     }
 
@@ -86,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Vector3 trailDirection = (this.transform.position - trailStartPosition).normalized;
             Quaternion trailRotation = Quaternion.FromToRotation(Vector3.up, trailDirection);
-            this.particleManager.CreateParticle(ParticleManager.ParticleType.Trail, this.transform.position, trailRotation, this.transform.localScale, player.Color);
+            ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Trail, this.transform.position, trailRotation, this.transform.localScale, player.Color);
 
             trailState = TrailState.Idle;
             previousTrailPosition = this.transform.position;

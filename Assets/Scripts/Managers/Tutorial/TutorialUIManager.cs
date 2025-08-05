@@ -29,8 +29,6 @@ public class TutorialUIManager : MonoBehaviour
     private Player player;
     private PlayerInput playerInput;
 
-    private GameStateManager gameStateManager;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -52,8 +50,6 @@ public class TutorialUIManager : MonoBehaviour
 
         player = GameObject.Find("Player").GetComponent<Player>();
         playerInput = player.GetComponent<PlayerInput>();
-
-        gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
     }
 
     public void EnableAbilityUI()
@@ -73,7 +69,7 @@ public class TutorialUIManager : MonoBehaviour
         PlayerClass playerClass = player.playerClass;
         if (playerClass.upgrades.Count == 0) return;
 
-        gameStateManager.ToPaused();
+        GameStateManager.Instance.ToPaused();
 
         Transform buttons = upgradeUI.transform.Find("Buttons");
 
@@ -123,7 +119,7 @@ public class TutorialUIManager : MonoBehaviour
     {
         ReturnMusicVolume();
 
-        gameStateManager.ToRunning();
+        GameStateManager.Instance.ToRunning();
         upgradeUI.SetActive(false);
         RemoveFirstSelected();
     }
@@ -244,7 +240,7 @@ public class TutorialUIManager : MonoBehaviour
 
         LowerMusicVolume();
 
-        gameStateManager.ToPaused();
+        GameStateManager.Instance.ToPaused();
         pauseUI.SetActive(true);
         SetFirstSelectedIfGamepad(pauseUI.transform.Find("ResumeButton").gameObject);
     }
@@ -253,7 +249,7 @@ public class TutorialUIManager : MonoBehaviour
     {
         ReturnMusicVolume();
 
-        gameStateManager.ToRunning();
+        GameStateManager.Instance.ToRunning();
         pauseUI.SetActive(false);
         RemoveFirstSelected();
     }

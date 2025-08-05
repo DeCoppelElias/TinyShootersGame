@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class PowerupManager : MonoBehaviour
 {
+    public static PowerupManager Instance { get; private set; }
+
     [SerializeField] private List<Powerup> commonPowerups = new List<Powerup>();
     [SerializeField] private List<Powerup> uncommonPowerups = new List<Powerup>();
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {

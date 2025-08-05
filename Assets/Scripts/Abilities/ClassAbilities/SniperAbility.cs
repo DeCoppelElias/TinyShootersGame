@@ -5,7 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewSniperAbility", menuName = "ClassAbilities/SniperAbility")]
 public class SniperAbility : ClassAbility
 {
-    private GameStateManager gameStateManager;
     private ShootingAbility shootingAbility;
 
     [SerializeField]
@@ -22,16 +21,15 @@ public class SniperAbility : ClassAbility
 
     public override bool Initialise(Player player)
     {
-        this.gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
         this.shootingAbility = player.GetComponent<ShootingAbility>();
 
-        if (gameStateManager == null || shootingAbility == null) return false;
+        if (GameStateManager.Instance == null || shootingAbility == null) return false;
         return true;
     }
 
     public override void PerformAbility(Player player)
     {
-        gameStateManager.SlowDownTime(0.05f, effectDuration, abilityDuration);
+        GameStateManager.Instance.SlowDownTime(0.05f, effectDuration, abilityDuration);
         shootingAbility.workWithRealTime = true;
 
         player.StartCoroutine(PerformActionAfterRealDelay((2 * effectDuration) + abilityDuration, () => shootingAbility.workWithRealTime = false));

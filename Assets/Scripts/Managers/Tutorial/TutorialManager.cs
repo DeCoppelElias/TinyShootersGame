@@ -17,6 +17,8 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Tile warningTile;
 
     private Player player;
+    private PlayerUIManager playerUIManager;
+
     private GameObject enemy;
     private float startTime = 0;
 
@@ -25,12 +27,14 @@ public class TutorialManager : MonoBehaviour
     private Text doneText;
     private TextMeshProUGUI explanationSubTitle;
 
-    private UIManager uiManager;
+    private GeneralUIManager uiManager;
 
     private void Start()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
-        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        playerUIManager = player.GetComponentInChildren<PlayerUIManager>();
+
+        uiManager = GameObject.Find("UIManager").GetComponent<GeneralUIManager>();
 
         explanationUI = GameObject.Find("ExplanationUI");
         explanationTitle = explanationUI.transform.Find("TitleContainer").Find("Title").GetComponent<Text>();
@@ -46,7 +50,7 @@ public class TutorialManager : MonoBehaviour
 
         StartCoroutine(PerformAfterDelay(0.1f, () =>
         {
-            uiManager.EnableAbilityUI(false);
+            playerUIManager.EnableAbilityUI(false);
             uiManager.EnableScoreUI(false);
         }));
     }
@@ -183,7 +187,7 @@ public class TutorialManager : MonoBehaviour
     private void ToDash()
     {
         tutorialState = TutorialState.Dash;
-        uiManager.EnableAbilityUI(true);
+        playerUIManager.EnableAbilityUI(true);
 
         explanationTitle.text = "Dashing (3/7)";
         explanationSubTitle.text = "Dashing will perform a quick movement in the direction you are moving.\n" +
@@ -225,7 +229,7 @@ public class TutorialManager : MonoBehaviour
         explanationSubTitle.text = "From time to time, you will be able to upgrade your character!\n" +
             "You can then choose between different classes, each with their own advantages and dissadvantages!";
 
-        uiManager.EnableUpgradeUI();
+        playerUIManager.EnableUpgradeUI();
 
         CreateRandomEnemyForTutorial();
         startTime = Time.time;

@@ -6,10 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class InputManager : MonoBehaviour
 {
-    private UIManager uiManager;
+    private GeneralUIManager uiManager;
     private void Start()
     {
-        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        uiManager = GameObject.Find("UIManager").GetComponent<GeneralUIManager>();
     }
     void Update()
     {

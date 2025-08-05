@@ -117,13 +117,14 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case "ClassAbility":
+                if (!collectInput) return;
                 if (onClassAbility != null && context.performed)
                 {
                     onClassAbility(player);
                 }
                 break;
             case "Pause":
-                onPause.Invoke();
+                if (context.performed) onPause.Invoke();
                 break;
         }
     }

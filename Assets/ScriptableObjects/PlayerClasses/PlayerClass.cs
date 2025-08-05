@@ -18,7 +18,6 @@ public class PlayerClass : ScriptableObject
     public Sprite UISprite;
 
     public float healthDelta = 0;
-    public float pvpHealthDelta = 0;
 
     public float normalMoveSpeedDelta = 0;
     public float shootingMoveSpeedDelta = 0;

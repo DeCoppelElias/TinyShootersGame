@@ -34,11 +34,8 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private WaveState waveState = WaveState.WaveCooldown;
     [SerializeField] private GameObject enemies;
 
-    private UIManager uiManager;
-    private GameStateManager gameStateManager;
-    private ScoreManager scoreManager;
-    private CameraManager cameraManager;
     private Player player;
+    private PlayerUIManager playerUIManager;
 
     private float lastWaveTime = 0;
     private float playerHealthBeforeWave = 0;
@@ -56,11 +53,8 @@ public class WaveManager : MonoBehaviour
     {
         lastWaveTime = Time.time;
 
-        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
-        scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
-        cameraManager = GameObject.Find("CameraManager").GetComponent<CameraManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
+        playerUIManager = player.GetComponentInChildren<PlayerUIManager>();
 
         InitializeDict();
         SetupCurrentLevel();
@@ -86,7 +80,7 @@ public class WaveManager : MonoBehaviour
                 if (Time.time - lastWaveTime > waveCooldown)
                 {
                     waveState = WaveState.Ready;
-                    uiManager.DisableWaveUI();
+                    GeneralUIManager.Instance.DisableWaveUI();
                 }
             }
             else if (waveState == WaveState.LevelCooldown)
@@ -105,19 +99,19 @@ public class WaveManager : MonoBehaviour
         // Give Score if player did not lose health
         if (player.Health == playerHealthBeforeWave)
         {
-            scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
+            ScoreManager.Instance.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
         }
 
         if (CheckLastLevel() && CheckLastWave())
         {
             waveState = WaveState.Done;
-            uiManager.EnableLevelCompletedText(levelIndex + 1);
-            StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
+            GeneralUIManager.Instance.EnableLevelCompletedText(levelIndex + 1);
+            StartCoroutine(PerformAfterDelay(5, () => GameStateManager.Instance.GameWon()));
         }
         else if (!CheckLastLevel() && CheckLastWave())
         {
             waveState = WaveState.LevelCooldown;
-            uiManager.EnableLevelCompletedText(levelIndex + 1);
+            GeneralUIManager.Instance.EnableLevelCompletedText(levelIndex + 1);
             lastWaveTime = Time.time;
 
             RewardPlayer();
@@ -131,7 +125,7 @@ public class WaveManager : MonoBehaviour
 
             Level level = GetLevel(this.levelIndex);
             Wave wave = level.GetWave(waveIndex);
-            uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
+            GeneralUIManager.Instance.PerformWaveCountdown(waveCooldown, wave.boss);
 
             RewardPlayer();
         }
@@ -144,15 +138,15 @@ public class WaveManager : MonoBehaviour
         {
             classUpgradeCounter = 0;
 
-            if (player.GetUpgrades().Count > 0) uiManager.EnableUpgradeUI();
-            else uiManager.EnablePowerupUI();
+            if (player.GetUpgrades().Count > 0) playerUIManager.EnableUpgradeUI();
+            else playerUIManager.EnablePowerupUI();
         }
 
         powerupCounter++;
         if (powerupCounter == powerupCooldown)
         {
             powerupCounter = 0;
-            uiManager.EnablePowerupUI();
+            playerUIManager.EnablePowerupUI();
         }
     }
 
@@ -193,7 +187,7 @@ public class WaveManager : MonoBehaviour
     {
         Level level = GetLevel(this.levelIndex);
 
-        cameraManager.TransitionCamera(level.GetCameraLocation());
+        CameraManager.Instance.TransitionCamera(level.GetCameraLocation());
         player.transform.position = level.GetPlayerSpawnLocation();
     }
 
@@ -261,8 +255,8 @@ public class WaveManager : MonoBehaviour
         Level level = GetLevel(levelIndex);
         Wave wave = level.GetWave(waveIndex);
 
-        uiManager.DisableWaveUI();
-        uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
+        GeneralUIManager.Instance.DisableWaveUI();
+        GeneralUIManager.Instance.PerformWaveCountdown(waveCooldown, wave.boss);
 
         SetupCurrentLevel();
     }

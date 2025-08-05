@@ -20,8 +20,6 @@ public class Player : Entity
     public UnityEvent onHitEvent;
     public UnityEvent onDeath;
 
-    public bool isPVP = false;
-
     private PlayerController playerController;
 
     [SerializeField] private List<Sprite> alternativeSprites = new List<Sprite>();
@@ -105,15 +103,14 @@ public class Player : Entity
             animator.runtimeAnimatorController = playerClass.animatorController;
         }
 
-        if (!isPVP) this.MaxHealth += playerClass.healthDelta;
-        else this.MaxHealth += playerClass.pvpHealthDelta;
+        this.MaxHealth += playerClass.healthDelta;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");
         healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
 
         this.Health = this.MaxHealth;
 
-        if (!isPVP) this.invulnerableDuration += playerClass.invulnerableDurationDelta;
+        this.invulnerableDuration += playerClass.invulnerableDurationDelta;
 
         this.ContactDamage += playerClass.contactDamageDelta;
         this.ContactHitCooldown += playerClass.contactHitCooldownDelta;
@@ -141,15 +138,14 @@ public class Player : Entity
             animator.runtimeAnimatorController = playerStats.animatorController;
         }
 
-        if (!isPVP) this.MaxHealth = playerStats.maxHealth;
-        else this.MaxHealth = playerStats.pvpMaxHealth;
+        this.MaxHealth = playerStats.maxHealth;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");
         healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
 
         this.Health = this.MaxHealth;
 
-        if (!isPVP) this.invulnerableDuration = playerStats.invulnerableDuration;
+        this.invulnerableDuration = playerStats.invulnerableDuration;
 
         this.ContactDamage = playerStats.contactDamage;
         this.ContactHitCooldown = playerStats.contactHitCooldown;
@@ -179,7 +175,7 @@ public class Player : Entity
         Transform healthbar = this.transform.Find("EmptyHealthBar");
         healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
 
-        if (!isPVP) this.invulnerableDuration += powerup.invulnerableDurationDelta;
+        this.invulnerableDuration += powerup.invulnerableDurationDelta;
 
         this.ContactDamage += powerup.contactDamageDelta;
         this.ContactHitCooldown += powerup.contactHitCooldownDelta;
@@ -220,5 +216,10 @@ public class Player : Entity
         if (dashAbility != null) dashAbility.SetDashColor(color);
 
         this.Color = color;
+    }
+
+    public void Reset()
+    {
+        ApplyStats(baseStats);
     }
 }

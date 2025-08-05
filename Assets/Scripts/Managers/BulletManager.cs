@@ -4,12 +4,19 @@ using UnityEngine;
 
 public class BulletManager : MonoBehaviour
 {
+    public static BulletManager Instance { get; private set; }
+
     [SerializeField] private int bulletLimit = 1000;
     [SerializeField] private int bulletStart = 10;
     [SerializeField] private int bulletCount = 0;
     [SerializeField] private GameObject bulletPrefab;
 
     private Queue<Bullet> availableBullets = new Queue<Bullet>();
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()

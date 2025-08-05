@@ -10,6 +10,8 @@ public abstract class Entity : MonoBehaviour
     [SerializeField] protected EntityState entityState = EntityState.Alive;
     protected enum EntityState { Alive, Dead }
 
+    [SerializeField] public System.Guid EntityID { get; private set; }
+
     [SerializeField] private float maxHealth = 100;
     [SerializeField] private float health = 100;
 
@@ -45,7 +47,6 @@ public abstract class Entity : MonoBehaviour
     protected string lastDamageSourceTag;
     protected Vector2 lastDamageDirection;
 
-    protected AudioManager audioManager;
     private WaveManager waveManager;
 
     private Transform healthBar;
@@ -56,12 +57,15 @@ public abstract class Entity : MonoBehaviour
 
     protected Rigidbody2D rb;
 
+    private void Awake()
+    {
+        EntityID = System.Guid.NewGuid();
+    }
 
     private void Start()
     {
         walls = GameObject.Find("Walls")?.GetComponent<Tilemap>();
         pits = GameObject.Find("Pits")?.GetComponent<Tilemap>();
-        audioManager = GameObject.Find("AudioManager")?.GetComponent<AudioManager>();
         waveManager = GameObject.Find("WaveManager")?.GetComponent<WaveManager>();
         spriteRenderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
 
@@ -151,7 +155,7 @@ public abstract class Entity : MonoBehaviour
         ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
 
         // sound
-        audioManager.PlayDieSound();
+        AudioManager.Instance.PlayDieSound();
     }
 
     public virtual void UpdateEntity()
@@ -189,7 +193,7 @@ public abstract class Entity : MonoBehaviour
         if (r < 0.05f) ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
 
         // Play damage sound effect
-        this.audioManager.PlayDamageSound();
+        AudioManager.Instance.PlayDamageSound();
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -310,5 +314,13 @@ public abstract class Entity : MonoBehaviour
     {
         if (knockbackImmune) return;
         if (rb != null) rb.AddForce(force, ForceMode2D.Impulse);
+    }
+
+    public void Revive()
+    {
+        if (this.entityState != EntityState.Dead) return;
+
+        this.health = maxHealth;
+        this.entityState = EntityState.Alive;
     }
 }
