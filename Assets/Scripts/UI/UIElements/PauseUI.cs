@@ -33,7 +33,6 @@ public class PauseUI : UIElement
         quitButton = this.transform.Find("MainMenuButton").GetComponent<Button>();
         quitButton.onClick.AddListener(GameStateManager.Instance.QuitToMainMenu);
 
-        this.pausesGame = true;
         InstantDisableActions();
     }
 

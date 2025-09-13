@@ -19,19 +19,19 @@ public abstract class UIElement : MonoBehaviour
 
     }
 
-    public void Enable()
+    public virtual void Enable()
     {
         if (Enabled()) return;
         EnableActions();
         if (onEnable != null) onEnable.Invoke(this);
     }
-    public void Disable()
+    public virtual void Disable()
     {
         if (!Enabled()) return;
         DisableActions();
         if (onDisable != null) onDisable.Invoke(this);
     }
-    public void InstantDisable()
+    public virtual void InstantDisable()
     {
         if (!Enabled()) return;
         InstantDisableActions();
@@ -102,6 +102,21 @@ public abstract class PlayerUIElement : UIElement
         this.player = player;
         initialized = true;
         onInitialized?.Invoke();
+    }
+
+    public override void Enable()
+    {
+        if (initialized) base.Enable();
+    }
+
+    public override void Disable()
+    {
+        if (initialized) base.Disable();
+    }
+
+    public override void InstantDisable()
+    {
+        if (initialized) base.InstantDisable();
     }
 
     protected void AddOnInitializedListener(UnityAction onInitializedAction)

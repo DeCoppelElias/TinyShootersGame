@@ -95,6 +95,10 @@ MonoBehaviour:
   onDisable:
     m_PersistentCalls:
       m_Calls: []
+  onEnable:
+    m_PersistentCalls:
+      m_Calls: []
+  pausesGame: 1
   commonColor: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
   uncommonColor: {r: 0.17087929, g: 0.24236096, b: 0.4716981, a: 1}
   rareColor: {r: 0, g: 0, b: 0, a: 0}

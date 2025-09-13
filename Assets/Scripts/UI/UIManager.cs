@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
-using UnityEngine.UI;
 
-
-/// <summary>
-/// See Chatgpt promt "UI system redesign guide" for inspiration on how to further clean up this code.
-/// </summary>
-public class SharedUIManager : MonoBehaviour
+public abstract class UIManager : MonoBehaviour
 {
-    public static SharedUIManager Instance { get; private set; }
+    [SerializeField] protected Canvas canvas;
+    protected readonly Dictionary<System.Type, GameObject> uiElements = new Dictionary<System.Type, GameObject>();
 
-    [SerializeField] private UISceneProfile sceneUIProfile;
-    [SerializeField] private Canvas canvas;
-    private readonly Dictionary<System.Type, GameObject> uiElements = new Dictionary<System.Type, GameObject>();
-
-    [SerializeField] private PlayerInput currentControllingPlayer;
+    [SerializeField] protected PlayerInput currentControllingPlayer;
     private string currentControlScheme;
 
     [Header("Panel Statistics")]
@@ -29,41 +19,25 @@ public class SharedUIManager : MonoBehaviour
 
     public GameObject FirstSelected { get; private set; }
 
-    private void Awake()
+    public virtual void Awake()
     {
-        Instance = this;
-
-        RegisterUIPanels();
+        LoadUIPanels();
+        RegisterCallbacks();
     }
 
-    private void RegisterUIPanels()
-    {
-        foreach (var prefab in sceneUIProfile.sharedUIPrefabs)
-        {
-            var go = Instantiate(prefab, canvas.transform);
+    /// <summary>
+    /// Load UI elements in class variable.
+    /// </summary>
+    protected abstract void LoadUIPanels();
 
-            UIElement uiElement = go.GetComponent<UIElement>();
-            uiElements[uiElement.GetType()] = go;
+    private void RegisterCallbacks()
+    {
+        foreach (GameObject uiGO in uiElements.Values)
+        {
+            UIElement uiElement = uiGO.GetComponent<UIElement>();
 
             uiElement.AddOnEnableAction(OnEnableActions);
             uiElement.AddOnDisableAction(OnDisableActions);
-        }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        LinkToPlayers();
-    }
-
-    private void LinkToPlayers()
-    {
-        PlayerController[] playerControllers = FindObjectsOfType<PlayerController>();
-        foreach (PlayerController playerController in playerControllers)
-        {
-            playerController.onPause.AddListener(() => {
-                Toggle<PauseUI>();
-            });
         }
     }
 

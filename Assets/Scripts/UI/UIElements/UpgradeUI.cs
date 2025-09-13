@@ -25,7 +25,7 @@ public class UpgradeUI : PlayerUIElement
         List<PlayerClass> upgrades = player.GetUpgrades();
         if (upgrades.Count == 0)
         {
-            DisableActions();
+            Disable();
             return;
         }
 
@@ -83,7 +83,7 @@ public class UpgradeUI : PlayerUIElement
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
                 player.ApplyClass(currentPlayerClass);
-                DisableActions();
+                Disable();
             });
         }
 

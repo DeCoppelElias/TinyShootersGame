@@ -315,6 +315,10 @@ MonoBehaviour:
   onDisable:
     m_PersistentCalls:
       m_Calls: []
+  onEnable:
+    m_PersistentCalls:
+      m_Calls: []
+  pausesGame: 1
   classUpgradeButtonPrefab: {fileID: 2644183180546784704, guid: 0708eb2f0f8caad4992a8beee96c78d1, type: 3}
 --- !u!225 &2327026177266468645
 CanvasGroup:

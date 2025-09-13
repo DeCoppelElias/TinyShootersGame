@@ -555,6 +555,10 @@ MonoBehaviour:
   onDisable:
     m_PersistentCalls:
       m_Calls: []
+  onEnable:
+    m_PersistentCalls:
+      m_Calls: []
+  pausesGame: 1
 --- !u!225 &1439470713484059476
 CanvasGroup:
   m_ObjectHideFlags: 0

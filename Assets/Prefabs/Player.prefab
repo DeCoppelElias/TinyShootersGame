@@ -976,8 +976,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f8d2fe1f4ecfee43b65b20784305ebe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2952285022420082844}
   canvas: {fileID: 5288767435732246638}
+  currentControllingPlayer: {fileID: 4128045392292169300}
+  enabledPanels: 0
+  disabledPanels: 0
+  enabledPausePanels: 0
   sceneUIProfile: {fileID: 0}
 --- !u!223 &5288767435732246638
 Canvas:

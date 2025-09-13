@@ -50,7 +50,7 @@ public class PowerupUI : PlayerUIElement
         List<Powerup> powerups = PowerupManager.Instance.ChooseRandomPowerups(3);
         if (powerups.Count != 3)
         {
-            DisableActions();
+            Disable();
             return;
         }
 
@@ -82,7 +82,7 @@ public class PowerupUI : PlayerUIElement
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
                 player.ApplyPowerup(currentPowerup);
-                DisableActions();
+                Disable();
             });
 
             // Change color depending on rarity of powerup
