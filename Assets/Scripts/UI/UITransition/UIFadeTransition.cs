@@ -3,10 +3,21 @@ using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.InputSystem.UI;
 
-public class UITransition : MonoBehaviour
+public class UIFadeTransition : UITransition
 {
     [SerializeField] private CanvasGroup canvasGroup;
-    public void FadeIn()
+
+    public override void Transition()
+    {
+        FadeIn();
+    }
+
+    public override void ReverseTransition()
+    {
+        FadeOut();
+    }
+
+    private void FadeIn()
     {
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
@@ -22,7 +33,7 @@ public class UITransition : MonoBehaviour
             });
     }
 
-    public void FadeOut()
+    private void FadeOut()
     {
         canvasGroup.alpha = 1;
         canvasGroup.interactable = false;
@@ -33,7 +44,7 @@ public class UITransition : MonoBehaviour
             .SetUpdate(true);
     }
 
-    public bool Enabled()
+    public override bool Enabled()
     {
         return canvasGroup.interactable;
     }
@@ -58,5 +69,13 @@ public class UITransition : MonoBehaviour
             nav.mode = Navigation.Mode.Explicit;
             button.navigation = nav;
         }
+    }
+
+    public override void InstantReverseTransition()
+    {
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+        DisableButtons();
     }
 }

@@ -106,6 +106,6 @@ public class AudioManager : MonoBehaviour
 
     public void ChangeMusicVolume(float amount)
     {
-        musicAudioSource.volume = musicAudioSource.volume * amount;
+        musicAudioSource.volume *= amount;
     }
 }

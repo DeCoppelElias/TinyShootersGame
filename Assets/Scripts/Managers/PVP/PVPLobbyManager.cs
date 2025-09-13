@@ -76,9 +76,7 @@ public class PVPLobbyManager : MonoBehaviour
         }
 
         input.gameObject.AddComponent<PlayerReady>();
-        input.GetComponent<PlayerController>().collectInput = false;
         input.neverAutoSwitchControlSchemes = true;
-        input.GetComponentInChildren<Canvas>().enabled = false;
 
         if (input.gameObject.name == "Player 1")
         {
@@ -113,13 +111,9 @@ public class PVPLobbyManager : MonoBehaviour
         {
             Destroy(player1.gameObject.GetComponent<PlayerReady>());
             DontDestroyOnLoad(player1);
-            player1.GetComponent<PlayerController>().collectInput = true;
-            player1.GetComponentInChildren<Canvas>().enabled = true;
 
             Destroy(player2.gameObject.GetComponent<PlayerReady>());
             DontDestroyOnLoad(player2);
-            player2.GetComponent<PlayerController>().collectInput = true;
-            player2.GetComponentInChildren<Canvas>().enabled = true;
 
             DontDestroyOnLoad(eventSystem);
 

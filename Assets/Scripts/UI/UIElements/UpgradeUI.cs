@@ -4,28 +4,28 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-[RequireComponent(typeof(UITransition))]
-public class UpgradeUI : UIElement
+[RequireComponent(typeof(UIFadeTransition))]
+public class UpgradeUI : PlayerUIElement
 {
     [SerializeField] private GameObject classUpgradeButtonPrefab;
-    private UITransition uiTransition;
-
-    protected Player player;
+    private UIFadeTransition uiTransition;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
-        uiTransition = GetComponent<UITransition>();
-        player = GetComponentInParent<Player>();
+
+        this.pausesGame = true;
+        uiTransition = GetComponent<UIFadeTransition>();
+        InstantDisableActions();
     }
 
-    public override void Enable()
+    protected override void EnableActions()
     {
         List<PlayerClass> upgrades = player.GetUpgrades();
         if (upgrades.Count == 0)
         {
-            Disable();
+            DisableActions();
             return;
         }
 
@@ -83,21 +83,23 @@ public class UpgradeUI : UIElement
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
                 player.ApplyClass(currentPlayerClass);
-                Disable();
+                DisableActions();
             });
         }
 
         firstSelected = buttons.GetChild(0).gameObject;
-        uiTransition.FadeIn();
+        uiTransition.Transition();
 
         return;
     }
 
-    public override UIElement Disable()
+    protected override void DisableActions()
     {
-        uiTransition.FadeOut();
-        onDisable.Invoke();
-        return this;
+        uiTransition.ReverseTransition();
+    }
+    protected override void InstantDisableActions()
+    {
+        uiTransition.InstantReverseTransition();
     }
     public override bool Enabled()
     {

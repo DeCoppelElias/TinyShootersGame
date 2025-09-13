@@ -7,6 +7,9 @@ public class UIVisibilityManager : MonoBehaviour
 {
     public static UIVisibilityManager Instance { get; private set; }
 
+    // UI elements that will pause the game when enabled
+    [SerializeField] private List<System.Type> pauseUIElements = new List<System.Type>();
+
     [SerializeField] private int activeUICount = 0;
 
     [SerializeField] private event UnityAction OnUIShown;

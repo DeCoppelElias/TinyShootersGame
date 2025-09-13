@@ -129,12 +129,11 @@ public class PVPBattleManager : MonoBehaviour
 
         currentMatch += 1;
         ColorUtility.TryParseHtmlString("#E6E6E6", out Color newColor);
-        GeneralUIManager.Instance.PerformCountdown("Next match starts in: ", newColor, matchCooldown);
+
+        SharedUIManager.Instance.GetUIElement<PVPStatusUI>().PerformCountdown("Next match starts in: ", newColor, matchCooldown);
 
         StartCoroutine(PerformAfterDelay(matchCooldown, () =>
         {
-            GeneralUIManager.Instance.DisableWaveUI();
-
             if (currentMatch >= matches) EndPVP();
             else
             {
@@ -143,8 +142,8 @@ public class PVPBattleManager : MonoBehaviour
                 foreach (GameObject playerGO in playerGOs)
                 {
                     PlayerUIManager playerUIManager = playerGO.GetComponentInChildren<PlayerUIManager>();
-                    playerUIManager.EnablePowerupUI();
-                    StartCoroutine(PerformAfterDelay(0.1f, playerUIManager.EnableUpgradeUI));
+                    playerUIManager.Enable<PowerupUI>();
+                    StartCoroutine(PerformAfterDelay(0.1f, playerUIManager.Enable<UpgradeUI>));
                 }
             }
         }));

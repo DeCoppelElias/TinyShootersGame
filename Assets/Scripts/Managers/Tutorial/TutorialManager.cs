@@ -27,14 +27,10 @@ public class TutorialManager : MonoBehaviour
     private Text doneText;
     private TextMeshProUGUI explanationSubTitle;
 
-    private GeneralUIManager uiManager;
-
     private void Start()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
         playerUIManager = player.GetComponentInChildren<PlayerUIManager>();
-
-        uiManager = GameObject.Find("UIManager").GetComponent<GeneralUIManager>();
 
         explanationUI = GameObject.Find("ExplanationUI");
         explanationTitle = explanationUI.transform.Find("TitleContainer").Find("Title").GetComponent<Text>();
@@ -50,8 +46,8 @@ public class TutorialManager : MonoBehaviour
 
         StartCoroutine(PerformAfterDelay(0.1f, () =>
         {
-            playerUIManager.EnableAbilityUI(false);
-            uiManager.EnableScoreUI(false);
+            playerUIManager.Disable<AbilityUI>();
+            SharedUIManager.Instance.Disable<ScoreUI>();
         }));
     }
 
@@ -187,7 +183,7 @@ public class TutorialManager : MonoBehaviour
     private void ToDash()
     {
         tutorialState = TutorialState.Dash;
-        playerUIManager.EnableAbilityUI(true);
+        playerUIManager.Enable<AbilityUI>();
 
         explanationTitle.text = "Dashing (3/7)";
         explanationSubTitle.text = "Dashing will perform a quick movement in the direction you are moving.\n" +
@@ -210,7 +206,7 @@ public class TutorialManager : MonoBehaviour
     private void ToEnemyTest()
     {
         tutorialState = TutorialState.Combat;
-        uiManager.EnableScoreUI(true);
+        SharedUIManager.Instance.Enable<ScoreUI>();
 
         explanationTitle.text = "Combat (5/7)";
         explanationSubTitle.text = "Test your skills against a real enemy!\n" +
@@ -229,7 +225,7 @@ public class TutorialManager : MonoBehaviour
         explanationSubTitle.text = "From time to time, you will be able to upgrade your character!\n" +
             "You can then choose between different classes, each with their own advantages and dissadvantages!";
 
-        playerUIManager.EnableUpgradeUI();
+        playerUIManager.Enable<UpgradeUI>();
 
         CreateRandomEnemyForTutorial();
         startTime = Time.time;

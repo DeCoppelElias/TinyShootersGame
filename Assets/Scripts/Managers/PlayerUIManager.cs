@@ -10,56 +10,37 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Canvas))]
 public class PlayerUIManager : MonoBehaviour
 {
-    private Canvas playerCanvas;
+    [SerializeField] private Player player;
+    [SerializeField] private Canvas canvas;
+    [SerializeField] private UISceneProfile sceneUIProfile;
+
     private MultiplayerEventSystem playerEventSystem;
-    private Player player;
 
-    private GameObject upgradeUI;
-    private GameObject powerupUI;
-    [SerializeField] private GameObject upgradeButtonPrefab;
-
-    private GameObject abilityUI;
-    private GameObject dashAbilityUI;
-    private bool dashAbilityEnabled = true;
-    private GameObject reflectAbilityUI;
-    private bool reflectAbilityEnabled = true;
-    private GameObject classAbilityUI;
-    private bool classAbilityEnabled = true;
-    private bool classAbilityInitialised = false;
+    private readonly Dictionary<System.Type, GameObject> uiElements = new Dictionary<System.Type, GameObject>();
 
     private PlayerInput playerInput;
 
     private string currentControlScheme;
     public GameObject FirstSelected { get; private set; }
+    
+    private void Awake()
+    {
+        foreach (var prefab in sceneUIProfile.playerUIPrefabs)
+        {
+            var go = Instantiate(prefab, canvas.transform.GetChild(0).transform);
+
+            PlayerUIElement uiElement = go.GetComponent<PlayerUIElement>();
+            uiElement.Initialize(player);
+            uiElements[uiElement.GetType()] = go;
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        player = GetComponentInParent<Player>();
-        playerCanvas = GetComponent<Canvas>();
+        canvas.worldCamera = Camera.main;
 
         playerEventSystem = player.GetComponentInChildren<MultiplayerEventSystem>();
-        LinkToPlayer();
-
-        upgradeUI = playerCanvas.transform.Find("UIParent").Find("UpgradeUI").gameObject;
-        upgradeUI.GetComponent<UIElement>().onDisable.AddListener(() =>
-        {
-            UIVisibilityManager.Instance.RegisterUIHidden();
-            RemoveFirstSelected();
-        });
-        powerupUI = playerCanvas.transform.Find("UIParent").Find("PowerupUI").gameObject;
-        powerupUI.GetComponent<UIElement>().onDisable.AddListener(() =>
-        {
-            UIVisibilityManager.Instance.RegisterUIHidden();
-            RemoveFirstSelected();
-        });
-
-        abilityUI = playerCanvas.transform.Find("UIParent").Find("AbilityUI").gameObject;
-        dashAbilityUI = abilityUI.transform.Find("DashAbility").gameObject;
-        reflectAbilityUI = abilityUI.transform.Find("ReflectAbility").gameObject;
-        classAbilityUI = abilityUI.transform.Find("ClassAbility").gameObject;
-        if (!classAbilityInitialised) classAbilityUI.SetActive(false);
-
         playerInput = player.GetComponent<PlayerInput>();
     }
 
@@ -70,6 +51,55 @@ public class PlayerUIManager : MonoBehaviour
             currentControlScheme = playerInput.currentControlScheme;
             OnControlsChanged();
         }
+    }
+    public T GetUIElement<T>() where T : UIElement
+    {
+        if (uiElements.TryGetValue(typeof(T), out var go))
+            return go.GetComponent<T>();
+        return null;
+    }
+
+    public T GetUIElement<T, TData>() where T : UIElement<TData>
+    {
+        if (uiElements.TryGetValue(typeof(T), out var go))
+            return go.GetComponent<T>();
+        return null;
+    }
+
+    public void Toggle<T>() where T : UIElement
+    {
+        var panel = GetUIElement<T>();
+        if (!panel.Enabled()) panel.Enable();
+        else panel.Disable();
+    }
+
+    public void Enable<T>() where T : UIElement
+    {
+        var panel = GetUIElement<T>();
+        panel?.Enable();
+
+        SetFirstSelectedIfGamepad(panel.GetFirstSelected());
+    }
+
+    public void Disable<T>() where T : UIElement
+    {
+        var panel = GetUIElement<T>();
+        panel?.Disable();
+
+        RemoveFirstSelected();
+    }
+
+    public void Enable<T, TData>(TData data) where T : UIElement<TData>
+    {
+        var panel = GetUIElement<T, TData>();
+        panel?.Enable(data);
+
+        SetFirstSelectedIfGamepad(panel.GetFirstSelected());
+    }
+    public void Toggle<T, TData>(TData data) where T : UIElement<TData>
+    {
+        var panel = GetUIElement<T, TData>();
+        panel.Toggle(data);
     }
 
     private void OnControlsChanged()
@@ -83,179 +113,6 @@ public class PlayerUIManager : MonoBehaviour
         else
         {
             playerEventSystem.SetSelectedGameObject(null);
-        }
-    }
-
-    private void LinkToPlayer()
-    {
-        DashAbility dashAbility = player.GetComponent<DashAbility>();
-        if (dashAbility != null)
-        {
-            dashAbility.onReady.AddListener(EnableDashAbility);
-            dashAbility.onPerformed.AddListener(DisableDashAbility);
-        }
-
-        ReflectShieldAbility reflectShieldAbility = player.GetComponent<ReflectShieldAbility>();
-        if (reflectShieldAbility != null)
-        {
-            reflectShieldAbility.onReady.AddListener(EnableReflectAbility);
-            reflectShieldAbility.onPerformed.AddListener(DisableReflectAbility);
-        }
-
-        AbilityBehaviour abilityBehaviour = player.GetComponent<AbilityBehaviour>();
-        if (abilityBehaviour != null)
-        {
-            abilityBehaviour.onReady.AddListener(() => EnableClassAbility(abilityBehaviour));
-            abilityBehaviour.onPerformed.AddListener(() => DisableClassAbility(abilityBehaviour));
-            abilityBehaviour.onLinkAbility.AddListener(() => SetClassAbilityUI(abilityBehaviour));
-        }
-    }
-
-    public void EnableUpgradeUI()
-    {
-        UIElement upgradeUIElement = this.upgradeUI.GetComponent<UIElement>();
-        EnableUI(upgradeUIElement);
-    }
-
-    public void DisableUpgradeUI()
-    {
-        UIElement upgradeUIElement = this.upgradeUI.GetComponent<UIElement>();
-        DisableUI(upgradeUIElement);
-    }
-
-    public void EnablePowerupUI()
-    {
-        UIElement powerupUIElement = this.powerupUI.GetComponent<UIElement>();
-        EnableUI(powerupUIElement);
-    }
-
-    public void DisablePowerupUI()
-    {
-        UIElement powerupUIElement = this.powerupUI.GetComponent<UIElement>();
-        DisableUI(powerupUIElement);
-    }
-
-    public void DisableUI(UIElement uiElement)
-    {
-        uiElement.Disable();
-    }
-
-    public void EnableUI(UIElement uiElement)
-    {
-        UIVisibilityManager.Instance.RegisterUIShown();
-
-        // First enable then set first selected as first selected object might be created in enable call.
-        uiElement.Enable();
-        SetFirstSelectedIfGamepad(uiElement.GetFirstSelected());
-    }
-
-    public void EnableAbilityUI(bool enable)
-    {
-        abilityUI.SetActive(enable);
-    }
-
-    public void DisableDashAbility()
-    {
-        if (!dashAbilityEnabled) return;
-        dashAbilityEnabled = false;
-
-        DashAbility dashAbility = player.GetComponent<DashAbility>();
-        int cooldown = Mathf.RoundToInt(dashAbility.GetDashCooldown());
-
-        Image image = dashAbilityUI.GetComponent<Image>();
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
-
-        Text text = dashAbilityUI.GetComponentInChildren<Text>();
-        text.text = cooldown.ToString();
-
-        StartCoroutine(ReduceCountEverySecond(text));
-    }
-
-    public void EnableDashAbility()
-    {
-        dashAbilityEnabled = true;
-
-        Image image = dashAbilityUI.GetComponent<Image>();
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.7f);
-
-        Text text = dashAbilityUI.GetComponentInChildren<Text>();
-        text.text = "";
-    }
-
-    public void DisableReflectAbility()
-    {
-        if (!reflectAbilityEnabled) return;
-        reflectAbilityEnabled = false;
-
-        ReflectShieldAbility reflectAbility = player.GetComponent<ReflectShieldAbility>();
-        int cooldown = reflectAbility.GetReflectShieldCooldown();
-
-        Image image = reflectAbilityUI.GetComponent<Image>();
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
-
-        Text text = reflectAbilityUI.GetComponentInChildren<Text>();
-        text.text = cooldown.ToString();
-
-        StartCoroutine(ReduceCountEverySecond(text));
-    }
-
-    public void EnableReflectAbility()
-    {
-        reflectAbilityEnabled = true;
-
-        Image image = reflectAbilityUI.GetComponent<Image>();
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.7f);
-
-        Text text = reflectAbilityUI.GetComponentInChildren<Text>();
-        text.text = "";
-    }
-
-    public void SetClassAbilityUI(AbilityBehaviour abilityBehaviour)
-    {
-        classAbilityUI.SetActive(true);
-        classAbilityInitialised = true;
-    }
-
-    public void DisableClassAbility(AbilityBehaviour abilityBehaviour)
-    {
-        if (!classAbilityUI.activeSelf) return;
-        if (!classAbilityEnabled) return;
-        classAbilityEnabled = false;
-
-        int cooldown = abilityBehaviour.ability.cooldown;
-
-        Image image = classAbilityUI.GetComponent<Image>();
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
-
-        Text text = classAbilityUI.GetComponentInChildren<Text>();
-        text.text = cooldown.ToString();
-
-        StartCoroutine(ReduceCountEverySecond(text));
-    }
-
-    public void EnableClassAbility(AbilityBehaviour abilityBehaviour)
-    {
-        if (!classAbilityUI.activeSelf) return;
-        classAbilityEnabled = true;
-
-        Image image = classAbilityUI.GetComponent<Image>();
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.7f);
-
-        Text text = classAbilityUI.GetComponentInChildren<Text>();
-        text.text = "";
-    }
-
-    private IEnumerator ReduceCountEverySecond(Text text)
-    {
-        yield return new WaitForSeconds(1);
-        if (text.text != "")
-        {
-            int cooldown = int.Parse(text.text);
-            if (cooldown > 0)
-            {
-                text.text = (cooldown - 1).ToString();
-                StartCoroutine(ReduceCountEverySecond(text));
-            }
         }
     }
 

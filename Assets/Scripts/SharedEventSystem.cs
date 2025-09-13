@@ -40,7 +40,6 @@ public class SharedEventSystem : MonoBehaviour
         if (currentControllingPlayer == playerInput)
             return;
 
-        HIER WAS IK BEZIG, IK PROBEERDE TE ZORGEN DAT DE SHARED UI ZOU WISSELEN TUSSEN DE MEERDERE SPELERS AFHANKELIJK VAN WIE DAT ALS LAATSTE EEN INPUT GEGEVEN HEEFT.
         Debug.Log($"Shared UI now controlled by: {playerInput.name}");
         currentControllingPlayer = playerInput;
         sharedUIInputModule.actionsAsset = playerInput.actions;

@@ -80,7 +80,6 @@ public class WaveManager : MonoBehaviour
                 if (Time.time - lastWaveTime > waveCooldown)
                 {
                     waveState = WaveState.Ready;
-                    GeneralUIManager.Instance.DisableWaveUI();
                 }
             }
             else if (waveState == WaveState.LevelCooldown)
@@ -102,16 +101,18 @@ public class WaveManager : MonoBehaviour
             ScoreManager.Instance.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
         }
 
+        WaveStatusUI waveStatusUI = SharedUIManager.Instance.GetUIElement<WaveStatusUI>();
+
         if (CheckLastLevel() && CheckLastWave())
         {
             waveState = WaveState.Done;
-            GeneralUIManager.Instance.EnableLevelCompletedText(levelIndex + 1);
+            waveStatusUI.EnableLevelCompletedText(levelIndex + 1);
             StartCoroutine(PerformAfterDelay(5, () => GameStateManager.Instance.GameWon()));
         }
         else if (!CheckLastLevel() && CheckLastWave())
         {
             waveState = WaveState.LevelCooldown;
-            GeneralUIManager.Instance.EnableLevelCompletedText(levelIndex + 1);
+            waveStatusUI.EnableLevelCompletedText(levelIndex + 1);
             lastWaveTime = Time.time;
 
             RewardPlayer();
@@ -125,7 +126,7 @@ public class WaveManager : MonoBehaviour
 
             Level level = GetLevel(this.levelIndex);
             Wave wave = level.GetWave(waveIndex);
-            GeneralUIManager.Instance.PerformWaveCountdown(waveCooldown, wave.boss);
+            waveStatusUI.PerformWaveCountdown(waveCooldown, wave.boss, levelIndex, waveIndex);
 
             RewardPlayer();
         }
@@ -138,15 +139,15 @@ public class WaveManager : MonoBehaviour
         {
             classUpgradeCounter = 0;
 
-            if (player.GetUpgrades().Count > 0) playerUIManager.EnableUpgradeUI();
-            else playerUIManager.EnablePowerupUI();
+            if (player.GetUpgrades().Count > 0) playerUIManager.Enable<UpgradeUI>();
+            else playerUIManager.Enable<PowerupUI>();
         }
 
         powerupCounter++;
         if (powerupCounter == powerupCooldown)
         {
             powerupCounter = 0;
-            playerUIManager.EnablePowerupUI();
+            playerUIManager.Enable<PowerupUI>();
         }
     }
 
@@ -255,10 +256,10 @@ public class WaveManager : MonoBehaviour
         Level level = GetLevel(levelIndex);
         Wave wave = level.GetWave(waveIndex);
 
-        GeneralUIManager.Instance.DisableWaveUI();
-        GeneralUIManager.Instance.PerformWaveCountdown(waveCooldown, wave.boss);
-
         SetupCurrentLevel();
+
+        WaveStatusUI waveStatusUI = SharedUIManager.Instance.GetUIElement<WaveStatusUI>();
+        waveStatusUI.PerformWaveCountdown(waveCooldown, wave.boss, waveIndex, levelIndex);
     }
 
     public Vector3 GetSafePosition()

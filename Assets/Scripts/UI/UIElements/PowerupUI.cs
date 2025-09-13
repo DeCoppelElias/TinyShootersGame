@@ -5,11 +5,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(UITransition))]
-public class PowerupUI : UIElement
+[RequireComponent(typeof(UIFadeTransition))]
+public class PowerupUI : PlayerUIElement
 {
-    private UITransition uiTransition;
-    private Player player;
+    private UIFadeTransition uiTransition;
 
     private List<Button> buttons = new List<Button>();
 
@@ -28,8 +27,7 @@ public class PowerupUI : UIElement
 
     private void Init()
     {
-        player = GetComponentInParent<Player>();
-        uiTransition = GetComponent<UITransition>();
+        uiTransition = GetComponent<UIFadeTransition>();
 
         buttons.Clear();
         Transform buttonTransform = this.transform.Find("Buttons");
@@ -39,10 +37,12 @@ public class PowerupUI : UIElement
             this.buttons.Add(buttonChildTransform.GetComponent<Button>());
         }
 
+        this.pausesGame = true;
+
         initialised = true;
     }
 
-    public override void Enable()
+    protected override void EnableActions()
     {
         if (!initialised) Init();
         if (PowerupManager.Instance == null) return;
@@ -50,7 +50,7 @@ public class PowerupUI : UIElement
         List<Powerup> powerups = PowerupManager.Instance.ChooseRandomPowerups(3);
         if (powerups.Count != 3)
         {
-            Disable();
+            DisableActions();
             return;
         }
 
@@ -82,7 +82,7 @@ public class PowerupUI : UIElement
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
                 player.ApplyPowerup(currentPowerup);
-                Disable();
+                DisableActions();
             });
 
             // Change color depending on rarity of powerup
@@ -109,14 +109,16 @@ public class PowerupUI : UIElement
         }
 
         firstSelected = buttons[0].gameObject;
-        uiTransition.FadeIn();
+        uiTransition.Transition();
     }
 
-    public override UIElement Disable()
+    protected override void DisableActions()
     {
-        uiTransition.FadeOut();
-        onDisable.Invoke();
-        return this;
+        uiTransition.ReverseTransition();
+    }
+    protected override void InstantDisableActions()
+    {
+        uiTransition.InstantReverseTransition();
     }
 
     public override bool Enabled()
