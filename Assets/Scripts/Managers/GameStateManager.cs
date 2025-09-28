@@ -28,6 +28,8 @@ public class GameStateManager : MonoBehaviour
 
     private float startTime;
 
+    private int pauseRequests = 0;
+
     private void Awake()
     {
         Instance = this;
@@ -91,6 +93,8 @@ public class GameStateManager : MonoBehaviour
     }
     public void ToPaused()
     {
+        if (this.state == State.PAUSED) return;
+
         this.state = State.PAUSED;
         Time.timeScale = 0;
         Time.fixedDeltaTime = Time.timeScale * 0.02f;
@@ -120,6 +124,8 @@ public class GameStateManager : MonoBehaviour
 
     public void ToRunning()
     {
+        if (this.state == State.RUNNING) return;
+
         this.state = State.RUNNING;
         Time.timeScale = 1;
         Time.fixedDeltaTime = Time.timeScale * 0.02f;
@@ -248,5 +254,23 @@ public class GameStateManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void RequestPause()
+    {
+        pauseRequests++;
+        UpdatePauseState();
+    }
+
+    public void ReleasePause()
+    {
+        pauseRequests = Mathf.Max(0, pauseRequests - 1);
+        UpdatePauseState();
+    }
+
+    private void UpdatePauseState()
+    {
+        if (pauseRequests == 0) ToRunning();
+        else if (pauseRequests > 0) ToPaused();
     }
 }

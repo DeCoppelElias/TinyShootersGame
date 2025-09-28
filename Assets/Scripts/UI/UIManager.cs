@@ -7,15 +7,9 @@ using UnityEngine.InputSystem;
 public abstract class UIManager : MonoBehaviour
 {
     [SerializeField] protected Canvas canvas;
+    [SerializeField] protected EventSystem eventSystem;
+
     protected readonly Dictionary<System.Type, GameObject> uiElements = new Dictionary<System.Type, GameObject>();
-
-    [SerializeField] protected PlayerInput currentControllingPlayer;
-    private string currentControlScheme;
-
-    [Header("Panel Statistics")]
-    [SerializeField] private int enabledPanels = 0;
-    [SerializeField] private int disabledPanels = 0;
-    [SerializeField] private int enabledPausePanels = 0;
 
     public GameObject FirstSelected { get; private set; }
 
@@ -69,21 +63,13 @@ public abstract class UIManager : MonoBehaviour
 
     private void OnEnableActions(UIElement panel)
     {
-        enabledPanels++;
-        if (panel.PausesGame) enabledPausePanels++;
-        if (enabledPausePanels == 1) GameStateManager.Instance.ToPaused();
-
-        SetFirstSelectedIfGamepad(panel.GetFirstSelected());
+        if (panel.PausesGame) GameStateManager.Instance.RequestPause();
+        FirstSelected = panel.GetFirstSelected();
     }
     private void OnDisableActions(UIElement panel)
     {
-        enabledPanels--;
-        if (panel.PausesGame) enabledPausePanels--;
-        if (enabledPausePanels == 0)
-        {
-            GameStateManager.Instance.ToRunning();
-            RemoveFirstSelected();
-        }
+        if (panel.PausesGame) GameStateManager.Instance.ReleasePause();
+        if (FirstSelected == panel.GetFirstSelected()) FirstSelected = null;
     }
 
     public void Disable<T>() where T : UIElement
@@ -103,47 +89,20 @@ public abstract class UIManager : MonoBehaviour
         panel.Toggle(data);
     }
 
-    private void SetFirstSelectedIfGamepad(GameObject obj)
+    protected void EnableFirstSelected()
     {
-        FirstSelected = obj;
-
-        // Only select first if player is using a gamepad
-        if (currentControllingPlayer != null && Gamepad.current != null && Gamepad.current.enabled && currentControllingPlayer.currentControlScheme == "Gamepad") EventSystem.current.SetSelectedGameObject(obj);
+        Debug.Log($"Enabling first selected: {FirstSelected}");
+        eventSystem.SetSelectedGameObject(FirstSelected);
     }
 
-    private void RemoveFirstSelected()
+    protected void DisableFirstSelected()
     {
-        FirstSelected = null;
-        EventSystem.current.SetSelectedGameObject(null);
+        Debug.Log($"Disabling first selected: {FirstSelected}");
+        eventSystem.SetSelectedGameObject(null);
     }
 
-    public void SetCurrentControllingPlayer(PlayerInput controllingPlayer)
+    protected bool IsController(PlayerInput playerInput)
     {
-        if (controllingPlayer == null) return;
-        if (currentControllingPlayer == controllingPlayer) return;
-
-        this.currentControllingPlayer = controllingPlayer;
-        this.currentControlScheme = controllingPlayer.currentControlScheme;
-    }
-
-    private void Update()
-    {
-        if (currentControllingPlayer != null && currentControllingPlayer.currentControlScheme != currentControlScheme)
-        {
-            currentControlScheme = currentControllingPlayer.currentControlScheme;
-            OnControlsChanged();
-        }
-    }
-
-    private void OnControlsChanged()
-    {
-        if (Gamepad.current != null && Gamepad.current.enabled && currentControllingPlayer.currentControlScheme == "Gamepad")
-        {
-            EventSystem.current.SetSelectedGameObject(FirstSelected);
-        }
-        else
-        {
-            EventSystem.current.SetSelectedGameObject(null);
-        }
+        return playerInput != null && Gamepad.current != null && Gamepad.current.enabled && playerInput.currentControlScheme == "Gamepad";
     }
 }

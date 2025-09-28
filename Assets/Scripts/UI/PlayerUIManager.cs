@@ -12,6 +12,9 @@ public class PlayerUIManager : UIManager
 {
     [SerializeField] private UISceneProfile sceneUIProfile;
 
+    [SerializeField] protected PlayerInput currentControllingPlayer;
+    private string currentControlScheme;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,8 +38,42 @@ public class PlayerUIManager : UIManager
         foreach (GameObject uiGO in uiElements.Values)
         {
             PlayerUIElement uiElement = uiGO.GetComponent<PlayerUIElement>();
+
+            // Link player
             Player player = currentControllingPlayer.GetComponent<Player>();
             uiElement.Initialize(player);
+
+            // Add callback
+            uiElement.AddOnEnableAction((UIElement panel) => HandleFirstSelected());
+        }
+    }
+
+    private void Update()
+    {
+        if (currentControllingPlayer != null && currentControllingPlayer.currentControlScheme != currentControlScheme)
+        {
+            currentControlScheme = currentControllingPlayer.currentControlScheme;
+            OnControlsChanged();
+        }
+    }
+
+    private void HandleFirstSelected()
+    {
+        if (IsController(currentControllingPlayer)) EnableFirstSelected();
+        else DisableFirstSelected();
+    }
+
+    private void OnControlsChanged()
+    {
+        if (Gamepad.current != null && Gamepad.current.enabled && currentControllingPlayer.currentControlScheme == "Gamepad")
+        {
+            Debug.Log("Player controls switched to Gamepad!");
+            eventSystem.SetSelectedGameObject(FirstSelected);
+        }
+        else
+        {
+            Debug.Log("Player controls switched to Keyboard!");
+            eventSystem.SetSelectedGameObject(null);
         }
     }
 }

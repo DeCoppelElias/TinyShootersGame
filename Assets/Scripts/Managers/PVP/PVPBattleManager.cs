@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 
 public class PVPBattleManager : MonoBehaviour
 {
+    public static PVPBattleManager Instance { get; private set; }
+
     [SerializeField] private List<GameObject> playerGOs = new List<GameObject>();
     [SerializeField] private List<System.Guid> alivePlayers = new List<System.Guid>();
      private Dictionary<System.Guid,int> playerScores = new Dictionary<System.Guid, int>();
@@ -20,12 +22,15 @@ public class PVPBattleManager : MonoBehaviour
     [SerializeField] private int currentMatch = 0;
     [SerializeField] private int matchCooldown = 5;
 
-    [SerializeField] private GameObject endMatchUI;
-    [SerializeField] private Text winnerText;
     [SerializeField] private GameObject playerNamePrefab;
 
     [SerializeField] private PlayerStats pvpBaseStats;
 
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -45,9 +50,6 @@ public class PVPBattleManager : MonoBehaviour
             // Make sure players do not switch controls
             player.GetComponent<PlayerInput>().neverAutoSwitchControlSchemes = true;
 
-            // Link player canvas to Camera
-            player.GetComponentInChildren<Canvas>().worldCamera = Camera.main;
-
             // Link Match end to player death
             player.onDeath.AddListener(() => PlayerDied(playerGO));
 
@@ -58,26 +60,6 @@ public class PVPBattleManager : MonoBehaviour
 
             i++;
         }
-
-        // Link Event System
-        GameObject eventSystemGO = GameObject.Find("EventSystem");
-        MultiplayerEventSystem multiplayerEventSystem = eventSystemGO.GetComponent<MultiplayerEventSystem>();
-        GameObject canvasGO = GameObject.Find("Canvas");
-        multiplayerEventSystem.playerRoot = canvasGO;
-
-        // UI Setup
-        endMatchUI.SetActive(false);
-        Player player1 = players[0];
-        GameObject playerUIGO1 = player1.GetComponentInChildren<PlayerUIManager>().transform.Find("UIParent").gameObject;
-        RectTransform transform1 = playerUIGO1.GetComponent<RectTransform>();
-        transform1.localScale = new Vector3(0.75f, 0.75f, 1);
-        transform1.localPosition = new Vector3(-500, 0, 0);
-
-        Player player2 = players[1];
-        GameObject playerUIGO2 = player2.GetComponentInChildren<PlayerUIManager>().transform.Find("UIParent").gameObject;
-        RectTransform transform2 = playerUIGO2.GetComponent<RectTransform>();
-        transform2.localScale = new Vector3(0.75f, 0.75f, 1);
-        transform2.localPosition = new Vector3(500, 0, 0);
 
         StartMatch();
     }
@@ -95,7 +77,7 @@ public class PVPBattleManager : MonoBehaviour
         foreach (GameObject playerGO in playerGOs)
         {
             // Enable player
-            playerGO.transform.Find("Sprite").gameObject.SetActive(true);
+            playerGO.SetActive(true);
             Player player = playerGO.GetComponent<Player>();
             alivePlayers.Add(player.EntityID);
 
@@ -113,7 +95,7 @@ public class PVPBattleManager : MonoBehaviour
     {
         Player player = playerGO.GetComponent<Player>();
         alivePlayers.Remove(player.EntityID);
-        playerGO.transform.Find("Sprite").gameObject.SetActive(false);
+        playerGO.SetActive(false);
 
         if (alivePlayers.Count <= 1) MatchEnd(alivePlayers[0]);
     }
@@ -128,9 +110,7 @@ public class PVPBattleManager : MonoBehaviour
         else playerScores.Add(winnerID, 1);
 
         currentMatch += 1;
-        ColorUtility.TryParseHtmlString("#E6E6E6", out Color newColor);
-
-        SharedUIManager.Instance.GetUIElement<PVPStatusUI>().PerformCountdown("Next match starts in: ", newColor, matchCooldown);
+        SharedUIManager.Instance.GetUIElement<PVPStatusUI>().PerformCountdown(matchCooldown);
 
         StartCoroutine(PerformAfterDelay(matchCooldown, () =>
         {
@@ -151,9 +131,6 @@ public class PVPBattleManager : MonoBehaviour
 
     private void EndPVP()
     {
-        UIVisibilityManager.Instance.RegisterUIShown();
-        endMatchUI.SetActive(true);
-
         System.Guid maxKey;
         int maxValue = 0;
         foreach (System.Guid key in playerScores.Keys)
@@ -166,17 +143,20 @@ public class PVPBattleManager : MonoBehaviour
         }
 
         int i = 1;
+        string winnerText = "";
         foreach (GameObject playerGO in playerGOs)
         {
             Player player = playerGO.GetComponent<Player>();
 
             if (player.EntityID == maxKey)
             {
-                winnerText.text = $"Player {i}";
+                winnerText = $"Player {i}";
             }
 
             i++;
         }
+
+        SharedUIManager.Instance.Enable<PVPEndMatchUI, PVPEndMatchUIData>(new PVPEndMatchUIData(winnerText));
     }
 
     public void Restart()
@@ -194,16 +174,9 @@ public class PVPBattleManager : MonoBehaviour
             player.Reset();
         }
 
-        endMatchUI.SetActive(false);
-        UIVisibilityManager.Instance.RegisterUIHidden();
+        SharedUIManager.Instance.Disable<PVPEndMatchUI>();
 
         StartMatch();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     [System.Serializable]

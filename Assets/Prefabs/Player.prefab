@@ -977,11 +977,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 5288767435732246638}
-  currentControllingPlayer: {fileID: 4128045392292169300}
-  enabledPanels: 0
-  disabledPanels: 0
-  enabledPausePanels: 0
+  eventSystem: {fileID: 6753508659922762392}
   sceneUIProfile: {fileID: 0}
+  currentControllingPlayer: {fileID: 4128045392292169300}
 --- !u!223 &5288767435732246638
 Canvas:
   m_ObjectHideFlags: 0

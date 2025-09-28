@@ -40,8 +40,6 @@ public class WinUI : UIElement<WinUIData>
 
     protected override void EnableActions(WinUIData data)
     {
-        UIVisibilityManager.Instance.RegisterUIShown();
-
         this.gameObject.SetActive(true);
         GameObject timeGameObject = this.gameObject.transform.Find("Scores").Find("Time").gameObject;
         timeGameObject.SetActive(false);

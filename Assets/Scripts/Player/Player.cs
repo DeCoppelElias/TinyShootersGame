@@ -50,7 +50,8 @@ public class Player : Entity
     {
         base.UpdateEntity();
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        // TODO reimplement this with new input system
+        /*if (Input.GetKeyDown(KeyCode.Tab))
         {
             alternativeSpriteIndex++;
             SpriteRenderer renderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
@@ -73,7 +74,7 @@ public class Player : Entity
                     renderer.sprite = alternativeSprites[alternativeSpriteIndex - 1];
                 }
             }
-        }
+        }*/
     }
 
     public List<PlayerClass> GetUpgrades()

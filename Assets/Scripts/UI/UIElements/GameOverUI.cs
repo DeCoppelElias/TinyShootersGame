@@ -36,8 +36,6 @@ public class GameOverUI : UIElement<GameOverUIData>
 
     protected override void EnableActions(GameOverUIData data)
     {
-        UIVisibilityManager.Instance.RegisterUIShown();
-
         this.gameObject.SetActive(true);
         GameObject scoreGameObject = this.gameObject.transform.Find("Scores").Find("Score").gameObject;
         scoreGameObject.SetActive(false);
