@@ -34,7 +34,7 @@ public class UIPlayerScaler : MonoBehaviour
     private void ApplyLayout()
     {
         List<Canvas> orderedCanvases = playerCanvases
-            .OrderBy(pair => -pair.Key)
+            .OrderBy(pair => pair.Key)
             .Select(pair => pair.Value)
             .ToList();
 

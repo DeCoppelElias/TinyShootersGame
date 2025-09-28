@@ -9,6 +9,9 @@ public class PVPStatusUI : UIElement
     [SerializeField] private GameObject countdownUIElement;
     [SerializeField] private Text countDownText;
 
+    [SerializeField] private Transform scoresParent;
+    [SerializeField] private GameObject scorePrefab;
+
     protected override void Start()
     {
         base.Start();
@@ -44,6 +47,22 @@ public class PVPStatusUI : UIElement
 
         StartCoroutine(ReduceCountEverySecond(countdown, DisableCountdown));
     }
+
+    public void UpdateScores(Dictionary<string, int> scoreDict)
+    {
+        foreach (Transform child in scoresParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (KeyValuePair<string, int> pair in scoreDict)
+        {
+            Transform child = GameObject.Instantiate(scorePrefab, scoresParent).transform;
+            child.Find("Score").GetComponent<Text>().text = pair.Value.ToString();
+            child.Find("Name").GetComponent<Text>().text = $"{pair.Key}: ";
+        }
+    }
+
     private void DisableCountdown()
     {
         countDownText.text = "";
@@ -57,7 +76,7 @@ public class PVPStatusUI : UIElement
         {
             if (count > 0)
             {
-                countDownText.text = (count - 1).ToString();
+                countDownText.text = count.ToString();
                 StartCoroutine(ReduceCountEverySecond(count - 1, onComplete));
             }
             else

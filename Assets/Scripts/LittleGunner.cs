@@ -64,21 +64,24 @@ public class LittleGunner : MonoBehaviour
 
     private Entity FindTarget()
     {
-        Entity[] entities = UnityEngine.Object.FindObjectsOfType<Entity>();
+        Collider2D[] hits = Physics2D.OverlapCircleAll(this.transform.position, gunnerShootingAbility.GetRange() + 1);
 
-        Entity closestPlayer = null;
+        Entity closestEntity = null;
         float closestDistance = float.MaxValue;
 
-        foreach (Entity entity in entities)
+        foreach (Collider2D hit in hits)
         {
+            Entity entity = hit.GetComponent<Entity>();
+            if (entity == null) continue;
+
             float distance = Vector3.Distance(this.transform.position, entity.transform.position);
-            if (distance < closestDistance && entity.tag != this.tag)
+            if (distance < closestDistance && entity.EntityID != this.owner.EntityID)
             {
                 closestDistance = distance;
-                closestPlayer = entity;
+                closestEntity = entity;
             }
         }
 
-        return closestPlayer;
+        return closestEntity;
     }
 }

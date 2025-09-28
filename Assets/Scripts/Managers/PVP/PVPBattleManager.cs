@@ -5,14 +5,15 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PVPBattleManager : MonoBehaviour
 {
     public static PVPBattleManager Instance { get; private set; }
 
-    [SerializeField] private List<GameObject> playerGOs = new List<GameObject>();
+    [SerializeField] private Dictionary<System.Guid, GameObject> playerGOs = new Dictionary<System.Guid, GameObject>();
     [SerializeField] private List<System.Guid> alivePlayers = new List<System.Guid>();
-     private Dictionary<System.Guid,int> playerScores = new Dictionary<System.Guid, int>();
+     private Dictionary<System.Guid, int> playerScores = new Dictionary<System.Guid, int>();
 
     [SerializeField] private List<Vector3> levels;
     [SerializeField] private List<ListWrapper> localPlayerSpawnPositions;
@@ -41,7 +42,7 @@ public class PVPBattleManager : MonoBehaviour
         foreach (Player player in players)
         {
             GameObject playerGO = player.gameObject;
-            playerGOs.Add(playerGO);
+            playerGOs.Add(player.EntityID, playerGO);
 
             // Give player PVP base stats
             player.baseStats = pvpBaseStats;
@@ -56,7 +57,10 @@ public class PVPBattleManager : MonoBehaviour
             // Give name
             GameObject playerNameGO = Instantiate(playerNamePrefab, playerGO.transform);
             TextMeshPro playerNameText = playerNameGO.GetComponent<TextMeshPro>();
-            playerNameText.text = $"Player {i}";
+            playerNameText.text = $"{playerGO.name}";
+
+            // Add score
+            playerScores.Add(player.EntityID, 0);
 
             i++;
         }
@@ -74,7 +78,7 @@ public class PVPBattleManager : MonoBehaviour
 
         int i = 0;
         alivePlayers.Clear();
-        foreach (GameObject playerGO in playerGOs)
+        foreach (GameObject playerGO in playerGOs.Values)
         {
             // Enable player
             playerGO.SetActive(true);
@@ -89,6 +93,14 @@ public class PVPBattleManager : MonoBehaviour
 
             i++;
         }
+
+        // Update score UI
+        Dictionary<string, int> scoreDict = new Dictionary<string, int>();
+        foreach (KeyValuePair<System.Guid, int> pair in playerScores)
+        {
+            scoreDict.Add(playerGOs[pair.Key].name, pair.Value);
+        }
+        SharedUIManager.Instance.GetUIElement<PVPStatusUI>().UpdateScores(scoreDict);
     }
 
     private void PlayerDied(GameObject playerGO)
@@ -112,14 +124,22 @@ public class PVPBattleManager : MonoBehaviour
         currentMatch += 1;
         SharedUIManager.Instance.GetUIElement<PVPStatusUI>().PerformCountdown(matchCooldown);
 
-        StartCoroutine(PerformAfterDelay(matchCooldown, () =>
+        // Update score UI
+        Dictionary<string, int> scoreDict = new Dictionary<string, int>();
+        foreach (KeyValuePair<System.Guid, int> pair in playerScores)
+        {
+            scoreDict.Add(playerGOs[pair.Key].name, pair.Value);
+        }
+        SharedUIManager.Instance.GetUIElement<PVPStatusUI>().UpdateScores(scoreDict);
+
+        StartCoroutine(PerformAfterDelay(matchCooldown+1.5f, () =>
         {
             if (currentMatch >= matches) EndPVP();
             else
             {
                 StartMatch();
 
-                foreach (GameObject playerGO in playerGOs)
+                foreach (GameObject playerGO in playerGOs.Values)
                 {
                     PlayerUIManager playerUIManager = playerGO.GetComponentInChildren<PlayerUIManager>();
                     playerUIManager.Enable<PowerupUI>();
@@ -144,7 +164,7 @@ public class PVPBattleManager : MonoBehaviour
 
         int i = 1;
         string winnerText = "";
-        foreach (GameObject playerGO in playerGOs)
+        foreach (GameObject playerGO in playerGOs.Values)
         {
             Player player = playerGO.GetComponent<Player>();
 
@@ -161,22 +181,7 @@ public class PVPBattleManager : MonoBehaviour
 
     public void Restart()
     {
-        // Reset matches
-        currentMatch = 0;
-
-        // Reset scores
-        playerScores.Clear();
-
-        // Reset Players
-        foreach (GameObject playerGO in playerGOs)
-        {
-            Player player = playerGO.GetComponent<Player>();
-            player.Reset();
-        }
-
-        SharedUIManager.Instance.Disable<PVPEndMatchUI>();
-
-        StartMatch();
+        SceneManager.LoadScene("PVPBattle");
     }
 
     [System.Serializable]
