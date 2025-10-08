@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class AbilityUI : PlayerUIElement
@@ -27,21 +28,21 @@ public class AbilityUI : PlayerUIElement
 
     private void LinkToPlayer()
     {
-        DashAbility dashAbility = player.GetComponent<DashAbility>();
+        DashAbility dashAbility = Player.GetComponent<DashAbility>();
         if (dashAbility != null)
         {
             dashAbility.onReady.AddListener(EnableDashAbility);
             dashAbility.onPerformed.AddListener(DisableDashAbility);
         }
 
-        ReflectShieldAbility reflectShieldAbility = player.GetComponent<ReflectShieldAbility>();
+        ReflectShieldAbility reflectShieldAbility = Player.GetComponent<ReflectShieldAbility>();
         if (reflectShieldAbility != null)
         {
             reflectShieldAbility.onReady.AddListener(EnableReflectAbility);
             reflectShieldAbility.onPerformed.AddListener(DisableReflectAbility);
         }
 
-        AbilityBehaviour abilityBehaviour = player.GetComponent<AbilityBehaviour>();
+        AbilityBehaviour abilityBehaviour = Player.GetComponent<AbilityBehaviour>();
         if (abilityBehaviour != null)
         {
             abilityBehaviour.onReady.AddListener(() => EnableClassAbility(abilityBehaviour));
@@ -75,7 +76,7 @@ public class AbilityUI : PlayerUIElement
         if (!dashAbilityEnabled) return;
         dashAbilityEnabled = false;
 
-        DashAbility dashAbility = player.GetComponent<DashAbility>();
+        DashAbility dashAbility = Player.GetComponent<DashAbility>();
         int cooldown = Mathf.RoundToInt(dashAbility.GetDashCooldown());
 
         Image image = dashAbilityUI.GetComponent<Image>();
@@ -103,7 +104,7 @@ public class AbilityUI : PlayerUIElement
         if (!reflectAbilityEnabled) return;
         reflectAbilityEnabled = false;
 
-        ReflectShieldAbility reflectAbility = player.GetComponent<ReflectShieldAbility>();
+        ReflectShieldAbility reflectAbility = Player.GetComponent<ReflectShieldAbility>();
         int cooldown = reflectAbility.GetReflectShieldCooldown();
 
         Image image = reflectAbilityUI.GetComponent<Image>();
@@ -124,6 +125,8 @@ public class AbilityUI : PlayerUIElement
 
         Text text = reflectAbilityUI.GetComponentInChildren<Text>();
         text.text = "";
+
+        Debug.Log("Reflect UI enabled");
     }
 
     public void SetClassAbilityUI(AbilityBehaviour abilityBehaviour)

@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8895881373306958398}
+  - component: {fileID: 6762712030540392126}
   m_Layer: 5
-  m_Name: ExplanationUI
+  m_Name: TutorialExplanationUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,6 +38,18 @@ RectTransform:
   m_AnchoredPosition: {x: 25, y: -25}
   m_SizeDelta: {x: 1500, y: 300}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &6762712030540392126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8895881373306958399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e316fe72793c4734eaabb50d53e3c020, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8895881373436578832
 GameObject:
   m_ObjectHideFlags: 0

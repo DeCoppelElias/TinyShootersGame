@@ -8,121 +8,146 @@ using UnityEngine.UI;
 
 public class PVPLobbyManager : MonoBehaviour
 {
-    private PlayerInput player1;
-    private GameObject playerJoinedUI1;
-    private Text readyText1;
-    private GameObject ready1;
+    [SerializeField] private List<LobbyPlayerSlot> playerSlots = new List<LobbyPlayerSlot>();
+    [SerializeField] private string battleSceneName = "PVPBattle";
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
-    private PlayerInput player2;
-    private GameObject playerJoinedUI2;
-    private Text readyText2;
-    private GameObject ready2;
-
-    private int lastSwitched = 2;
-
-    private GameObject eventSystem;
-
-    void Start()
+    private void OnEnable()
     {
         PlayerInputManager.instance.onPlayerJoined += OnPlayerJoined;
-
-        playerJoinedUI1 = GameObject.Find("Player1").transform.Find("PlayerJoinedUI").gameObject;
-        ready1 = playerJoinedUI1.transform.Find("Ready").gameObject;
-        readyText1 = playerJoinedUI1.transform.Find("ReadyExplanation").GetComponent<Text>();
-        playerJoinedUI2 = GameObject.Find("Player2").transform.Find("PlayerJoinedUI").gameObject;
-        ready2 = playerJoinedUI2.transform.Find("Ready").gameObject;
-        readyText2 = playerJoinedUI2.transform.Find("ReadyExplanation").GetComponent<Text>();
-
-        playerJoinedUI1.SetActive(false);
-        ready1.SetActive(false);
-        playerJoinedUI2.SetActive(false);
-        ready2.SetActive(false);
-
-        eventSystem = GameObject.Find("EventSystem");
+        PlayerReady.OnPlayerReady += HandlePlayerReady;
     }
 
-    void OnPlayerJoined(PlayerInput input)
+    private void OnDisable()
     {
-        if (player1 == null)
-        {
-            player1 = input;
-            input.gameObject.name = "Player 1";
-            Debug.Log("Player 1 joined!");
-        }
-        else if (player2 == null)
-        {
-            player2 = input;
-            input.gameObject.name = "Player 2";
-            Debug.Log("Player 2 joined!");
-        }
-        else 
-        { 
-            if (lastSwitched == 1)
-            {
-                Destroy(player2.gameObject);
-                player2 = input;
-                input.gameObject.name = "Player 2";
-                lastSwitched = 2;
-                Debug.Log("Player 2 replaced!");
-            }
-            else if (lastSwitched == 2)
-            {
-                Destroy(player1.gameObject);
-                player1 = input;
-                input.gameObject.name = "Player 1";
-                lastSwitched = 1;
-                Debug.Log("Player 1 replaced!");
-            }
-        }
+        if (PlayerInputManager.instance != null)
+            PlayerInputManager.instance.onPlayerJoined -= OnPlayerJoined;
+        PlayerReady.OnPlayerReady -= HandlePlayerReady;
+    }
 
-        input.gameObject.AddComponent<PlayerReady>();
+    private void Start()
+    {
+        foreach (var slot in playerSlots)
+        {
+            slot.playerJoinedUI?.SetActive(false);
+            slot.readyIndicator?.SetActive(false);
+        }
+    }
+
+    private void OnPlayerJoined(PlayerInput input)
+    {
         input.neverAutoSwitchControlSchemes = true;
+        var freeSlot = playerSlots.FirstOrDefault(s => s.LobbyPlayer == null);
 
-        if (input.gameObject.name == "Player 1")
+        if (freeSlot != null)
         {
-            playerJoinedUI1.SetActive(true);
-            input.transform.position = new Vector3(-5, 0, 0);
-
-            if (input.currentControlScheme == "Gamepad") readyText1.text = "Press SELECT to ready up!";
-            else readyText1.text = "Press X to ready up!";
+            AssignPlayerToSlot(input, freeSlot);
         }
-        if (input.gameObject.name == "Player 2")
+        else
         {
-            playerJoinedUI2.SetActive(true);
-            input.transform.position = new Vector3(5, 0, 0);
-
-            if (input.currentControlScheme == "Gamepad") readyText2.text = "Press SELECT to ready up!";
-            else readyText2.text = "Press X to ready up!";
+            ReplaceLastPlayer(input);
         }
     }
 
-    public void TryStartGame(PlayerInput playerInput)
+    private void AssignPlayerToSlot(PlayerInput input, LobbyPlayerSlot slot)
     {
-        if (playerInput.gameObject.name == "Player 1")
+        slot.AssignPlayer(input.GetComponentInParent<LobbyPlayer>());
+
+        Debug.Log($"{input.gameObject.name} joined using {input.currentControlScheme}");
+    }
+
+    private void ReplaceLastPlayer(PlayerInput newInput)
+    {
+        var oldestSlot = playerSlots
+        .Where(s => s.PlayerInput != null)
+        .OrderBy(s => s.JoinedTimestamp)
+        .First();
+
+        if (oldestSlot.LobbyPlayer != null)
+            Destroy(oldestSlot.LobbyPlayer.gameObject);
+
+        AssignPlayerToSlot(newInput, oldestSlot);
+        Debug.Log($"{newInput.gameObject.name} replaced previous player in slot {oldestSlot.slotIndex}");
+    }
+
+    private void HandlePlayerReady(PlayerInput input)
+    {
+        var slot = playerSlots.FirstOrDefault(s => s.PlayerInput == input);
+        if (slot == null)
+            return;
+
+        slot.readyIndicator.SetActive(true);
+
+        if (playerSlots.All(s => s.PlayerAssigned() && s.PlayerInput != null && s.IsReady))
         {
-            ready1.SetActive(true);
+            StartCoroutine(StartBattleAfterDelay());
         }
-        else if (playerInput.gameObject.name == "Player 2")
+    }
+
+    private IEnumerator StartBattleAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+
+        foreach (var slot in playerSlots)
         {
-            ready2.SetActive(true);
+            DontDestroyOnLoad(slot.LobbyPlayer.gameObject);
         }
 
-        if (player1 != null && player2 != null && player1.GetComponent<PlayerReady>().IsReady && player2.GetComponent<PlayerReady>().IsReady)
-        {
-            Destroy(player1.gameObject.GetComponent<PlayerReady>());
-            DontDestroyOnLoad(player1);
-
-            Destroy(player2.gameObject.GetComponent<PlayerReady>());
-            DontDestroyOnLoad(player2);
-
-            DontDestroyOnLoad(eventSystem);
-
-            SceneManager.LoadScene("PVPBattle");
-        }
+        SceneManager.LoadScene(battleSceneName);
     }
 
     public void QuitToMainMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    [System.Serializable]
+    public class LobbyPlayerSlot
+    {
+        public int slotIndex;
+
+        public LobbyPlayer LobbyPlayer { get; private set; }
+        public float JoinedTimestamp { get; private set; }
+
+        public Color playerColor;
+        public GameObject playerJoinedUI;
+        public GameObject readyIndicator;
+        public Text readyText;
+        public Image playerUIImage;
+
+        public void AssignPlayer(LobbyPlayer lobbyPlayer)
+        {
+            LobbyPlayer = lobbyPlayer;
+            JoinedTimestamp = Time.time;
+
+            LobbyPlayer.playerIndex = slotIndex;
+            LobbyPlayer.color = playerColor;
+
+            lobbyPlayer.gameObject.name = $"Player {slotIndex}";
+
+            playerUIImage.color = playerColor;
+            readyText.text = GetReadyPrompt(PlayerInput.currentControlScheme);
+
+            playerJoinedUI.SetActive(true);
+            readyIndicator.SetActive(false);
+        }
+
+        private string GetReadyPrompt(string controlScheme)
+        {
+            if (controlScheme == "Gamepad") return "Press Select to ready up!";
+            if (controlScheme == "Keyboard&Mouse") return "Press X to ready up!";
+            else return "Press Ready button!";
+        }
+
+        public bool PlayerAssigned()
+        {
+            return this.LobbyPlayer != null;
+        }
+
+        public PlayerReady PlayerReady { get => LobbyPlayer.GetComponent<PlayerReady>(); }
+        public PlayerInput PlayerInput { get => LobbyPlayer.GetComponentInChildren<PlayerInput>(); }
+
+        public bool IsReady => PlayerReady.IsReady;
     }
 }
+

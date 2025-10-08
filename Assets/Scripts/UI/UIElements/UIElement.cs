@@ -90,7 +90,7 @@ public abstract class UIElement<T> : UIElement
 
 public abstract class PlayerUIElement : UIElement
 {
-    protected Player player;
+    protected Player Player { get; set; }
 
     protected bool initialized = false;
     protected UnityEvent onInitialized = new UnityEvent();
@@ -99,7 +99,7 @@ public abstract class PlayerUIElement : UIElement
     {
         if (player == null) return;
         
-        this.player = player;
+        this.Player = player;
         initialized = true;
         onInitialized?.Invoke();
     }

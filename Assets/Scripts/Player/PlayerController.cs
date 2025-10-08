@@ -14,8 +14,7 @@ public class PlayerController : MonoBehaviour
     private DashAbility dashAbility;
     private ShootingAbility shootAbility;
     private ReflectShieldAbility reflectAbility;
-    private GameStateManager gameStateManager;
-    private PlayerInput playerInput;
+    [SerializeField] private PlayerInput playerInput;
 
     public UnityEvent onPause;
     private Action onMove;
@@ -30,9 +29,14 @@ public class PlayerController : MonoBehaviour
         shootAbility = GetComponent<ShootingAbility>();
         reflectAbility = GetComponent<ReflectShieldAbility>();
 
-        gameStateManager = FindObjectOfType<GameStateManager>();
+        if (playerInput == null) playerInput = GetComponent<PlayerInput>();
+    }
 
-        playerInput = GetComponent<PlayerInput>();
+    public void SetPlayerInput(PlayerInput newPlayerInput)
+    {
+        playerInput.onActionTriggered -= OnActionTriggered;
+        playerInput = newPlayerInput;
+        playerInput.onActionTriggered += OnActionTriggered;
     }
 
     private void OnEnable()
@@ -53,11 +57,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnActionTriggered(InputAction.CallbackContext context)
     {
+        if (!collectInput) return;
+
         switch (context.action.name)
         {
             case "Dash":
-                if (gameStateManager != null && gameStateManager.IsPaused()) return;
-                if (!collectInput) return;
+                if (IsPaused()) return;
 
                 if (dashAbility != null && context.performed)
                 {
@@ -67,8 +72,7 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case "Fire":
-                if (gameStateManager != null && gameStateManager.IsPaused()) return;
-                if (!collectInput) return;
+                if (IsPaused()) return;
 
                 if (shootAbility != null)
                 {
@@ -79,9 +83,8 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
 
-            case "Look":
-                if (gameStateManager != null && gameStateManager.IsPaused()) return;
-                if (!collectInput) return;
+            case "LookGamepad":
+                if (IsPaused()) return;
 
                 if (playerMovement != null)
                 {
@@ -90,9 +93,19 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
 
+            case "LookMouse":
+                if (IsPaused()) return;
+
+                if (playerMovement != null)
+                {
+                    Vector2 mouseInput = context.ReadValue<Vector2>();
+                    Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(mouseInput);
+                    playerMovement.SetLookPoint(worldMousePos);
+                }
+                break;
+
             case "Reflect":
-                if (gameStateManager != null && gameStateManager.IsPaused()) return;
-                if (!collectInput) return;
+                if (IsPaused()) return;
 
                 if (reflectAbility != null && context.performed)
                 {
@@ -104,8 +117,7 @@ public class PlayerController : MonoBehaviour
                 if (playerMovement != null)
                 {
                     playerMovement.SetMoveDirection(Vector2.zero);
-                    if (gameStateManager != null && gameStateManager.IsPaused()) return;
-                    if (!collectInput) return;
+                    if (IsPaused()) return;
 
                     if (context.performed)
                     {
@@ -117,7 +129,8 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case "ClassAbility":
-                if (!collectInput) return;
+                if (IsPaused()) return;
+
                 if (onClassAbility != null && context.performed)
                 {
                     onClassAbility(player);
@@ -137,5 +150,10 @@ public class PlayerController : MonoBehaviour
     public void RemoveOnMoveCallback(Action action)
     {
         onMove -= action;
+    }
+
+    private bool IsPaused()
+    {
+        return GameStateManager.Instance != null && GameStateManager.Instance.IsPaused();
     }
 }

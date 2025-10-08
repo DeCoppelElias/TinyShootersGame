@@ -22,7 +22,7 @@ public class UpgradeUI : PlayerUIElement
 
     protected override void EnableActions()
     {
-        List<PlayerClass> upgrades = player.GetUpgrades();
+        List<PlayerClass> upgrades = Player.GetUpgrades();
         if (upgrades.Count == 0)
         {
             Disable();
@@ -82,7 +82,7 @@ public class UpgradeUI : PlayerUIElement
             Button button = buttonTransform.GetComponent<Button>();
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
-                player.ApplyClass(currentPlayerClass);
+                Player.ApplyClass(currentPlayerClass);
                 Disable();
             });
         }

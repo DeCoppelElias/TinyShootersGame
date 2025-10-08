@@ -22,6 +22,11 @@ public class PlayerUIManager : UIManager
         InitializeUIElements();
     }
 
+    public void SetCurrentControllingPlayer(PlayerInput playerInput)
+    {
+        currentControllingPlayer = playerInput;
+    }
+
     protected override void LoadUIPanels()
     {
         foreach (var prefab in sceneUIProfile.playerUIPrefabs)
@@ -59,6 +64,7 @@ public class PlayerUIManager : UIManager
 
     private void HandleFirstSelected()
     {
+        Debug.Log(currentControllingPlayer.currentControlScheme);
         if (IsController(currentControllingPlayer)) EnableFirstSelected();
         else DisableFirstSelected();
     }

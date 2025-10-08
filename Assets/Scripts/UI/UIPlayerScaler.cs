@@ -6,19 +6,17 @@ using UnityEngine.InputSystem;
 
 public class UIPlayerScaler : MonoBehaviour
 {
+    public static UIPlayerScaler Instance { get; private set; }
     private readonly Dictionary<int, Canvas> playerCanvases = new Dictionary<int, Canvas>();
 
-    private void Start()
+    private void Awake()
     {
-        PlayerInput[] initialPlayers = FindObjectsOfType<PlayerInput>();
-        foreach (PlayerInput player in initialPlayers) Register(player);
+        Instance = this;
     }
 
-    public void Register(PlayerInput playerInput)
+    public void Register(int playerIndex, Canvas playerCanvas)
     {
-        Canvas playerCanvas = playerInput.GetComponentInChildren<Canvas>();
-
-        playerCanvases[playerInput.playerIndex] = playerCanvas;
+        playerCanvases[playerIndex] = playerCanvas;
         ApplyLayout();
     }
 

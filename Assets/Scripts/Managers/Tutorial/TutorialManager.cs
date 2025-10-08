@@ -22,21 +22,10 @@ public class TutorialManager : MonoBehaviour
     private GameObject enemy;
     private float startTime = 0;
 
-    private GameObject explanationUI;
-    private Text explanationTitle;
-    private Text doneText;
-    private TextMeshProUGUI explanationSubTitle;
-
     private void Start()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
         playerUIManager = player.GetComponentInChildren<PlayerUIManager>();
-
-        explanationUI = GameObject.Find("ExplanationUI");
-        explanationTitle = explanationUI.transform.Find("TitleContainer").Find("Title").GetComponent<Text>();
-        doneText = explanationUI.transform.Find("TitleContainer").Find("Done").GetComponent<Text>();
-        doneText.text = "";
-        explanationSubTitle = explanationUI.transform.Find("SubTitle").GetComponent<TextMeshProUGUI>();
         tutorialState = TutorialState.Explanation;
 
         StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
@@ -60,10 +49,10 @@ public class TutorialManager : MonoBehaviour
             if (player.GetComponent<ShootingAbility>().shooting)
             {
                 tutorialState = TutorialState.Pause;
-                doneText.text = "Done!";
+                SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();
                 StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
                 {
-                    doneText.text = "";
+                    SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().DisableDoneText();
                     ToDash();
                 }));
             }
@@ -73,10 +62,10 @@ public class TutorialManager : MonoBehaviour
             if (player.GetComponent<DashAbility>().Dashing())
             {
                 tutorialState = TutorialState.Pause;
-                doneText.text = "Done!";
+                SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();
                 StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
                 {
-                    doneText.text = "";
+                    SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().DisableDoneText();
                     ToReflect();
                 }));
             }
@@ -86,10 +75,10 @@ public class TutorialManager : MonoBehaviour
             if (player.GetComponent<ReflectShieldAbility>().IsReflecting())
             {
                 tutorialState = TutorialState.Pause;
-                doneText.text = "Done!";
+                SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();
                 StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
                 {
-                    doneText.text = "";
+                    SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().DisableDoneText();
                     ToEnemyTest();
                 }));
             }
@@ -99,10 +88,10 @@ public class TutorialManager : MonoBehaviour
             if (enemy == null && Time.time - startTime > 3)
             {
                 tutorialState = TutorialState.Pause;
-                doneText.text = "Done!";
+                SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();
                 StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
                 {
-                    doneText.text = "";
+                    SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().DisableDoneText();
                     ToUpgrade();
                 }));
             }
@@ -112,10 +101,10 @@ public class TutorialManager : MonoBehaviour
             if (enemy == null && Time.time - startTime > 3)
             {
                 tutorialState = TutorialState.Pause;
-                doneText.text = "Done!";
+                SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();
                 StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
                 {
-                    doneText.text = "";
+                    SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().DisableDoneText();
                     ToClassAbility();
                 }));
             }
@@ -125,10 +114,10 @@ public class TutorialManager : MonoBehaviour
             if (player.GetComponent<AbilityBehaviour>().OnCooldown())
             {
                 tutorialState = TutorialState.Pause;
-                doneText.text = "Done!";
+                SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();
                 StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
                 {
-                    doneText.text = "";
+                    SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().DisableDoneText();
                     ToEndless();
                 }));
             }
@@ -152,16 +141,17 @@ public class TutorialManager : MonoBehaviour
     {
         tutorialState = TutorialState.Movement;
 
-        explanationTitle.text = "Movement (1/7)";
-        explanationSubTitle.text = "You can move your character (the blue tank) by using WASD (Keyboard)\n or the left stick (Gamepad).";
+        var explanationTitle = "Movement (1/7)";
+        var explanationSubTitle = "You can move your character (the blue tank) by using WASD (Keyboard)\n or the left stick (Gamepad).";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
 
         void OnMoveCallback()
         {
             tutorialState = TutorialState.Pause;
-            doneText.text = "Done!";
+            SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();
             StartCoroutine(PerformAfterDelay(tutorialStepDelay, () =>
             {
-                doneText.text = "";
+                SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().DisableDoneText();
                 ToShooting();
             }));
             player.GetComponent<PlayerController>().RemoveOnMoveCallback(OnMoveCallback);
@@ -176,8 +166,9 @@ public class TutorialManager : MonoBehaviour
     {
         tutorialState = TutorialState.Shoot;
 
-        explanationTitle.text = "Shooting (2/7)";
-        explanationSubTitle.text = "You can shoot by aiming with your mouse and shooting with left click (Keyboard)\n or aiming with the right stick and shooting with right trigger (Gamepad).";
+        var explanationTitle = "Shooting (2/7)";
+        var explanationSubTitle = "You can shoot by aiming with your mouse and shooting with left click (Keyboard)\n or aiming with the right stick and shooting with right trigger (Gamepad).";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
     }
 
     private void ToDash()
@@ -185,34 +176,37 @@ public class TutorialManager : MonoBehaviour
         tutorialState = TutorialState.Dash;
         playerUIManager.Enable<AbilityUI>();
 
-        explanationTitle.text = "Dashing (3/7)";
-        explanationSubTitle.text = "Dashing will perform a quick movement in the direction you are moving.\n" +
+        var explanationTitle = "Dashing (3/7)";
+        var explanationSubTitle = "Dashing will perform a quick movement in the direction you are moving.\n" +
             "While dashing, you deal high damage when bumping into enemies and you are invulnerable.\n" +
             "Dashing has a cooldown which can be seen at the bottom of the screen.\n" + 
             "You can dash with your character by moving and dashing with left shift (Keyboard)\n" +
             "or with left trigger (Gamepad).";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
     }
 
     private void ToReflect()
     {
         tutorialState = TutorialState.Reflect;
 
-        explanationTitle.text = "Reflect Shield (4/7)";
-        explanationSubTitle.text = "The reflect shield will reflect enemy bullets.\n" +
+        var explanationTitle = "Reflect Shield (4/7)";
+        var explanationSubTitle = "The reflect shield will reflect enemy bullets.\n" +
             "The reflect shield has a cooldown which can be seen at the bottom of the screen.\n" +
             "You can enable your reflect shield by pressing space (Keyboard)\n " +
             "or with left shoulder (Gamepad).";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
     }
     private void ToEnemyTest()
     {
         tutorialState = TutorialState.Combat;
         SharedUIManager.Instance.Enable<ScoreUI>();
 
-        explanationTitle.text = "Combat (5/7)";
-        explanationSubTitle.text = "Test your skills against a real enemy!\n" +
+        var explanationTitle = "Combat (5/7)";
+        var explanationSubTitle = "Test your skills against a real enemy!\n" +
             "Killing an enemy will reward your with a score. This score can be seen on the top right of the screen.\n" +
             "When enemies hit your character (either melee or with bullets), your character will lose health.\n" +
             "If your health reaches zero, you lose!";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
 
         CreateRandomEnemyForTutorial();
         startTime = Time.time;
@@ -221,9 +215,10 @@ public class TutorialManager : MonoBehaviour
     {
         tutorialState = TutorialState.Upgrading;
 
-        explanationTitle.text = "Upgrading (6/7)";
-        explanationSubTitle.text = "From time to time, you will be able to upgrade your character!\n" +
+        var explanationTitle = "Upgrading (6/7)";
+        var explanationSubTitle = "From time to time, you will be able to upgrade your character!\n" +
             "You can then choose between different classes, each with their own advantages and dissadvantages!";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
 
         playerUIManager.Enable<UpgradeUI>();
 
@@ -235,10 +230,11 @@ public class TutorialManager : MonoBehaviour
     {
         tutorialState = TutorialState.ClassAbility;
 
-        explanationTitle.text = "Class Abilities (7/7)";
-        explanationSubTitle.text = "Each class has a unique class ability. This ability has a cooldown which can be seen at the bottom of the screen.\n" +
+        var explanationTitle = "Class Abilities (7/7)";
+        var explanationSubTitle = "Each class has a unique class ability. This ability has a cooldown which can be seen at the bottom of the screen.\n" +
             "You can use this class ability by pressing the right mouse button (Keyboard)\n" +
             "or by using the right shoulder (Gamepad).";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
 
         CreateRandomEnemyForTutorial();
         startTime = Time.time;
@@ -248,10 +244,11 @@ public class TutorialManager : MonoBehaviour
     {
         tutorialState = TutorialState.Endless;
 
-        explanationTitle.text = "Endless";
-        explanationSubTitle.text = "You have completed the tutorial!\n" +
+        var explanationTitle = "Endless";
+        var explanationSubTitle = "You have completed the tutorial!\n" +
             "You can leave by pressing ESC (Keyboard) or Start (Gamepad) and clicking the main menu button.\n" +
             "You can also stay and practise some more against the infinite enemies. Have fun!";
+        SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().SetTitle(explanationTitle, explanationSubTitle);
     }
 
     private IEnumerator PerformAfterDelay(float delay, Action action)

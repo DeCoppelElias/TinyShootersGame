@@ -10,6 +10,8 @@ public class Player : Entity
     public PlayerClass playerClass;
     public PlayerStats baseStats = null;
 
+    public int playerIndex;
+
     [SerializeField] private bool invulnerable = false;
     [SerializeField] private float invulnerableDuration = 0.5f;
     private float invulnerableStart;
@@ -27,8 +29,6 @@ public class Player : Entity
 
     private PlayerMovement playerMovement;
 
-    public Color Color { get; set; }
-
     public override void StartEntity()
     {
         base.StartEntity();
@@ -41,7 +41,6 @@ public class Player : Entity
         playerController = GetComponent<PlayerController>();
         playerMovement = GetComponent<PlayerMovement>();
 
-        SetupColor(new Color(59 / 255f, 93 / 255f, 201 / 255f));
         ApplyStats(baseStats);
         ApplyClass(playerClass);
     }
@@ -211,16 +210,38 @@ public class Player : Entity
         if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(force);
     }
 
-    private void SetupColor(Color color)
+    protected override void OnColorChange(Color newColor)
     {
-        if (shootingAbility != null) shootingAbility.SetBulletColor(color);
-        if (dashAbility != null) dashAbility.SetDashColor(color);
+        base.OnColorChange(newColor);
 
-        this.Color = color;
+        this.spriteRenderer.color = newColor;
+        Color damageColor = new Color(0.5f * newColor.r, 0.5f * newColor.g, 0.5f * newColor.b);
+        this.damageColor = damageColor;
+
+        if (shootingAbility != null) shootingAbility.SetBulletColor(newColor);
+        if (dashAbility != null) dashAbility.SetDashColor(newColor);
     }
 
     public void Reset()
     {
         ApplyStats(baseStats);
+        ResetAbilities();
+    }
+
+    public override void Revive()
+    {
+        base.Revive();
+        ResetAbilities();
+    }
+
+    private void ResetAbilities()
+    {
+        if (dashAbility != null) dashAbility.SetReady();
+
+        ReflectShieldAbility reflectShieldAbility = GetComponent<ReflectShieldAbility>();
+        if (reflectShieldAbility != null) reflectShieldAbility.SetReady();
+
+        AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
+        if (abilityBehaviour != null) abilityBehaviour.SetReady();
     }
 }

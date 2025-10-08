@@ -65,18 +65,23 @@ public class DashAbility : MonoBehaviour
         return dashingState == DashingState.Ready;
     }
 
+    public void SetReady()
+    {
+        dashingState = DashingState.Ready;
+
+        if (onReady != null)
+        {
+            onReady.Invoke();
+        }
+    }
+
     private void FixedUpdate()
     {
         if (dashingState == DashingState.Cooldown)
         {
             if (Time.time - lastDash > DashCooldown)
             {
-                dashingState = DashingState.Ready;
-
-                if (onReady != null)
-                {
-                    onReady.Invoke();
-                }
+                SetReady();
             }
         }
         else if (dashingState == DashingState.Charging)

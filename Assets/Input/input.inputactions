@@ -14,9 +14,17 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Look",
+                    "name": "LookGamepad",
                     "type": "Value",
                     "id": "a3e7ddef-89ba-427e-9365-adb3604c118a",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "LookMouse",
+                    "type": "Value",
+                    "id": "aca76ecc-3da3-4a56-bdcf-8e5027e09844",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
@@ -188,7 +196,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "Look",
+                    "action": "LookGamepad",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -332,6 +340,17 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Ready",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a361366e-6314-47c5-8472-e8643bd36278",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "LookMouse",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

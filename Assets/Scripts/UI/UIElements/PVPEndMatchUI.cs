@@ -46,6 +46,9 @@ public class PVPEndMatchUI : UIElement<PVPEndMatchUIData>
 
     protected override void EnableActions(PVPEndMatchUIData data)
     {
+        winningPlayerText.text = data.winningPlayerName;
+
+        firstSelected = restartButton.gameObject;
 
         this.gameObject.SetActive(true);
     }

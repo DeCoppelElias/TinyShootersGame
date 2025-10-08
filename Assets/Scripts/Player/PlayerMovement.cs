@@ -17,11 +17,14 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 currentMoveDirection = Vector2.zero;
 
+    private enum LookBehaviour { LookInput, LookPoint}
+    private LookBehaviour lookBehaviour = LookBehaviour.LookInput;
+
     private Vector2 currentLookInput = Vector2.zero;
+    private Vector2 currentLookPoint = Vector2.zero;
 
     private Player player;
     private Rigidbody2D playerRB;
-    private PlayerInput playerInput;
 
     private DashAbility dashAbility;
     private ShootingAbility shootAbility;
@@ -40,7 +43,6 @@ public class PlayerMovement : MonoBehaviour
     {
         this.player = this.GetComponent<Player>();
         this.playerRB = this.GetComponent<Rigidbody2D>();
-        this.playerInput = this.GetComponent<PlayerInput>();
 
         this.dashAbility = this.GetComponent<DashAbility>();
         this.shootAbility = this.GetComponent<ShootingAbility>();
@@ -117,18 +119,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void Look()
     {
-        // Handle input depending on controller or mouse input
-        if (Gamepad.current != null && Gamepad.current.enabled && playerInput.currentControlScheme == "Gamepad" && currentLookInput != Vector2.zero)
+        Vector2 lookInput = currentLookInput;
+        if (lookBehaviour == LookBehaviour.LookPoint)
         {
-            spriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, currentLookInput);
+            lookInput = currentLookPoint - new Vector2(transform.position.x, transform.position.y);
         }
-        else if (Mouse.current != null && Mouse.current.enabled && playerInput.currentControlScheme == "Keyboard&Mouse")
-        {
-            Vector3 mousePosition = Mouse.current.position.ReadValue();
-            Vector3 worldMousePosition = (customCamera != null) ? customCamera.ScreenToWorldPoint(mousePosition) : Camera.main.ScreenToWorldPoint(mousePosition);
-            Vector2 lookDirection = (worldMousePosition - transform.position);
-            spriteRenderer.transform.localRotation = Quaternion.LookRotation(Vector3.forward, lookDirection);
-        }
+        if (lookInput != Vector2.zero) spriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookInput);
     }
 
     public void SetMoveDirection(Vector3 moveDirection)
@@ -138,6 +134,12 @@ public class PlayerMovement : MonoBehaviour
     public void SetLookInput(Vector3 lookInput)
     {
         this.currentLookInput = lookInput;
+        this.lookBehaviour = LookBehaviour.LookInput;
+    }
+    public void SetLookPoint(Vector3 lookPoint)
+    {
+        this.currentLookPoint = lookPoint;
+        this.lookBehaviour = LookBehaviour.LookPoint;
     }
     public void ApplyKnockBack(Vector2 force)
     {

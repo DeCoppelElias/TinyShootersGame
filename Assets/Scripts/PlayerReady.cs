@@ -1,36 +1,42 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerReady : MonoBehaviour
 {
-    public bool IsReady { get; private set; } = false;
+    public bool IsReady { get; private set; }
+    public static event System.Action<PlayerInput> OnPlayerReady;
+
     private PlayerInput playerInput;
 
-    private void Start()
+    private void Awake()
     {
-        playerInput = GetComponent<PlayerInput>();
+        playerInput = GetComponentInChildren<PlayerInput>();
+    }
+
+    private void OnEnable()
+    {
         playerInput.onActionTriggered += OnActionTriggered;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        if (playerInput != null)
+        playerInput.onActionTriggered -= OnActionTriggered;
+    }
+
+    private void OnActionTriggered(InputAction.CallbackContext context)
+    {
+        if (context.action.name == "Ready" && context.performed)
         {
-            playerInput.onActionTriggered -= OnActionTriggered;
+            OnReady();
         }
     }
 
-    private void OnActionTriggered(InputAction.CallbackContext ctx)
+    private void OnReady()
     {
-        if (ctx.action.name == "Ready" && ctx.performed && !IsReady)
-        {
-            IsReady = true;
+        if (IsReady) return;
 
-            playerInput.onActionTriggered -= OnActionTriggered;
-
-            FindObjectOfType<PVPLobbyManager>().TryStartGame(playerInput);
-        }
+        IsReady = true;
+        OnPlayerReady?.Invoke(playerInput);
+        Debug.Log($"{playerInput.gameObject.name} is ready!");
     }
 }

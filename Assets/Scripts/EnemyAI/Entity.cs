@@ -22,11 +22,11 @@ public abstract class Entity : MonoBehaviour
     public bool knockbackImmune = false;
 
     public int onDeathScore = 100;
-    [SerializeField] private Color entityColor = Color.red;
+    [SerializeField] private Color color;
 
     [Header("On-Hit Color Change Settings")]
-    [SerializeField] private Color damageColor = Color.red;
-    private float colorChangeDuration = 0.25f;
+    [SerializeField] protected Color damageColor = Color.red;
+    [SerializeField] private float colorChangeDuration = 0.25f;
     [SerializeField] private ColorChangeState colorChangeState = ColorChangeState.Nothing;
     private enum ColorChangeState { Nothing, ToDamageColor, ToOriginalColor }
     protected SpriteRenderer spriteRenderer;
@@ -80,6 +80,8 @@ public abstract class Entity : MonoBehaviour
         if (CheckOutOfBounds()) lastValidPosition = this.transform.position;
 
         StartEntity();
+
+        OnColorChange(this.color);
     }
     private void Update()
     {
@@ -135,6 +137,15 @@ public abstract class Entity : MonoBehaviour
             else contactHitCooldown = value;
         }
     }
+
+    public Color Color { 
+        get => color;
+        set
+        {
+            color = value;
+            OnColorChange(value);
+        }
+    }
     #endregion
 
     private void UpdateHealthBar()
@@ -151,8 +162,8 @@ public abstract class Entity : MonoBehaviour
         this.entityState = EntityState.Dead;
 
         // visual effects
-        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, 10);
-        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
+        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, damageColor, 10);
+        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, damageColor);
 
         // sound
         AudioManager.Instance.PlayDieSound();
@@ -186,11 +197,11 @@ public abstract class Entity : MonoBehaviour
 
         // Create damage particles
         int damageParticleAmount = UnityEngine.Random.Range(1, 3);
-        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, entityColor, damageParticleAmount);
+        ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Damage, transform.position, Quaternion.identity, this.transform.localScale, damageColor, damageParticleAmount);
 
         // Create blood
         float r = UnityEngine.Random.Range(0, 1f);
-        if (r < 0.05f) ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, entityColor);
+        if (r < 0.05f) ParticleManager.Instance.CreateParticle(ParticleManager.ParticleType.Blood, transform.position, Quaternion.identity, this.transform.localScale, damageColor);
 
         // Play damage sound effect
         AudioManager.Instance.PlayDamageSound();
@@ -316,11 +327,16 @@ public abstract class Entity : MonoBehaviour
         if (rb != null) rb.AddForce(force, ForceMode2D.Impulse);
     }
 
-    public void Revive()
+    public virtual void Revive()
     {
         if (this.entityState != EntityState.Dead) return;
 
         this.health = maxHealth;
         this.entityState = EntityState.Alive;
+    }
+
+    protected virtual void OnColorChange(Color newColor)
+    {
+
     }
 }

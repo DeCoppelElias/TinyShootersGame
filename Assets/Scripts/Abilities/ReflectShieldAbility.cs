@@ -20,7 +20,6 @@ public class ReflectShieldAbility : MonoBehaviour
 
     public UnityEvent onPerformed;
     public UnityEvent onReady;
-    private System.Action onComplete;
 
     private GameObject reflectShieldObject;
 
@@ -34,14 +33,24 @@ public class ReflectShieldAbility : MonoBehaviour
         reflectShieldObject.SetActive(false);
     }
 
-    public void EnableReflectShield(System.Action action = null)
+    public void EnableReflectShield()
     {
         if (reflectShieldState != ReflectShieldState.Ready) return;
 
-        if (action != null) onComplete = action;
         reflectShieldObject.SetActive(true);
         reflectShieldState = ReflectShieldState.Reflecting;
         reflectShieldStart = Time.time;
+    }
+
+    public void SetReady()
+    {
+        reflectShieldState = ReflectShieldState.Ready;
+        reflectShieldObject.SetActive(false);
+
+        if (onReady != null)
+        {
+            onReady?.Invoke();
+        }
     }
 
     private void Update()
@@ -50,12 +59,7 @@ public class ReflectShieldAbility : MonoBehaviour
         {
             if (Time.time - lastReflectShieldUse > reflectShieldCooldown)
             {
-                reflectShieldState = ReflectShieldState.Ready;
-
-                if (onReady != null)
-                {
-                    onReady.Invoke();
-                }
+                SetReady();
             }
         }
         if (reflectShieldState == ReflectShieldState.Reflecting)
@@ -66,11 +70,7 @@ public class ReflectShieldAbility : MonoBehaviour
                 reflectShieldObject.SetActive(false);
                 lastReflectShieldUse = Time.time;
 
-                if (onPerformed != null)
-                {
-                    onPerformed.Invoke();
-                }
-                onComplete?.Invoke();
+                onPerformed?.Invoke();
             }
         }
     }

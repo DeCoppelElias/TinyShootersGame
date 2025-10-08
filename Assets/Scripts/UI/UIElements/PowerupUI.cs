@@ -81,7 +81,7 @@ public class PowerupUI : PlayerUIElement
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
-                player.ApplyPowerup(currentPowerup);
+                Player.ApplyPowerup(currentPowerup);
                 Disable();
             });
 

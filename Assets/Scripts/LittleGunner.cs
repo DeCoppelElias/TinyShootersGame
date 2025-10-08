@@ -27,7 +27,6 @@ public class LittleGunner : MonoBehaviour
 
         RuntimeShootingStats ownerShootingStats = ownerShootingAbility.RuntimeStats;
         ownerShootingStats.Damage /= 2f;
-        Debug.Log(gunnerShootingAbility.GetRange());
         gunnerShootingAbility.ApplyShootingStats(ownerShootingStats);
         gunnerShootingAbility.owner = entity;
 

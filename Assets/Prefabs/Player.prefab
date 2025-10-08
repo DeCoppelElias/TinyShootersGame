@@ -221,8 +221,8 @@ MonoBehaviour:
   contactHitCooldown: 1
   knockbackImmune: 0
   onDeathScore: 100
-  entityColor: {r: 1, g: 0, b: 0, a: 1}
-  damageColor: {r: 0, g: 0, b: 1, a: 1}
+  color: {r: 0.23137255, g: 0.3647059, b: 0.7882353, a: 1}
+  damageColor: {r: 0, g: 0.23943663, b: 1, a: 1}
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 0.5
@@ -230,6 +230,7 @@ MonoBehaviour:
   allowedOutOfBoundsDuration: 0.2
   playerClass: {fileID: 0}
   baseStats: {fileID: 11400000, guid: 1a6ef962099c63f449e5cf96bbf24189, type: 2}
+  playerIndex: 0
   invulnerable: 0
   invulnerableDuration: 0.5
   onHitEvent:
@@ -595,6 +596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collectInput: 1
+  playerInput: {fileID: 0}
   onPause:
     m_PersistentCalls:
       m_Calls: []
@@ -781,8 +783,8 @@ SpriteRenderer:
   m_SortingLayerID: 1934459445
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: d461ada42b33d0c48ad16f1f17c23ad2, type: 3}
+  m_Color: {r: 0.23137255, g: 0.3647059, b: 0.7882353, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -802,7 +804,7 @@ Animator:
   m_GameObject: {fileID: 7383428955388207862}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e0a729f45a778f44f9703b2abee46df7, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5b88cd74f24e66a4dacac6f220b69c22, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1097,7 +1099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_InstanceId
-      value: -11678
+      value: -30746
       objectReference: {fileID: 0}
     - target: {fileID: 6068360432257490123, guid: 1715ae4149205de44af0bc8f842b1e69, type: 3}
       propertyPath: m_ShapePath.Array.data[7].x
