@@ -37,7 +37,7 @@ public class PlayerStats : ScriptableObject
     public float bulletSize = 1;
     public float bulletSpeed = 6;
     public bool splitOnHit = false;
-    public float splitAmount = 0;
+    public int splitAmount = 0;
     public float splitRange = 1;
     public float splitBulletSize = 0.5f;
     public float splitBulletSpeed = 6;

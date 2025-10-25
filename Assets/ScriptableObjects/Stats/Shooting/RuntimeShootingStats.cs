@@ -15,7 +15,7 @@ public class RuntimeShootingStats
     [SerializeField] private float attackCooldown = 0.5f;
 
     [SerializeField] private bool explode = false;
-    [SerializeField] private float explodeBulletAmount = 0;
+    [SerializeField] private int explodeBulletAmount = 0;
     [SerializeField] private float explodeDamagePercentage = 0.5f;
     [SerializeField] private float explodeBulletRange = 1;
     [SerializeField] private float explodeBulletSize = 0.5f;
@@ -206,10 +206,10 @@ public class RuntimeShootingStats
         get => explode;
         set => explode = value;
     }
-    public float ExplodeBulletAmount
+    public int ExplodeBulletAmount
     {
         get { return explodeBulletAmount; }
-        set { explodeBulletAmount = Mathf.Max(value, 0.1f); }
+        set { explodeBulletAmount = Mathf.Max(value, 0); }
     }
     public float ExplodeDamagePercentage
     {

@@ -142,7 +142,7 @@ MonoBehaviour:
   - {x: -0.5, y: 0, z: 0}
   m_ShapePathHash: -300134306
   m_Mesh: {fileID: 0}
-  m_InstanceId: -2976
+  m_InstanceId: 44238
 --- !u!1 &4451696334520911088
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,14 +195,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityState: 0
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
   maxHealth: 300
   health: 300
   contactDamage: 10
   contactHitCooldown: 1
   knockbackImmune: 0
   onDeathScore: 10
-  entityColor: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 0, g: 0, b: 0, a: 0}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 0.25
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
@@ -210,6 +214,7 @@ MonoBehaviour:
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
+  bodyDuration: 0.25
   spawnBody: 1
   debug: 0
 --- !u!50 &6578909941024215941
@@ -225,7 +230,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 30
-  m_LinearDrag: 5
+  m_LinearDrag: 3
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -266,9 +271,6 @@ MonoBehaviour:
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &2220398910152964613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,13 +291,11 @@ MonoBehaviour:
   targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
   pathFindingRefreshCooldown: 3
-  avoidanceRadius: 1
-  avoidanceStrength: 0.1
   debug: 0
   minimumMovementCooldown: 1
   maximumMovementCooldown: 2
-  minimumForceApplied: 1300
-  maximumForceApplied: 1800
+  minimumForceApplied: 2500
+  maximumForceApplied: 3000
   canSeePlayer: 1
   lastPlayerVisionCheck: 0
   playerVisionCooldown: 0.5
@@ -311,16 +311,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558404aa5f9d0bd4bb5a2092765bafb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnedEnemies: 0
+  maxSpawnedEnemies: 5
   enemyPrefabs:
   - {fileID: 8242213477927556755, guid: 78f19a6b8ec19bc4797907e3a2658557, type: 3}
   - {fileID: 1642511522402942177, guid: 29827f34e151c1542870e43f5194310a, type: 3}
-  - {fileID: 7427509855293966748, guid: 846fb494acf90034390d054651affb67, type: 3}
+  - {fileID: 7427509855293966748, guid: ad326b1056a21854b82a5619b91431aa, type: 3}
   probabilities:
   - 0.6
   - 0.2
   - 0.2
   launchCooldown: 5
-  launchOffset: 2
+  launchOffset: 1
   launchForce: 100
 --- !u!1 &6397630172467916016
 GameObject:

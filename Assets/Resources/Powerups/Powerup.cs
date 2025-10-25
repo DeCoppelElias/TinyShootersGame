@@ -35,7 +35,7 @@ public class Powerup : ScriptableObject
     public float bulletSizeDelta = 0;
     public float bulletSpeedDelta = 0;
     public bool splitOnHit = false;
-    public float splitAmountDelta = 0;
+    public int splitAmountDelta = 0;
     public float splitRangeDelta = 0;
     public float splitBulletSizeDelta = 0;
     public float splitBulletSpeedDelta = 0;
@@ -57,20 +57,8 @@ public class Powerup : ScriptableObject
         {
             if (field.Name == nameof(powerupName) || field.Name == nameof(rarity)) continue;
 
-            object value = field.GetValue(this);
-
-            if (value is float floatVal && Mathf.Abs(floatVal) > 0)
-            {
-                sb.AppendLine($"{SplitCamelCase(field.Name)}: {(floatVal > 0 ? "+" : "")}{floatVal}");
-            }
-            if (value is int intVal && Mathf.Abs(intVal) > 0)
-            {
-                sb.AppendLine($"{SplitCamelCase(field.Name)}: {(intVal > 0 ? "+" : "")}{intVal}");
-            }
-            if (field.Name == nameof(recoverHealth) && value is true)
-            {
-                sb.AppendLine("Recover All Health!");
-            }
+            string prettyString = GetPrettyStringForField(field);
+            if (prettyString.Length > 0) sb.AppendLine(prettyString);
         }
 
         return sb.ToString().TrimEnd();
@@ -87,5 +75,114 @@ public class Powerup : ScriptableObject
 
         // Capitalize the first letter
         return char.ToUpper(spaced[0]) + spaced.Substring(1);
+    }
+
+    private string GetPrettyStringForField(FieldInfo field)
+    {
+        string name = field.Name;
+        object value = field.GetValue(this);
+
+        string EffectText(string positive, string negative, float delta)
+        {
+            if (Mathf.Approximately(delta, 0)) return "";
+            return delta > 0 ? positive : negative;
+        }
+
+        string EffectTextInt(string positive, string negative, int delta)
+        {
+            if (delta == 0) return "";
+            return delta > 0 ? positive : negative;
+        }
+
+        switch (name)
+        {
+            // --- General Upgrade ---
+            case nameof(healthDelta):
+                return EffectText("Increased Max Health", "Reduced Max Health", (float)value);
+
+            case nameof(recoverHealth):
+                return value is true ? "Recover All Health!" : "";
+
+            case nameof(normalMoveSpeedDelta):
+                return EffectText("Faster Movement", "Slower Movement", (float)value);
+
+            case nameof(shootingMoveSpeedDelta):
+                return EffectText("Faster While Shooting", "Slower While Shooting", (float)value);
+
+            case nameof(invulnerableDurationDelta):
+                return EffectText("Longer Invulnerability", "Shorter Invulnerability", (float)value);
+
+            case nameof(contactDamageDelta):
+                return EffectText("Increased Contact Damage", "Reduced Contact Damage", (float)value);
+
+            case nameof(contactHitCooldownDelta):
+                return EffectText("Shorter Contact Cooldown", "Longer Contact Cooldown", (float)value);
+
+            // --- Ranged Combat Upgrade ---
+            case nameof(damageDelta):
+                return EffectText("Increased Damage", "Reduced Damage", (float)value);
+
+            case nameof(attackCooldownDelta):
+                return EffectText("Longer Attack Cooldown", "Shorter Attack Cooldown", (float)value);
+
+            case nameof(rangeDelta):
+                return EffectText("Increased Range", "Reduced Range", (float)value);
+
+            case nameof(pierceDelta):
+                return EffectTextInt("More Pierce", "Less Pierce", (int)value);
+
+            case nameof(totalSplitDelta):
+                return EffectText("More Split Shots", "Fewer Split Shots", (float)value);
+
+            case nameof(totalFanDelta):
+                return EffectText("More Fan Shots", "Fewer Fan Shots", (float)value);
+
+            case nameof(bulletSizeDelta):
+                return EffectText("Larger Bullets", "Smaller Bullets", (float)value);
+
+            case nameof(bulletSpeedDelta):
+                return EffectText("Faster Bullets", "Slower Bullets", (float)value);
+
+            case nameof(splitOnHit):
+                return value is true ? "Bullets Split on Hit!" : "";
+
+            case nameof(splitAmountDelta):
+                return EffectText("More Split Bullets", "Fewer Split Bullets", (int)value);
+
+            case nameof(splitRangeDelta):
+                return EffectText("Wider Split Range", "Shorter Split Range", (float)value);
+
+            case nameof(splitBulletSizeDelta):
+                return EffectText("Larger Split Bullets", "Smaller Split Bullets", (float)value);
+
+            case nameof(splitBulletSpeedDelta):
+                return EffectText("Faster Split Bullets", "Slower Split Bullets", (float)value);
+
+            case nameof(splitDamagePercentageDelta):
+                return EffectText("Higher Split Damage", "Lower Split Damage", (float)value);
+
+            // --- Dash Upgrade ---
+            case nameof(dashCooldownDelta):
+                return EffectText("Longer Dash Cooldown", "Shorter Dash Cooldown", (float)value);
+
+            case nameof(dashDurationDelta):
+                return EffectText("Longer Dash Duration", "Shorter Dash Duration", (float)value);
+
+            case nameof(chargeDurationDelta):
+                return EffectText("Longer Charge Time", "Shorter Charge Time", (float)value);
+
+            case nameof(dashSpeedDelta):
+                return EffectText("Faster Dash", "Slower Dash", (float)value);
+
+            case nameof(contactDamageIncreaseDelta):
+                return EffectText("Increased Dash Damage", "Reduced Dash Damage", (float)value);
+
+            default:
+                if (value is float floatVal && Mathf.Abs(floatVal) > 0)
+                    return $"{SplitCamelCase(field.Name)} {(floatVal > 0 ? "+" : "")}{floatVal}";
+                if (value is int intVal && intVal != 0)
+                    return $"{SplitCamelCase(field.Name)} {(intVal > 0 ? "+" : "")}{intVal}";
+                return "";
+        }
     }
 }

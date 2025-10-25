@@ -15,7 +15,7 @@ public class BaseShootingStats : ScriptableObject
     [SerializeField] private float attackCooldown = 0.5f;
 
     [SerializeField] private bool explode = false;
-    [SerializeField] private float explodeBulletAmount = 0;
+    [SerializeField] private int explodeBulletAmount = 0;
     [SerializeField] private float explodeDamagePercentage = 0.5f;
     [SerializeField] private float explodeBulletRange = 1;
     [SerializeField] private float explodeBulletSize = 0.5f;
@@ -34,7 +34,7 @@ public class BaseShootingStats : ScriptableObject
     public float AttackCooldown { get => attackCooldown; }
 
     public bool Explode { get => explode; }
-    public float ExplodeBulletAmount { get => explodeBulletAmount; }
+    public int ExplodeBulletAmount { get => explodeBulletAmount; }
     public float ExplodeDamagePercentage { get => explodeDamagePercentage; }
     public float ExplodeBulletRange { get => explodeBulletRange; }
     public float ExplodeBulletSize { get => explodeBulletSize; }

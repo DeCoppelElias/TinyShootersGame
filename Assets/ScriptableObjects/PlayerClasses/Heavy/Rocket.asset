@@ -19,7 +19,6 @@ MonoBehaviour:
   animatorController: {fileID: 9100000, guid: 1ae993f5e1b95a24583f87f309b1d48d, type: 2}
   UISprite: {fileID: 21300000, guid: 1aca28879e46a0a4caeda669de110f8e, type: 3}
   healthDelta: 50
-  pvpHealthDelta: 0
   normalMoveSpeedDelta: 0
   shootingMoveSpeedDelta: 0
   invulnerableDurationDelta: 0

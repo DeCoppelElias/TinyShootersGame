@@ -36,7 +36,7 @@ MonoBehaviour:
   splitBulletSpeedDelta: 0
   splitDamagePercentageDelta: 0
   dashCooldownDelta: -0.5
-  dashDurationDelta: 0.1
+  dashDurationDelta: 0.05
   chargeDurationDelta: 0
-  dashSpeedDelta: 10
+  dashSpeedDelta: 8
   contactDamageIncreaseDelta: 1

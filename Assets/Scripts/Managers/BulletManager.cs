@@ -9,9 +9,10 @@ public class BulletManager : MonoBehaviour
     [SerializeField] private int bulletLimit = 1000;
     [SerializeField] private int bulletStart = 10;
     [SerializeField] private int bulletCount = 0;
+    [SerializeField] private int availableBulletCount = 0;
     [SerializeField] private GameObject bulletPrefab;
 
-    private Queue<Bullet> availableBullets = new Queue<Bullet>();
+    [SerializeField] private Queue<Bullet> availableBullets = new Queue<Bullet>();
 
     private void Awake()
     {
@@ -37,6 +38,7 @@ public class BulletManager : MonoBehaviour
         if (bullet == null) throw new System.Exception("Bullet prefab does not have bullet script.");
         
         availableBullets.Enqueue(bullet);
+        availableBulletCount += 1;
         bulletGO.SetActive(false);
     }
 
@@ -50,6 +52,7 @@ public class BulletManager : MonoBehaviour
         if (availableBullets.Count > 0)
         {
             Bullet bullet = availableBullets.Dequeue();
+            availableBulletCount -= 1;
             bullet.gameObject.SetActive(true);
             return bullet;
         }
@@ -65,6 +68,7 @@ public class BulletManager : MonoBehaviour
         bullet.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
 
         this.availableBullets.Enqueue(bullet);
+        availableBulletCount += 1;
         bullet.gameObject.SetActive(false);
     }
 }

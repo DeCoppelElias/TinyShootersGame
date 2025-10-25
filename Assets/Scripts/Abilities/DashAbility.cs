@@ -53,6 +53,8 @@ public class DashAbility : MonoBehaviour
         dashingState = DashingState.Charging;
         this.dashDirection = direction;
 
+        rb.velocity = Vector2.zero;
+
         chargeStart = Time.time;
         if (chargeDuration > 0)
         {
@@ -121,6 +123,8 @@ public class DashAbility : MonoBehaviour
             {
                 dashingState = DashingState.Cooldown;
                 lastDash = Time.time;
+
+                rb.velocity = Vector2.zero;
 
                 onPerformed?.Invoke();
                 onComplete?.Invoke();

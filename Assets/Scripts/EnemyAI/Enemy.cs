@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Enemy : Entity
 {
@@ -14,7 +15,7 @@ public class Enemy : Entity
     protected float size = 0;
 
     [Header("On-Death Body Settings")]
-    private float bodyDuration = 0.25f;
+    [SerializeField] private float bodyDuration = 0.25f;
     [SerializeField] protected bool spawnBody = true;
 
     [Header("Debug Settings")]
@@ -90,7 +91,7 @@ public class Enemy : Entity
         if (spawnBody)
         {
             Transform spriteTransform = transform.Find("Sprite");
-            spriteRenderer.color = this.originalColor;
+            if (this.color != new Color(0,0,0,0)) spriteRenderer.color = this.color;
             spriteRenderer.sortingOrder = -1;
             spriteTransform.SetParent(transform.parent);
             DeadBodyBehaviour deadBody = spriteTransform.gameObject.AddComponent<DeadBodyBehaviour>();

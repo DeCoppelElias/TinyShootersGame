@@ -24,7 +24,7 @@ public class PVPEndMatchUI : UIElement<PVPEndMatchUIData>
         base.Start();
 
         restartButton.onClick.AddListener(PVPBattleManager.Instance.Restart);
-        mainMenuButton.onClick.AddListener(GameStateManager.Instance.QuitToMainMenu);
+        mainMenuButton.onClick.AddListener(PVPBattleManager.Instance.QuitToMainMenu);
 
         InstantDisable();
     }

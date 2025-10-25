@@ -8,6 +8,7 @@ public class PowerupManager : MonoBehaviour
 
     [SerializeField] private List<Powerup> commonPowerups = new List<Powerup>();
     [SerializeField] private List<Powerup> uncommonPowerups = new List<Powerup>();
+    [SerializeField] private List<Powerup> rarePowerups = new List<Powerup>();
 
     private void Awake()
     {
@@ -32,37 +33,57 @@ public class PowerupManager : MonoBehaviour
         {
             uncommonPowerups.Add((Powerup)powerup);
         }
+
+        UnityEngine.Object[] rarePowerupsObjects = Resources.LoadAll("Powerups/Rare", typeof(Powerup));
+        foreach (UnityEngine.Object powerup in rarePowerupsObjects)
+        {
+            rarePowerups.Add((Powerup)powerup);
+        }
     }
 
     public List<Powerup> ChooseRandomPowerups(int number)
     {
-        if (commonPowerups.Count == 0 && uncommonPowerups.Count == 0) return new List<Powerup>();
+        // Create temporary copies so original lists aren't modified
+        var availableCommons = new List<Powerup>(commonPowerups);
+        var availableUncommons = new List<Powerup>(uncommonPowerups);
+        var availableRares = new List<Powerup>(rarePowerups);
 
-        List<Powerup> randomPowerups = new List<Powerup>();
+        int allPowerups = availableCommons.Count + availableUncommons.Count + availableRares.Count;
+        if (allPowerups < number)
+            return new List<Powerup>();
 
-        for(int i = 0; i < number; i++)
+        var chosen = new List<Powerup>();
+        var rng = new System.Random();
+
+        for (int i = 0; i < number; i++)
         {
-            float random = Random.Range(0f, 1f);
-            if ((random < 0.7 || uncommonPowerups.Count == 0) && commonPowerups.Count > 0)
+            List<Powerup> sourceList = null;
+            double roll = rng.NextDouble();
+
+            // Select rarity based on probability, but only if list is not empty
+            if (roll < 0.6 && availableCommons.Count > 0)
+                sourceList = availableCommons;
+            else if (roll < 0.9 && availableUncommons.Count > 0)
+                sourceList = availableUncommons;
+            else if (availableRares.Count > 0)
+                sourceList = availableRares;
+            else
             {
-                Powerup selectedPowerup = commonPowerups[Random.Range(0, commonPowerups.Count)];
-                while (randomPowerups.Contains(selectedPowerup))
-                {
-                    selectedPowerup = commonPowerups[Random.Range(0, commonPowerups.Count)];
-                }
-                randomPowerups.Add(selectedPowerup);
+                // Fallback in case the selected list is empty
+                if (availableCommons.Count > 0) sourceList = availableCommons;
+                else if (availableUncommons.Count > 0) sourceList = availableUncommons;
+                else sourceList = availableRares;
             }
-            else if (uncommonPowerups.Count > 0)
-            {
-                Powerup selectedPowerup = uncommonPowerups[Random.Range(0, uncommonPowerups.Count)];
-                while (randomPowerups.Contains(selectedPowerup))
-                {
-                    selectedPowerup = uncommonPowerups[Random.Range(0, uncommonPowerups.Count)];
-                }
-                randomPowerups.Add(selectedPowerup);
-            }
+
+            // Pick a random powerup from the chosen list
+            int index = UnityEngine.Random.Range(0, sourceList.Count);
+            var selected = sourceList[index];
+
+            chosen.Add(selected);
+            sourceList.RemoveAt(index); // Remove only from the temporary list
         }
 
-        return randomPowerups;
+        return chosen;
     }
+
 }

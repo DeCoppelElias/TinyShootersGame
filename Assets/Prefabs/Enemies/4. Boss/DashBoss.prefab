@@ -154,17 +154,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2758c42b8d136f5458b2dba8f12d212a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashingState: 0
-  dashCooldown: 4
-  dashDuration: 0.5
-  chargeDuration: 0.5
-  dashSpeed: 5
+  dashingState: 3
+  dashCooldown: 2
+  dashDuration: 0.8
+  chargeDuration: 0.8
+  dashSpeed: 20
   contactDamageIncrease: 2
   dashEffectPrefab: {fileID: 8509839074665756491, guid: 25b2c8541e7128742807d8a6df1bd063, type: 3}
+  onStartDash:
+    m_PersistentCalls:
+      m_Calls: []
   onPerformed:
     m_PersistentCalls:
       m_Calls: []
   onReady:
+    m_PersistentCalls:
+      m_Calls: []
+  onLateComplete:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &-2866914268876374352
@@ -184,9 +190,6 @@ MonoBehaviour:
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!58 &2360086585545811613
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -216,14 +219,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityState: 0
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
   maxHealth: 1000
   health: 1000
   contactDamage: 15
   contactHitCooldown: 1
   knockbackImmune: 0
   onDeathScore: 1000
-  entityColor: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 0, g: 0, b: 0, a: 0}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 0.25
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
@@ -253,8 +260,6 @@ MonoBehaviour:
   targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
   pathFindingRefreshCooldown: 3
-  avoidanceRadius: 1
-  avoidanceStrength: 0.1
   debug: 0
 --- !u!114 &-1451981258528948742
 MonoBehaviour:

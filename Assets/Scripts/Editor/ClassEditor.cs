@@ -45,7 +45,7 @@ public class ClassEditor : Editor
             playerClass.bulletSize = EditorGUILayout.FloatField("Bullet Size", playerClass.bulletSize);
             playerClass.bulletSpeed = EditorGUILayout.FloatField("Bullet Speed", playerClass.bulletSpeed);
             playerClass.splitOnHit = EditorGUILayout.Toggle("Split On Hit", playerClass.splitOnHit);
-            playerClass.splitAmount = EditorGUILayout.FloatField("Split Amount", playerClass.splitAmount);
+            playerClass.splitAmount = EditorGUILayout.IntField("Split Amount", playerClass.splitAmount);
             playerClass.splitRange = EditorGUILayout.FloatField("Split Range", playerClass.splitRange);
             playerClass.splitBulletSize = EditorGUILayout.FloatField("Split Bullet Size", playerClass.splitBulletSize);
             playerClass.splitBulletSpeed = EditorGUILayout.FloatField("Split Bullet Speed", playerClass.splitBulletSpeed);

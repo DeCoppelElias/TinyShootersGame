@@ -368,14 +368,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityState: 0
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
   maxHealth: 150
   health: 150
   contactDamage: 0
   contactHitCooldown: 1
   knockbackImmune: 0
   onDeathScore: 100
-  entityColor: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 0, g: 0, b: 0, a: 0}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 0.25
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
@@ -405,8 +409,6 @@ MonoBehaviour:
   targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
   pathFindingRefreshCooldown: 3
-  avoidanceRadius: 1
-  avoidanceStrength: 0.1
   debug: 0
   shootingMoveSpeedReduction: 0.8
   movementTargetDistance: 0.8
@@ -427,9 +429,6 @@ MonoBehaviour:
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &-8286488011305890946
 MonoBehaviour:
   m_ObjectHideFlags: 0

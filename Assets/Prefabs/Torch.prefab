@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6877334157258407862}
   - component: {fileID: 7878759922008591117}
   - component: {fileID: 276995188771875818}
+  - component: {fileID: -8009436134817468597}
   m_Layer: 0
   m_Name: Torch
   m_TagString: Untagged
@@ -162,3 +163,15 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &-8009436134817468597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8213975106931473542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89cd70309f5f0854da9be00220fad965, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

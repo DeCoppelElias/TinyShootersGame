@@ -10,6 +10,8 @@ public abstract class Entity : MonoBehaviour
     [SerializeField] protected EntityState entityState = EntityState.Alive;
     protected enum EntityState { Alive, Dead }
 
+    public UnityEvent onDeath;
+
     [SerializeField] public System.Guid EntityID { get; private set; }
 
     [SerializeField] private float maxHealth = 100;
@@ -17,12 +19,12 @@ public abstract class Entity : MonoBehaviour
 
     [SerializeField] private float contactDamage = 10;
     [SerializeField] private float contactHitCooldown = 1f;
-    private float lastContactHit = 0;
+    private Dictionary<System.Guid, float> contactHits = new Dictionary<System.Guid, float>();
 
     public bool knockbackImmune = false;
 
     public int onDeathScore = 100;
-    [SerializeField] private Color color;
+    [SerializeField] protected Color color;
 
     [Header("On-Hit Color Change Settings")]
     [SerializeField] protected Color damageColor = Color.red;
@@ -41,7 +43,12 @@ public abstract class Entity : MonoBehaviour
     [SerializeField] private float allowedOutOfBoundsDuration = 1f;
     private float outOfBoundsStart = 0;
     private int outOfBoundsCounter = 0;
-    
+
+    // [Header("Contact Knockback Settings")]
+    private int baseContactKnockback = 100;
+    private float velocityKnockbackMultiplier = 10;
+    private float damageKnockbackMultiplier = 1.1f;
+
     public enum DamageType { Ranged, Melee }
     protected DamageType lastDamageType;
     protected string lastDamageSourceTag;
@@ -167,6 +174,9 @@ public abstract class Entity : MonoBehaviour
 
         // sound
         AudioManager.Instance.PlayDieSound();
+
+        // Callback
+        if (onDeath != null) onDeath.Invoke();
     }
 
     public virtual void UpdateEntity()
@@ -183,11 +193,11 @@ public abstract class Entity : MonoBehaviour
     {
         if (damage <= 0) return;
 
-        this.Health -= damage;
-
         lastDamageSourceTag = sourceTag;
         lastDamageType = damageType;
         lastDamageDirection = knockback.normalized;
+
+        this.Health -= damage;
 
         // Give knockback
         AddKnockback(knockback);
@@ -215,23 +225,53 @@ public abstract class Entity : MonoBehaviour
         if (collision.transform.CompareTag("Enemy") && this.transform.CompareTag("Enemy")) return;
 
         Entity other = collision.gameObject.GetComponent<Entity>();
-        if (other != null && Time.time - lastContactHit > ContactHitCooldown)
+        if (other != null && Time.time - LastContactHit(other) > ContactHitCooldown)
         {
-            lastContactHit = Time.time;
+            AddContactHit(other);
 
             Vector2 direction = (collision.transform.position - this.transform.position).normalized;
-            float baseKnockbackForce = 50;
             float damage = contactDamage;
             float velocity = Vector2.Dot(rb.velocity, direction);
 
             Vector2 knockbackForce = direction.normalized * (
-                baseKnockbackForce +
-                0.1f * damage +
-                0.5f * velocity
+                baseContactKnockback +
+                other.damageKnockbackMultiplier * damage +
+                other.velocityKnockbackMultiplier * velocity
             );
 
             other.TakeDamage(contactDamage, this.tag, DamageType.Melee, knockbackForce);
         }
+    }
+
+    private float LastContactHit(Entity other)
+    {
+        if (contactHits.ContainsKey(other.EntityID)) return contactHits[other.EntityID];
+        return 0;
+    }
+
+    private void AddContactHit(Entity other)
+    {
+        if (contactHits.ContainsKey(other.EntityID)) contactHits[other.EntityID] = Time.time;
+        else
+        {
+            contactHits.Add(other.EntityID, Time.time);
+            CleanupOldContactHits();
+        }
+    }
+
+    private void CleanupOldContactHits()
+    {
+        Debug.Log("cleaning up old contact hits. Before: " + contactHits.Count.ToString());
+        var expired = new List<System.Guid>();
+        foreach (var pair in contactHits)
+        {
+            if (Time.time - pair.Value > ContactHitCooldown)
+                expired.Add(pair.Key);
+        }
+
+        foreach (var e in expired)
+            contactHits.Remove(e);
+        Debug.Log("After: " + contactHits.Count.ToString());
     }
 
     private bool CheckOutOfBounds()

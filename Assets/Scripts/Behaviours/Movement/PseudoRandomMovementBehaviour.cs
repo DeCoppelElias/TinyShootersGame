@@ -70,7 +70,7 @@ public class PseudoRandomMovementBehaviour : MovementBehaviour
         if (Time.time - lastPlayerVisionCheck > playerVisionCooldown)
         {
             lastPlayerVisionCheck = Time.time;
-            canSeePlayer = !pathFinder.IsObstacleInBetween(transform.position, this.owner.GetTargetPlayer().transform.position);
+            canSeePlayer = !pathFinder.IsObstacleInBetween(transform.position, player.transform.position);
         }
     }
 

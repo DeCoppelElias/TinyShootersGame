@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 3773596934133626727}
   - component: {fileID: 5218863758776532670}
   m_Layer: 13
-  m_Name: FastEnemy
+  m_Name: FastEnemy 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,7 +132,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 15
   m_LinearDrag: 3
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -154,14 +154,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityState: 0
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
   maxHealth: 25
   health: 25
   contactDamage: 10
   contactHitCooldown: 1
   knockbackImmune: 0
   onDeathScore: 50
-  entityColor: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 0, g: 0, b: 0, a: 0}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 0.25
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
@@ -188,9 +192,6 @@ MonoBehaviour:
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!58 &3773596934133626727
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -227,8 +228,6 @@ MonoBehaviour:
   targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
   pathFindingRefreshCooldown: 3
-  avoidanceRadius: 1
-  avoidanceStrength: 0.1
   debug: 0
 --- !u!1001 &663409597109771511
 PrefabInstance:

@@ -18,7 +18,7 @@ MonoBehaviour:
   split: 1
   fan: 1
   bulletSize: 3
-  bulletVelocity: 1.5
+  bulletVelocity: 2
   attackCooldown: 3
   explode: 0
   explodeBulletAmount: 0

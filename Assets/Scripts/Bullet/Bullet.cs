@@ -197,12 +197,13 @@ public class Bullet : MonoBehaviour
     {
         if (splitAmount > 0)
         {
-            float angleInterval = 360 / splitAmount;
-            float currentAngle = 0;
+            Debug.Log(splitAmount);
+            float angleInterval = 360f / splitAmount;
+            float startAngle = (splitAmount % 2 == 0) ? angleInterval / 2f : 0f;
             for (int i = 0; i < splitAmount; i++)
             {
+                float currentAngle = startAngle + i * angleInterval;
                 CreateSplitBullet(currentAngle);
-                currentAngle += angleInterval;
             }
         }
     }
@@ -213,8 +214,16 @@ public class Bullet : MonoBehaviour
         if (bullet == null) return;
         bullet.AssignOnComplete(() => BulletManager.Instance.ReturnBullet(bullet));
 
-        Vector3 direction = Quaternion.Euler(0, 0, angle) * Vector3.up;
-        bullet.Initialize(this.ownerTag, this.owner, transform.position + direction / 3, Quaternion.Euler(0, 0, angle), new Vector3(splitBulletSize, splitBulletSize, 1), damage * splitDamagePercentage, splitRange / splitBulletSpeed, splitBulletSpeed, 1, this.color);
+        Vector3 direction = (Quaternion.Euler(0, 0, angle) * Vector3.up).normalized;
+        bullet.Initialize(
+            this.ownerTag, 
+            this.owner,
+            transform.position + direction * 0.1f, 
+            Quaternion.Euler(0, 0, angle), 
+            new Vector3(splitBulletSize, splitBulletSize, 1), 
+            damage * splitDamagePercentage, splitRange / splitBulletSpeed, 
+            splitBulletSpeed, 1, 
+            this.color);
         bullet.Shoot();
     }
 }

@@ -1,0 +1,137 @@
+{
+    "roomLocation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+    },
+    "cameraLocation": {
+        "x": 0,
+        "y": 0,
+        "z": -10
+    },
+    "roomWidth":  11.5,
+    "roomHeight": 5.5,
+    "playerSpawnLocations": [
+        { "x": -8, "y": 0, "z": 0 }, { "x": 8, "y": 0, "z": 0 }
+    ],
+    "enemySpawnLocations": [
+         { "x": -1.5, "y": -3.5, "z": 0 }, { "x": -0.5, "y": -3.5, "z": 0 }, { "x": 0.5, "y": -3.5, "z": 0 }, { "x": 1.5, "y": -3.5, "z": 0 },
+        { "x": -0.5, "y": -2.5, "z": 0 },  { "x": 0.5, "y": -2.5, "z": 0 }, 
+        { "x": -1.5, "y": 3.5, "z": 0 }, { "x": -0.5, "y": 3.5, "z": 0 }, { "x": 0.5, "y": 3.5, "z": 0 }, { "x": 1.5, "y": 3.5, "z": 0 },
+        { "x": -0.5, "y": 2.5, "z": 0 }, { "x": 0.5, "y": 2.5, "z": 0 }
+    ],
+    "easyWaves": [
+        {
+            "enemies": [
+                {
+                    "type": "Spider",
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "Spider",
+                    "amount": 2
+                },
+                {
+                    "type": "Plus",
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "Plus",
+                    "amount": 3
+                }
+            ]
+        }
+    ],
+    "normalWaves": [
+        {
+            "enemies": [
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "RangedEnemy",
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "RangedEnemy",
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "GunnerEnemy",
+                    "amount": 2
+                }
+            ]
+        }
+    ],
+    "hardWaves": [
+        {
+            "enemies": [
+                {
+                    "type": "SniperEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "GunnerEnemy",
+                    "amount": 1
+                },
+                {
+                    "type": "HeavyEnemy",
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 4
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "ChargeMeleeEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 2
+                }
+            ]
+        },
+        {
+            "enemies": [
+                {
+                    "type": "ChargeMeleeEnemy",
+                    "amount": 4
+                }
+            ]
+        }
+    ]
+}

@@ -22,7 +22,7 @@ public class ScoreManager : MonoBehaviour
 
         this.score += amount;
 
-        SharedUIManager.Instance.GetUIElement<ScoreUI>().AddScore(reason, amount);
+        SharedUIManager.Instance?.GetUIElement<ScoreUI>()?.AddScore(reason, amount);
     }
 
     public int GetScore()

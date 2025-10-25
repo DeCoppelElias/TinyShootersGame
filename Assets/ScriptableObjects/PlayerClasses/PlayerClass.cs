@@ -40,7 +40,7 @@ public class PlayerClass : ScriptableObject
     public float bulletSizeDelta = 0;
     public float bulletSpeedDelta = 0;
     public bool splitOnHit = false;
-    public float splitAmountDelta = 0;
+    public int splitAmountDelta = 0;
     public float splitRangeDelta = 0;
     public float splitBulletSizeDelta = 0;
     public float splitBulletSpeedDelta = 0;

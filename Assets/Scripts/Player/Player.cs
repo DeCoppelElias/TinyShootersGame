@@ -20,7 +20,6 @@ public class Player : Entity
     private DashAbility dashAbility;
 
     public UnityEvent onHitEvent;
-    public UnityEvent onDeath;
 
     private PlayerController playerController;
 
@@ -196,12 +195,6 @@ public class Player : Entity
         base.TakeDamage(amount, sourceTag, damageType, direction);
 
         if (onHitEvent != null) onHitEvent.Invoke();
-    }
-
-    public override void OnDeath()
-    {
-        base.OnDeath();
-        onDeath.Invoke();
     }
 
     public override void AddKnockback(Vector2 force)

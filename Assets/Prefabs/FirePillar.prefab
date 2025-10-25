@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 2747539656856140834}
   - component: {fileID: 6319795559269875186}
   - component: {fileID: 2707120690727709337}
+  - component: {fileID: 561301151025815470}
   m_Layer: 10
   m_Name: FirePillar
   m_TagString: Wall
@@ -220,3 +221,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.72216094}
   m_EdgeRadius: 0
+--- !u!114 &561301151025815470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2707120690727709342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89cd70309f5f0854da9be00220fad965, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
             case "LookMouse":
                 if (IsPaused()) return;
 
-                if (playerMovement != null)
+                if (playerMovement != null && Camera.main != null)
                 {
                     Vector2 mouseInput = context.ReadValue<Vector2>();
                     Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(mouseInput);

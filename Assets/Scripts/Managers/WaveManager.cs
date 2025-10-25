@@ -7,14 +7,18 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Sherbert.Framework.Generic;
 
+[RequireComponent(typeof(EnemyWaveSpawner))]
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager Instance;
+
     [Header("Level Settings")]
     [SerializeField] private int waveIndex = 0;
     [SerializeField] private int levelIndex = 0;
     [SerializeField] private int totalLevels = 3;
     [SerializeField] private int waveCooldown = 5;
     [SerializeField] private int levelCooldown = 5;
+    [SerializeField] private int initialCooldown = 5;
 
     private Dictionary<int,Level> levels = new Dictionary<int,Level>();
 
@@ -29,14 +33,15 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private Tilemap warningTilemap;
     [SerializeField] private Tile warningTile;
 
-    private enum WaveState { Fighting, Ready, Spawning, WaveCooldown, LevelCooldown, Done }
+    private enum WaveState { Initial, Fighting, Ready, Spawning, WaveCooldown, LevelCooldown, Done }
     [Header("State")]
-    [SerializeField] private WaveState waveState = WaveState.WaveCooldown;
+    [SerializeField] private WaveState waveState = WaveState.Initial;
     [SerializeField] private GameObject enemies;
 
     private Player player;
     private PlayerUIManager playerUIManager;
 
+    private float startTime = 0;
     private float lastWaveTime = 0;
     private float playerHealthBeforeWave = 0;
     private float betweenEnemySpawnDelay = 0.2f;
@@ -48,15 +53,52 @@ public class WaveManager : MonoBehaviour
     private float powerupCooldown = 10;
     private float powerupCounter = 5;
 
+    private EnemyWaveSpawner enemySpawner;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void SelectLevel()
+    {
+        if (SceneTransitionManager.Instance != null)
+        {
+            levelIndex = SceneTransitionManager.Instance.Level - 1;
+        }
+
+        StartCoroutine(ShowLevelUps(levelIndex));
+    }
+
+    private IEnumerator ShowLevelUps(int levelIndex)
+    {
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < levelIndex; i++)
+        {
+            // 1. Show Powerup first
+            playerUIManager.Enable<PowerupUI>();
+            yield return new WaitForSeconds(0.2f);
+
+            // 2. Show Upgrade if available, else Powerup
+            if (player.GetUpgrades().Count > 0)
+                playerUIManager.Enable<UpgradeUI>();
+            else
+                playerUIManager.Enable<PowerupUI>();
+
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
 
     private void Start()
     {
-        lastWaveTime = Time.time;
+        enemySpawner = GetComponent<EnemyWaveSpawner>();
+        startTime = Time.time;
 
         player = GameObject.Find("Player").GetComponent<Player>();
         playerUIManager = player.GetComponentInChildren<PlayerUIManager>();
 
         InitializeDict();
+        SelectLevel();
         SetupCurrentLevel();
     }
 
@@ -64,7 +106,14 @@ public class WaveManager : MonoBehaviour
     {
         if (waveIndex >= 0)
         {
-            if (waveState == WaveState.Ready)
+            if (waveState == WaveState.Initial)
+            {
+                if (Time.time - startTime > initialCooldown)
+                {
+                    waveState = WaveState.Ready;
+                }
+            }
+            else if (waveState == WaveState.Ready)
             {
                 SpawnWave(this.levelIndex, this.waveIndex);
             }
@@ -114,6 +163,12 @@ public class WaveManager : MonoBehaviour
             waveState = WaveState.LevelCooldown;
             waveStatusUI.EnableLevelCompletedText(levelIndex + 1);
             lastWaveTime = Time.time;
+
+            string levelString = $"Level {levelIndex + 1}";
+            if (!PlayerPrefs.HasKey(levelString))
+            {
+                PlayerPrefs.SetString(levelString, "true");
+            }
 
             RewardPlayer();
         }
@@ -220,29 +275,43 @@ public class WaveManager : MonoBehaviour
             if (!enemyCount.customSpawn) totalCount += enemyCount.amount;
         }
 
-        StartCoroutine(PerformAfterDelay((this.betweenEnemySpawnDelay * totalCount) + this.enemySpawnDelay, () => waveState = WaveState.Fighting));
-
-        List<Vector3> spawnLocations = FindSpawnLocations(totalCount);
+        /*List<Vector3> spawnLocations = FindSpawnLocations(totalCount);
 
         int spawnLocationCounter = 0;
-        int spawnCounter = 0;
+        int spawnCounter = 0;*/
+        List<string> enemiesToSpawn = new List<string>();
+        List<(string, Vector3)> customEnemySpawns = new List<(string, Vector3)>();
         foreach (EnemyCount enemyCount in enemies)
         {
-            GameObject prefab = StringToPrefab(enemyCount.type);
-            for (int i = 0; i < enemyCount.amount; i++)
+            /* GameObject prefab = StringToPrefab(enemyCount.type);
+             for (int i = 0; i < enemyCount.amount; i++)
+             {
+                 if (!enemyCount.customSpawn)
+                 {
+                     StartCoroutine(CreateLevelEnemy(prefab, spawnLocations[spawnLocationCounter], spawnCounter * this.betweenEnemySpawnDelay));
+                     spawnLocationCounter += 1;
+                 }
+                 else
+                 {
+                     StartCoroutine(CreateLevelEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3(), spawnCounter * this.betweenEnemySpawnDelay));
+                 }
+                 spawnCounter++;
+             }*/
+
+            if (enemyCount.customSpawn)
             {
-                if (!enemyCount.customSpawn)
-                {
-                    StartCoroutine(CreateLevelEnemy(prefab, spawnLocations[spawnLocationCounter], spawnCounter * this.betweenEnemySpawnDelay));
-                    spawnLocationCounter += 1;
-                }
-                else
-                {
-                    StartCoroutine(CreateLevelEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3(), spawnCounter * this.betweenEnemySpawnDelay));
-                }
-                spawnCounter++;
+                customEnemySpawns.Add((enemyCount.type, enemyCount.customSpawnLocation.ToVector3()));
+            }
+            else
+            {
+                for (int i = 0; i < enemyCount.amount; i++) enemiesToSpawn.Add(enemyCount.type);
             }
         }
+
+        List<Vector3> spawnLocations = new List<Vector3>(level.GetSpawnLocations());
+        StartCoroutine(enemySpawner.SpawnEnemiesSequentially(enemiesToSpawn, spawnLocations, customEnemySpawns));
+
+        StartCoroutine(PerformAfterDelay((this.betweenEnemySpawnDelay * totalCount) + this.enemySpawnDelay, () => waveState = WaveState.Fighting));
     }
 
     public void NextLevel()
@@ -260,6 +329,8 @@ public class WaveManager : MonoBehaviour
 
         WaveStatusUI waveStatusUI = SharedUIManager.Instance.GetUIElement<WaveStatusUI>();
         waveStatusUI.PerformWaveCountdown(waveCooldown, wave.boss, waveIndex, levelIndex);
+
+        player.Health = player.MaxHealth;
     }
 
     public Vector3 GetSafePosition()

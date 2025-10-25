@@ -7,7 +7,5 @@ public class MeleeEnemy : Enemy
     public override void UpdateEntity()
     {
         base.UpdateEntity();
-
-        //WalkToPlayerUpdate();
     }
 }

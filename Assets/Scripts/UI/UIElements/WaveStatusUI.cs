@@ -29,8 +29,6 @@ public class WaveStatusUI : UIElement
 
     public void PerformWaveCountdown(int countdown, bool boss, int newLevel, int newWave)
     {
-        if (waveCountdownUI.activeSelf) return;
-
         if (boss)
         {
             ColorUtility.TryParseHtmlString("#FA5C5C", out Color newColor);
@@ -56,8 +54,6 @@ public class WaveStatusUI : UIElement
 
     public void EnableLevelCompletedText(int room)
     {
-        if (waveCountdownUI.activeSelf) return;
-
         waveCountdownUI.SetActive(true);
         waveText.text = "You beat level " + room + "!";
     }

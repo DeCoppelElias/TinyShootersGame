@@ -73,7 +73,7 @@ public class AbilityUI : PlayerUIElement
 
     public void DisableDashAbility()
     {
-        if (!dashAbilityEnabled) return;
+        if (!dashAbilityEnabled || !gameObject.activeSelf) return;
         dashAbilityEnabled = false;
 
         DashAbility dashAbility = Player.GetComponent<DashAbility>();
@@ -101,7 +101,7 @@ public class AbilityUI : PlayerUIElement
 
     public void DisableReflectAbility()
     {
-        if (!reflectAbilityEnabled) return;
+        if (!reflectAbilityEnabled || !gameObject.activeSelf) return;
         reflectAbilityEnabled = false;
 
         ReflectShieldAbility reflectAbility = Player.GetComponent<ReflectShieldAbility>();
@@ -137,8 +137,7 @@ public class AbilityUI : PlayerUIElement
 
     public void DisableClassAbility(AbilityBehaviour abilityBehaviour)
     {
-        if (!classAbilityUI.activeSelf) return;
-        if (!classAbilityEnabled) return;
+        if (!classAbilityUI.activeSelf || !classAbilityEnabled || !gameObject.activeSelf) return;
         classAbilityEnabled = false;
 
         int cooldown = abilityBehaviour.ability.cooldown;
