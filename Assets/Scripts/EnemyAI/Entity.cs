@@ -120,7 +120,7 @@ public abstract class Entity : MonoBehaviour
             if (value <= 0)
             {
                 health = 0;
-                OnDeath();
+                if (entityState == EntityState.Alive) OnDeath();
             }
             else health = value;
         }
@@ -223,6 +223,7 @@ public abstract class Entity : MonoBehaviour
         // An enemy comes in contact with a player => enemy takes damage.
         // An enemy comes in contact with an other enemy => no damage is taken.
         if (collision.transform.CompareTag("Enemy") && this.transform.CompareTag("Enemy")) return;
+        if (entityState == EntityState.Dead) return;
 
         Entity other = collision.gameObject.GetComponent<Entity>();
         if (other != null && Time.time - LastContactHit(other) > ContactHitCooldown)

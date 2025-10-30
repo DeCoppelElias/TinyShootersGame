@@ -154,6 +154,14 @@
                 {
                     "type": "SplitBoss",
                     "amount": 1
+                },
+                {
+                    "type": "GunnerEnemy",
+                    "amount": 1
+                },
+                {
+                    "type": "SniperEnemy",
+                    "amount": 2
                 }
             ],
             "boss": true

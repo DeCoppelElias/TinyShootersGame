@@ -56,6 +56,7 @@ public class WaveStatusUI : UIElement
     {
         waveCountdownUI.SetActive(true);
         waveText.text = "You beat level " + room + "!";
+        waveCountdownText.text = "";
     }
 
     private void DisableCountdown()

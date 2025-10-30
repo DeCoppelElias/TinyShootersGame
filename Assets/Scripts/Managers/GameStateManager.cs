@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -188,7 +185,7 @@ public class GameStateManager : MonoBehaviour
         bool beatHighScore = SaveHighScore();
         int currentScore = ScoreManager.Instance.GetScore();
 
-        onLose.Invoke(beatHighScore, currentScore);
+        onLose?.Invoke(beatHighScore, currentScore);
     }
 
     public void GameWon()
@@ -201,7 +198,7 @@ public class GameStateManager : MonoBehaviour
         bool beatHighScore = SaveHighScore();
         float currentScore = ScoreManager.Instance.GetScore();
 
-        onWin.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
+        onWin?.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
     }
 
     /// <summary>

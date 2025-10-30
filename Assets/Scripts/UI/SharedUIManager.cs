@@ -66,4 +66,13 @@ public class SharedUIManager : UIManager
         if (this.playerInputs.Any((PlayerInput input) => IsController(input))) EnableFirstSelected();
         else DisableFirstSelected();
     }
+
+    public void DisableAllUI()
+    {
+        foreach (GameObject go in uiElements.Values)
+        {
+            UIElement uiElement = go.GetComponent<UIElement>();
+            uiElement?.InstantDisable();
+        }
+    }
 }

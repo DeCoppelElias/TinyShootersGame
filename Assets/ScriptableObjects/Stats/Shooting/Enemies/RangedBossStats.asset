@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RangedBossStats
   m_EditorClassIdentifier: 
   damage: 25
-  range: 10
+  range: 8
   pierce: 1
   split: 1
   fan: 3

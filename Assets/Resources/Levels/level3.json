@@ -180,6 +180,10 @@
                         "y": 0,
                         "z": 0
                     }
+                },
+                {
+                    "type": "DodgeMeleeEnemy",
+                    "amount": 2
                 }
             ],
             "boss": true

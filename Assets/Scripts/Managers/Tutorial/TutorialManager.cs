@@ -46,7 +46,7 @@ public class TutorialManager : MonoBehaviour
 
         if (tutorialState == TutorialState.Shoot)
         {
-            if (player.GetComponent<ShootingAbility>().shooting)
+            if (player.GetComponent<ShootingAbility>().Shooting)
             {
                 tutorialState = TutorialState.Pause;
                 SharedUIManager.Instance.GetUIElement<TutorialExplanationUI>().EnableDoneText();

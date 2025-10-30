@@ -268,14 +268,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityState: 0
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
   maxHealth: 1500
   health: 1500
   contactDamage: 10
   contactHitCooldown: 1
   knockbackImmune: 0
   onDeathScore: 1000
-  entityColor: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 0, g: 0, b: 0, a: 0}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  colorChangeDuration: 0.25
   colorChangeState: 0
   lastValidPosition: {x: 0, y: 0, z: 0}
   updateValidPositionCooldown: 2
@@ -283,6 +287,7 @@ MonoBehaviour:
   allowedOutOfBoundsDuration: 1
   targetPlayer: {fileID: 0}
   refreshPlayerTargetCooldown: 2
+  bodyDuration: 0.25
   spawnBody: 1
   debug: 0
 --- !u!114 &-2126329393386220075
@@ -305,8 +310,6 @@ MonoBehaviour:
   targetPositionVisionCooldown: 0.5
   walkToPositionState: 0
   pathFindingRefreshCooldown: 3
-  avoidanceRadius: 1
-  avoidanceStrength: 0.1
   debug: 0
   shootingMoveSpeedReduction: 0.8
   movementTargetDistance: 0.8
@@ -327,9 +330,6 @@ MonoBehaviour:
   stepSize: 0.25
   maxIterations: 1000
   displayLineRenderer: {fileID: 0}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &2661245408951144127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,6 +495,14 @@ PrefabInstance:
       propertyPath: bulletSprite
       value: 
       objectReference: {fileID: 21300000, guid: 527fac237c2d6e040b5d78b91144a2bf, type: 3}
+    - target: {fileID: 3286964448592694954, guid: 857c962a268e9334da8fd2366430cf18, type: 3}
+      propertyPath: reflectDamageMultiplier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3286964448592694954, guid: 857c962a268e9334da8fd2366430cf18, type: 3}
+      propertyPath: reflectVelocityMultiplier
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3286964448592694955, guid: 857c962a268e9334da8fd2366430cf18, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

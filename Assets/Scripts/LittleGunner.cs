@@ -28,7 +28,7 @@ public class LittleGunner : MonoBehaviour
         RuntimeShootingStats ownerShootingStats = ownerShootingAbility.RuntimeStats;
         ownerShootingStats.Damage /= 2f;
         gunnerShootingAbility.ApplyShootingStats(ownerShootingStats);
-        gunnerShootingAbility.owner = entity;
+        gunnerShootingAbility.Owner = entity;
 
         this.tag = entity.tag;
     }
@@ -42,7 +42,7 @@ public class LittleGunner : MonoBehaviour
         {
             Vector2 lookDir = (target.transform.position - gameObject.transform.position).normalized;
             this.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDir);
-            gunnerShootingAbility.shooting = true;
+            gunnerShootingAbility.Shooting = true;
 
             if (Time.time - lastRefresh > refreshCooldown)
             {
@@ -52,7 +52,7 @@ public class LittleGunner : MonoBehaviour
         }
         else
         {
-            gunnerShootingAbility.shooting = false;
+            gunnerShootingAbility.Shooting = false;
             if (Time.time - lastRefresh > refreshCooldown)
             {
                 lastRefresh = Time.time;

@@ -197,7 +197,6 @@ public class Bullet : MonoBehaviour
     {
         if (splitAmount > 0)
         {
-            Debug.Log(splitAmount);
             float angleInterval = 360f / splitAmount;
             float startAngle = (splitAmount % 2 == 0) ? angleInterval / 2f : 0f;
             for (int i = 0; i < splitAmount; i++)

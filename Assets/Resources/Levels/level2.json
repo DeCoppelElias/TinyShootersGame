@@ -150,6 +150,10 @@
                 {
                     "type": "DashBoss",
                     "amount": 2
+                },
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 2
                 }
             ],
             "boss": true

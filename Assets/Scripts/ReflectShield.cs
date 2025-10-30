@@ -11,6 +11,9 @@ public class ReflectShield : MonoBehaviour
     private GameObject owner;
     private Color ownerBulletColor = Color.white;
 
+    [SerializeField] private float reflectDamageMultiplier = 2;
+    [SerializeField] private float reflectVelocityMultiplier = 2;
+
     private void Start()
     {
         Entity entity = GetComponentInParent<Entity>();
@@ -36,8 +39,8 @@ public class ReflectShield : MonoBehaviour
                 float reflectedVelocity = oldBullet.velocity;
                 if (!oldBullet.reflected)
                 {
-                    reflectedDamage *= 2;
-                    reflectedVelocity *= 2;
+                    reflectedDamage *= reflectDamageMultiplier;
+                    reflectedVelocity *= reflectVelocityMultiplier;
                 }
 
                 ShootingAbility shootingAbility = GetComponentInParent<ShootingAbility>();

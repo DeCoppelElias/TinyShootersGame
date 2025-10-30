@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using TMPro;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class PVPBattleManager : MonoBehaviour
 {
@@ -232,11 +233,26 @@ public class PVPBattleManager : MonoBehaviour
         alivePlayers.Clear();
         foreach (Player player in playerDict.Values)
         {
-            player.gameObject.SetActive(true);
+            EnablePlayer(player, true);
             player.Revive();
             if (!alivePlayers.Contains(player.EntityID))
                 alivePlayers.Add(player.EntityID);
         }
+    }
+
+    private void EnablePlayer(Player player, bool enable)
+    {
+        SpriteRenderer[] spriteRenderers = player.GetComponentsInChildren<SpriteRenderer>();
+        foreach (SpriteRenderer spr in spriteRenderers) spr.enabled = enable;
+
+        TextMeshPro[] texts = player.GetComponentsInChildren<TextMeshPro>();
+        foreach (TextMeshPro text in texts) text.enabled = enable;
+
+        ShadowCaster2D[] shadowCasters = player.GetComponentsInChildren<ShadowCaster2D>();
+        foreach (ShadowCaster2D shadowCaster in shadowCasters) shadowCaster.enabled = enable;
+
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        playerController.collectInput = enable;
     }
 
     private void PlayerDied(GameObject playerGO)
@@ -245,7 +261,7 @@ public class PVPBattleManager : MonoBehaviour
         if (player == null) return;
 
         alivePlayers.Remove(player.EntityID);
-        playerGO.SetActive(false);
+        EnablePlayer(player, false);
 
         // If one player remains, end match
         if (alivePlayers.Count == 1)
@@ -314,13 +330,16 @@ public class PVPBattleManager : MonoBehaviour
         LobbyPlayer[] lobbyPlayers = FindObjectsOfType<LobbyPlayer>();
         List<Player> players = new List<Player>(this.playerDict.Values);
 
+        List<Player> orderedPlayers = players.OrderBy(p => p.playerIndex).ToList();
+        List<LobbyPlayer> orderedLobbyPlayers = lobbyPlayers.OrderBy(lp => lp.playerIndex).ToList();
+
         // Re-parent player's input to corresponding lobby players if possible (preserve behaviour)
-        int count = Mathf.Min(players.Count, lobbyPlayers.Length);
+        int count = Mathf.Min(orderedPlayers.Count, orderedLobbyPlayers.Count);
         for (int i = 0; i < count; i++)
         {
-            var playerInput = players[i].GetComponentInChildren<PlayerInput>();
+            var playerInput = orderedPlayers[i].GetComponentInChildren<PlayerInput>();
             if (playerInput != null)
-                playerInput.transform.SetParent(lobbyPlayers[i].transform);
+                playerInput.transform.SetParent(orderedLobbyPlayers[i].transform);
         }
 
         GameStateManager.Instance.ToRunning();

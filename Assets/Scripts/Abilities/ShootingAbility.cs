@@ -14,7 +14,7 @@ public class ShootingAbility : MonoBehaviour
     private float lastAttackRealTime;
 
     [Header("ShootAbility Parameters")]
-    public bool shooting = false;
+    [SerializeField] private bool shooting = false;
 
     public bool workWithRealTime = false;
 
@@ -22,7 +22,7 @@ public class ShootingAbility : MonoBehaviour
     public List<Transform> firepoints = new List<Transform>();
     private List<ParticleSystem> muzzleFlashes = new List<ParticleSystem>();
 
-    public Entity owner;
+    [SerializeField] private Entity owner;
 
     public UnityAction OnShootStart;
     public UnityAction OnShootEnd;
@@ -34,10 +34,23 @@ public class ShootingAbility : MonoBehaviour
         Initialize();
     }
 
+    private void OnEnable()
+    {
+        Owner?.onDeath.AddListener(OnOwnerDeath);
+    }
+
+    private void OnDisable()
+    {
+        Owner?.onDeath.RemoveListener(OnOwnerDeath);
+    }
+
+    private void OnOwnerDeath()
+    {
+        this.Shooting = false;
+    }
+
     public void Initialize()
     {
-        if (owner == null) owner = GetComponent<Entity>();
-
         if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
 
         InitializeFirepoints();
@@ -69,20 +82,20 @@ public class ShootingAbility : MonoBehaviour
 
     private void Update()
     {
-        if (shooting)
+        if (Shooting)
         {
             TryShootOnce();
         }
     }
     public void StartShooting()
     {
-        shooting = true;
+        Shooting = true;
         if (OnShootStart != null) OnShootStart.Invoke();
     }
 
     public void StopShooting()
     {
-        shooting = false;
+        Shooting = false;
         if (OnShootEnd != null) OnShootEnd.Invoke();
     }
 
@@ -189,7 +202,7 @@ public class ShootingAbility : MonoBehaviour
         bullet.AssignOnComplete(() => BulletManager.Instance.ReturnBullet(bullet));
 
         Quaternion finalRotation = Quaternion.Euler(0, 0, firepoint.eulerAngles.z + rotation);
-        bullet.Initialize(owner.tag, owner.gameObject, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
+        bullet.Initialize(Owner.tag, Owner.gameObject, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
         if (this.runtimeStats.Explode) bullet.InitializeSplitting(this.runtimeStats.ExplodeBulletAmount, this.runtimeStats.ExplodeBulletRange, this.runtimeStats.ExplodeBulletSize, this.runtimeStats.ExplodeBulletVelocity, this.runtimeStats.ExplodeDamagePercentage);
         bullet.Shoot();
 
@@ -203,7 +216,7 @@ public class ShootingAbility : MonoBehaviour
             0.4f * damage +
             0.4f * velocity
         );
-        if (this.owner != null) this.owner.AddKnockback(knockbackForce);
+        this.Owner?.AddKnockback(knockbackForce);
     }
 
     public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage, float knockbackMultiplier)
@@ -310,4 +323,25 @@ public class ShootingAbility : MonoBehaviour
         }
         return false;
     }
+
+    #region Properties
+    public bool Shooting { get => shooting; 
+        set 
+        {
+            if (shooting == value) return;
+            shooting = value;
+            if (shooting) OnShootStart?.Invoke();
+            else OnShootEnd?.Invoke();
+        } 
+    }
+
+    public Entity Owner {
+        get
+        {
+            if (owner == null) return GetComponent<Entity>();
+            return owner;
+        } 
+        set => owner = value; 
+    }
+    #endregion
 }

@@ -134,6 +134,10 @@
                 {
                     "type": "Mother",
                     "amount": 1
+                },
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 2
                 }
             ],
             "boss": true

@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Sherbert.Framework.Generic;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(EnemyWaveSpawner))]
 public class WaveManager : MonoBehaviour
@@ -275,29 +276,10 @@ public class WaveManager : MonoBehaviour
             if (!enemyCount.customSpawn) totalCount += enemyCount.amount;
         }
 
-        /*List<Vector3> spawnLocations = FindSpawnLocations(totalCount);
-
-        int spawnLocationCounter = 0;
-        int spawnCounter = 0;*/
         List<string> enemiesToSpawn = new List<string>();
         List<(string, Vector3)> customEnemySpawns = new List<(string, Vector3)>();
         foreach (EnemyCount enemyCount in enemies)
         {
-            /* GameObject prefab = StringToPrefab(enemyCount.type);
-             for (int i = 0; i < enemyCount.amount; i++)
-             {
-                 if (!enemyCount.customSpawn)
-                 {
-                     StartCoroutine(CreateLevelEnemy(prefab, spawnLocations[spawnLocationCounter], spawnCounter * this.betweenEnemySpawnDelay));
-                     spawnLocationCounter += 1;
-                 }
-                 else
-                 {
-                     StartCoroutine(CreateLevelEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3(), spawnCounter * this.betweenEnemySpawnDelay));
-                 }
-                 spawnCounter++;
-             }*/
-
             if (enemyCount.customSpawn)
             {
                 customEnemySpawns.Add((enemyCount.type, enemyCount.customSpawnLocation.ToVector3()));
@@ -356,58 +338,6 @@ public class WaveManager : MonoBehaviour
     private bool CheckLastLevel()
     {
         return (levelIndex == totalLevels - 1);
-    }
-
-    private List<Vector3> FindSpawnLocations(int amount)
-    {
-        Level level = GetLevel(levelIndex);
-        List<Vector3> spawnLocations = new List<Vector3>(level.GetSpawnLocations());
-        if (spawnLocations.Count < amount) throw new Exception("Cannot spawn enemies, number of spawn locations is too small");
-
-        return spawnLocations.OrderBy(x => UnityEngine.Random.Range(0, spawnLocations.Count)).Take(amount).ToList();
-    }
-
-    /// <summary>
-    /// Create an enemy as part of the level (will give score)
-    /// </summary>
-    /// <param name="prefab"></param>
-    /// <param name="spawnLocation"></param>
-    private IEnumerator CreateLevelEnemy(GameObject prefab, Vector3 spawnLocation, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), warningTile);
-        StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation, this.enemySpawnDelay));
-    }
-
-    /// <summary>
-    /// Create an enemy as not part of level (will not give score)
-    /// </summary>
-    /// <param name="prefab"></param>
-    /// <param name="spawnLocation"></param>
-    /// <returns></returns>
-    public GameObject CreateEnemy(GameObject prefab, Vector3 spawnLocation)
-    {
-        GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
-        enemy.transform.SetParent(enemies.transform);
-        enemy.GetComponent<Enemy>().onDeathScore = 0;
-
-        return enemy;
-    }
-
-    private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
-        enemy.transform.SetParent(enemies.transform);
-
-        warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), null);
-    }
-
-    public GameObject StringToPrefab(string s)
-    {
-        return this.enemyDict[s];
     }
 
     private IEnumerator PerformAfterDelay(float delay, Action action)

@@ -18,12 +18,19 @@ public struct GameOverUIData
 
 public class GameOverUI : UIElement<GameOverUIData>
 {
+    [SerializeField] private Button mainMenuButton;
+    [SerializeField] private Button restartButton;
     protected override void Start()
     {
         base.Start();
 
         this.pausesGame = true;
         InstantDisableActions();
+
+        mainMenuButton.onClick.AddListener(GameStateManager.Instance.QuitToMainMenu);
+        restartButton.onClick.AddListener(GameStateManager.Instance.Restart);
+
+        GameStateManager.Instance.onLose.AddListener((beatHighScore, currentScore) => EnableActions(new GameOverUIData(beatHighScore, currentScore)));
     }
     protected override void DisableActions()
     {
