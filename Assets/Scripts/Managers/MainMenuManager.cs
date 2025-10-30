@@ -16,9 +16,6 @@ public class MainMenuManager : MonoBehaviour
 
     public PlayerInput playerInput;
 
-    private GameObject bestTimeUI;
-    private Text bestTimeText;
-
     private GameObject highScoreUI;
     private Text highScoreText;
 
@@ -31,19 +28,6 @@ public class MainMenuManager : MonoBehaviour
     private void Start()
     {
         firstSelected = mainMenuFirstSelected;
-
-        bestTimeUI = GameObject.Find("BestTime");
-        bestTimeText = bestTimeUI.GetComponent<Text>();
-        if (PlayerPrefs.HasKey("BestTime"))
-        {
-            float bestTime = PlayerPrefs.GetFloat("BestTime");
-            TimeSpan time = TimeSpan.FromSeconds(bestTime);
-            bestTimeText.text = $"Best Time: {time:hh\\:mm\\:ss}";
-        }
-        else
-        {
-            bestTimeUI.SetActive(false);
-        }
 
         highScoreUI = GameObject.Find("HighScore");
         highScoreText = highScoreUI.GetComponent<Text>();

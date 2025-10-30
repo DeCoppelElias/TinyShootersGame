@@ -20,7 +20,7 @@ public class GameStateManager : MonoBehaviour
     private Volume volume;
     private ColorAdjustments colorAdjustments;
 
-    public UnityEvent<bool, float, bool, float> onWin;
+    public UnityEvent<bool, float> onWin;
     public UnityEvent<bool, float> onLose;
 
     private float startTime;
@@ -192,13 +192,10 @@ public class GameStateManager : MonoBehaviour
     {
         ToPaused();
 
-        bool beatBestTime = SaveBestTime();
-        float currentTime = Time.time - startTime;
-
         bool beatHighScore = SaveHighScore();
         float currentScore = ScoreManager.Instance.GetScore();
 
-        onWin?.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
+        onWin?.Invoke(beatHighScore, currentScore);
     }
 
     /// <summary>
@@ -221,32 +218,6 @@ public class GameStateManager : MonoBehaviour
         else
         {
             PlayerPrefs.SetFloat("HighScore", currentScore);
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// This methods checks if a best time is reached and updates the PlayerPrefs accordingly.
-    /// </summary>
-    /// <returns></returns>
-    private bool SaveBestTime()
-    {
-        float currentTime = Time.time - startTime;
-        if (PlayerPrefs.HasKey("BestTime"))
-        {
-            float bestTime = PlayerPrefs.GetFloat("BestTime");
-            if (currentTime < bestTime)
-            {
-                PlayerPrefs.SetFloat("OldBestTime", bestTime);
-                PlayerPrefs.SetFloat("BestTime", currentTime);
-                return true;
-            }
-        }
-        else
-        {
-            PlayerPrefs.SetFloat("BestTime", currentTime);
             return true;
         }
 

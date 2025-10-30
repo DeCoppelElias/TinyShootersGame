@@ -35,6 +35,8 @@ public class ReflectShield : MonoBehaviour
                 if (reflectedBullet == null) return;
                 reflectedBullet.AssignOnComplete(() => BulletManager.Instance.ReturnBullet(reflectedBullet));
 
+                reflectedBullet.reflected = true;
+
                 float reflectedDamage = oldBullet.damage;
                 float reflectedVelocity = oldBullet.velocity;
                 if (!oldBullet.reflected)
