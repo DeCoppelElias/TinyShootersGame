@@ -1,94 +1,91 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ScoreUI : UIElement
 {
-    private int actualScore = 0;
-    private int displayedScore = 0;
-
-    private Dictionary<ScoreManager.ScoreReason, ScoreEntry> entries = new Dictionary<ScoreManager.ScoreReason, ScoreEntry>();
-
-    private float scoreCatchUpTime = 1;
-    private float updateScoreCooldown = 0.1f;
-    private int scoreJumpAmount = 0;
-    private float lastUpdate = 0;
-
-    private Text scoreText;
-    private Transform scoreContent;
     [SerializeField] private GameObject scoreEntryPrefab;
+    [SerializeField] private float scoreCatchUpTime = 1f;
+    [SerializeField] private float updateScoreCooldown = 0.1f;
+
+    private Text _scoreText;
+    private Transform _scoreContent;
+    private readonly Dictionary<ScoreManager.ScoreReason, ScoreEntry> _uiEntries = new Dictionary<ScoreManager.ScoreReason, ScoreEntry>();
+
+    private int _displayedScore = 0;
+    private int _targetScore = 0;
+    private float _lastUpdate = 0f;
+    private int _scoreStep = 0;
 
     protected override void Start()
     {
         base.Start();
+        _scoreText = transform.Find("Score").GetComponent<Text>();
+        _scoreContent = transform.Find("SubScores/Content");
 
-        scoreText = this.transform.Find("Score").GetComponent<Text>();
-        scoreContent = this.transform.Find("SubScores").Find("Content");
-    }
-
-    public void AddScore(ScoreManager.ScoreReason reason, int amount)
-    {
-        if (amount <= 0) return;
-
-        ScoreEntry entry = null;
-        if (entries.ContainsKey(reason))
+        var manager = ScoreManager.Instance;
+        if (manager != null)
         {
-            entry = entries[reason];
-            entry.AddScore(amount);
-        }
-        else
-        {
-            GameObject entryGameObject = Instantiate(scoreEntryPrefab, scoreContent);
-            entry = entryGameObject.GetComponent<ScoreEntry>();
-            entry.Initialise(reason.ToString(), amount, () =>
-            {
-                entries.Remove(reason);
-                this.actualScore += entry.GetScore();
-                int difference = actualScore - displayedScore;
-                this.scoreJumpAmount = (int)(difference / (scoreCatchUpTime / updateScoreCooldown));
-            });
-            entries.Add(reason, entry);
+            manager.OnEntryUpdated += HandleEntryUpdated;
+            manager.OnEntryCommitted += HandleEntryCommitted;
+            manager.OnTotalScoreChanged += HandleTotalScoreChanged;
         }
     }
-    private void AddDisplayedScore(int amount)
+
+    private void HandleEntryUpdated(ScoreManager.ScoreReason reason, int entryScore, int multiplier, float timeRemaining, float totalDuration)
     {
-        displayedScore += amount;
+        if (!_uiEntries.TryGetValue(reason, out var uiEntry))
+        {
+            var go = Instantiate(scoreEntryPrefab, _scoreContent);
+            uiEntry = go.GetComponent<ScoreEntry>();
+            _uiEntries.Add(reason, uiEntry);
+        }
 
-        if (displayedScore > actualScore) displayedScore = actualScore;
+        uiEntry.SetReason(reason.ToString());
+        uiEntry.UpdateScore(entryScore, multiplier, timeRemaining, totalDuration);
+    }
 
-        scoreText.text = displayedScore.ToString();
+    private void HandleEntryCommitted(ScoreManager.ScoreReason reason, int committedAmount, int newTotal)
+    {
+        // remove UI entry for that reason (it finished)
+        if (_uiEntries.TryGetValue(reason, out var uiEntry))
+        {
+            uiEntry.PlayCommitAndDestroy(); // graceful UI close (optional animation) then Destroy
+            _uiEntries.Remove(reason);
+        }
+
+        // update total target score and animate catch-up
+        _targetScore = newTotal;
+        StartScoreCatchUp();
+    }
+
+    private void HandleTotalScoreChanged(int newTotal)
+    {
+        _targetScore = newTotal;
+        StartScoreCatchUp();
+    }
+
+    private void StartScoreCatchUp()
+    {
+        int diff = _targetScore - _displayedScore;
+        if (diff <= 0) { _scoreStep = 0; return; }
+        _scoreStep = Mathf.Max(1, (int)(diff / (scoreCatchUpTime / updateScoreCooldown)));
     }
 
     private void Update()
     {
-        if (displayedScore < actualScore && Time.time - lastUpdate > updateScoreCooldown)
+        if (_displayedScore < _targetScore && Time.time - _lastUpdate > updateScoreCooldown)
         {
-            lastUpdate = Time.time;
-
-            AddDisplayedScore(scoreJumpAmount);
+            _lastUpdate = Time.time;
+            _displayedScore += _scoreStep;
+            if (_displayedScore > _targetScore) _displayedScore = _targetScore;
+            _scoreText.text = _displayedScore.ToString();
         }
     }
-    protected override void DisableActions()
-    {
-        this.gameObject.SetActive(false);
-    }
-    protected override void InstantDisableActions()
-    {
-        DisableActions();
-    }
 
-    protected override void EnableActions()
-    {
-        this.gameObject.SetActive(true);
-    }
-
-    public override bool IsEnabled()
-    {
-        return this.gameObject.activeSelf;
-    }
-    public override bool IsDisabled()
-    {
-        return !IsEnabled();
-    }
+    protected override void DisableActions() => gameObject.SetActive(false);
+    protected override void InstantDisableActions() => DisableActions();
+    protected override void EnableActions() => gameObject.SetActive(true);
+    public override bool IsEnabled() => gameObject.activeSelf;
+    public override bool IsDisabled() => !IsEnabled();
 }

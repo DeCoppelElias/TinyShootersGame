@@ -6,70 +6,57 @@ using UnityEngine.UI;
 
 public class ScoreEntry : MonoBehaviour
 {
-    private bool initialised = false;
-    private bool done = false;
+    [SerializeField] private float fadeDuration = 0.4f;
+    [SerializeField] private Text _reasonText;
+    [SerializeField] private Text _scoreText;
+    [SerializeField] private Text _multiplierText;
+    [SerializeField] private Image _progressBar;
 
-    private string reason = "";
-    private int score = 0;
-    private int multiplier = 1;
+    [SerializeField] private CanvasGroup _canvasGroup;
 
-    private Text reasonText;
-    private Text scoreText;
-    private Text multiplierText;
+    private float _targetFill = 0;
 
-    [SerializeField] private float duration = 2;
-    [SerializeField] private float durationAdd = 0.5f;
-    private float initialiseTime = 0;
-
-    private Action onTimeout;
-
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        if (!initialised) return;
+        _progressBar.transform.localScale = new Vector3(0, 1, 1);
+    }
 
-        if (Time.time - initialiseTime > duration)
+    public void SetReason(string reason)
+    {
+        _reasonText.text = reason;
+    }
+
+    /// <summary>
+    /// Update the displayed entry. timeRemaining can be used to show a progress bar if you have one.
+    /// </summary>
+    public void UpdateScore(int entryScore, int multiplier, float timeRemaining, float totalDuration)
+    {
+        _scoreText.text = entryScore.ToString();
+        _multiplierText.text = "x" + multiplier.ToString();
+
+        if (_progressBar != null && totalDuration > 0)
         {
-            onTimeout();
-            Destroy(this.gameObject);
+            _targetFill = Mathf.Clamp01(timeRemaining / totalDuration);
+
+            _progressBar.transform.localScale = new Vector3(Mathf.Lerp(_progressBar.transform.localScale.x, _targetFill, Time.deltaTime * 20f), 1, 1);
         }
     }
 
-    public void Initialise(string reason, int initialScore, Action onTimeout)
+    public void PlayCommitAndDestroy()
     {
-        reasonText = this.transform.Find("Reason").GetComponent<Text>();
-        scoreText = this.transform.Find("Score").GetComponent<Text>();
-        multiplierText = this.transform.Find("Multiplier").GetComponent<Text>();
-        initialiseTime = Time.time;
-
-        this.score = initialScore;
-        this.reason = reason;
-
-        reasonText.text = reason;
-        scoreText.text = score.ToString();
-        multiplierText.text = "x" + multiplier.ToString();
-
-        this.onTimeout = onTimeout;
-
-        initialised = true;
+        StartCoroutine(FadeOutAndDestroy());
     }
 
-    public int GetScore()
+    private IEnumerator FadeOutAndDestroy()
     {
-        return score * multiplier;
-    }
-
-    public void AddScore(int additionalScore)
-    {
-        if (done || !initialised) return;
-
-        this.score += additionalScore;
-        this.multiplier += 1;
-
-        scoreText.text = score.ToString();
-        multiplierText.text = "x" + multiplier.ToString();
-
-        // Give extra time
-        this.initialiseTime += this.durationAdd;
+        float t = 0f;
+        float start = _canvasGroup.alpha;
+        while (t < fadeDuration)
+        {
+            t += Time.deltaTime;
+            _canvasGroup.alpha = Mathf.Lerp(start, 0f, t / fadeDuration);
+            yield return null;
+        }
+        Destroy(gameObject);
     }
 }

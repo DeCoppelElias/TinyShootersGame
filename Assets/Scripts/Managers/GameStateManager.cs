@@ -183,7 +183,9 @@ public class GameStateManager : MonoBehaviour
         ToPaused();
 
         bool beatHighScore = SaveHighScore();
-        int currentScore = ScoreManager.Instance.GetScore();
+        
+        ScoreManager.Instance.CommitAll();
+        int currentScore = ScoreManager.Instance.GetTotalScoreIncludingActive();
 
         onLose?.Invoke(beatHighScore, currentScore);
     }
@@ -193,7 +195,9 @@ public class GameStateManager : MonoBehaviour
         ToPaused();
 
         bool beatHighScore = SaveHighScore();
-        float currentScore = ScoreManager.Instance.GetScore();
+
+        ScoreManager.Instance.CommitAll();
+        int currentScore = ScoreManager.Instance.GetTotalScoreIncludingActive();
 
         onWin?.Invoke(beatHighScore, currentScore);
     }
@@ -204,7 +208,7 @@ public class GameStateManager : MonoBehaviour
     /// <returns></returns>
     private bool SaveHighScore()
     {
-        float currentScore = ScoreManager.Instance.GetScore();
+        int currentScore = ScoreManager.Instance.GetTotalScoreIncludingActive();
         if (PlayerPrefs.HasKey("HighScore"))
         {
             float highScore = PlayerPrefs.GetFloat("HighScore");
