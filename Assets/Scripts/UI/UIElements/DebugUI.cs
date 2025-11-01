@@ -26,7 +26,7 @@ public class DebugUI : UIElement
         this.gameObject.SetActive(true);
     }
 
-    public override bool Enabled()
+    public override bool IsEnabled()
     {
         return this.gameObject.activeSelf;
     }
@@ -34,5 +34,10 @@ public class DebugUI : UIElement
     protected override void InstantDisableActions()
     {
         this.gameObject.SetActive(false);
+    }
+
+    public override bool IsDisabled()
+    {
+        return !IsEnabled();
     }
 }

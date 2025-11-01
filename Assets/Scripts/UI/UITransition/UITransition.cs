@@ -4,7 +4,8 @@ using UnityEngine;
 
 public abstract class UITransition : MonoBehaviour
 {
-    public abstract bool Enabled();
+    public abstract bool IsEnabled();
+    public abstract bool IsDisabled();
     public abstract void Transition();
 
     public abstract void ReverseTransition();

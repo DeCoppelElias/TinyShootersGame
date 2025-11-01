@@ -70,9 +70,13 @@ public class GameOverUI : UIElement<GameOverUIData>
         EnableActions(new GameOverUIData(false, 0));
     }
 
-    public override bool Enabled()
+    public override bool IsEnabled()
     {
         return this.gameObject.activeSelf;
+    }
+    public override bool IsDisabled()
+    {
+        return !IsEnabled();
     }
 
     private IEnumerator PerformAfterRealDelay(float delay, UnityAction action)

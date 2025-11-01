@@ -83,8 +83,12 @@ public class ScoreUI : UIElement
         this.gameObject.SetActive(true);
     }
 
-    public override bool Enabled()
+    public override bool IsEnabled()
     {
         return this.gameObject.activeSelf;
+    }
+    public override bool IsDisabled()
+    {
+        return !IsEnabled();
     }
 }

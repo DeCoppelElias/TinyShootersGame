@@ -9,9 +9,13 @@ public class TutorialExplanationUI : UIElement
     private Text explanationTitle;
     private Text doneText;
     private TextMeshProUGUI explanationSubTitle;
-    public override bool Enabled()
+    public override bool IsEnabled()
     {
         return this.gameObject.activeSelf;
+    }
+    public override bool IsDisabled()
+    {
+        return !IsEnabled();
     }
 
     protected override void DisableActions()

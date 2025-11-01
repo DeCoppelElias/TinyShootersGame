@@ -21,31 +21,32 @@ public abstract class UIElement : MonoBehaviour
 
     public virtual void Enable()
     {
-        if (Enabled()) return;
+        if (!IsDisabled()) return;
         EnableActions();
         if (onEnable != null) onEnable.Invoke(this);
     }
     public virtual void Disable()
     {
-        if (!Enabled()) return;
+        if (!IsEnabled()) return;
         DisableActions();
         if (onDisable != null) onDisable.Invoke(this);
     }
     public virtual void InstantDisable()
     {
-        if (!Enabled()) return;
+        if (!IsEnabled()) return;
         InstantDisableActions();
         if (onDisable != null) onDisable.Invoke(this);
     }
     protected abstract void EnableActions();
     protected abstract void DisableActions();
     protected abstract void InstantDisableActions();
-    public abstract bool Enabled();
+    public abstract bool IsEnabled();
+    public abstract bool IsDisabled();
 
     public void Toggle()
     {
-        if (!Enabled()) Enable();
-        else Disable();
+        if (IsDisabled()) Enable();
+        else if (IsEnabled()) Disable();
     }
 
     public virtual GameObject GetFirstSelected()
@@ -75,7 +76,7 @@ public abstract class UIElement<T> : UIElement
 {
     public void Enable(T data)
     {
-        if (Enabled()) return;
+        if (IsEnabled()) return;
         EnableActions(data);
         if (onEnable != null) onEnable.Invoke(this);
     }
@@ -83,7 +84,7 @@ public abstract class UIElement<T> : UIElement
 
     public void Toggle(T data)
     {
-        if (!Enabled()) Enable(data);
+        if (!IsEnabled()) Enable(data);
         else Disable();
     }
 }

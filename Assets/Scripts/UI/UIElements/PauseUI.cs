@@ -16,10 +16,7 @@ public class PauseUI : UIElement
             if (uiTransition == null) return this.GetComponent<UITransition>();
             return uiTransition;
         }
-        set
-        {
-            uiTransition = value;
-        }
+        set => uiTransition = value;
     }
 
     protected override void Start()
@@ -51,8 +48,12 @@ public class PauseUI : UIElement
         UiTransition.InstantReverseTransition();
     }
 
-    public override bool Enabled()
+    public override bool IsEnabled()
     {
-        return UiTransition.Enabled();
+        return UiTransition.IsEnabled();
+    }
+    public override bool IsDisabled()
+    {
+        return UiTransition.IsDisabled();
     }
 }

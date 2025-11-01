@@ -101,8 +101,12 @@ public class UpgradeUI : PlayerUIElement
     {
         uiTransition.InstantReverseTransition();
     }
-    public override bool Enabled()
+    public override bool IsEnabled()
     {
-        return uiTransition.Enabled();
+        return uiTransition.IsEnabled();
+    }
+    public override bool IsDisabled()
+    {
+        return uiTransition.IsDisabled();
     }
 }
