@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: GameUIProfile
   m_EditorClassIdentifier: 
   sharedUIPrefabs:
-  - {fileID: 1439470713484059482, guid: 230963fd150882a448da92543f41049a, type: 3}
+  - {fileID: 6397785363284814662, guid: 8ff5a5103aa31db4c95a9c806b4d44fb, type: 3}
   - {fileID: 4313446336556066659, guid: 1ca0ac7fa63206946963bcb42cc5a69f, type: 3}
   - {fileID: 8153578487586405754, guid: 80e8c71d984d97144836b52787b287af, type: 3}
   - {fileID: 4529763083623842409, guid: 3def7e401def2be409a40fb5bfe634dd, type: 3}
   - {fileID: 2750490067580246473, guid: 602ec3d91edcb444881e1b6b7329ba2b, type: 3}
+  - {fileID: 3845996550879981571, guid: 9f9179b72679553439935e8c391bd7a8, type: 3}
   playerUIPrefabs:
   - {fileID: 7773081688106647958, guid: f20759c462bea454b8e89a10b2107b4d, type: 3}
   - {fileID: 137981136727702510, guid: 0485b7a2f136b234fa9fd55506b7d2c8, type: 3}

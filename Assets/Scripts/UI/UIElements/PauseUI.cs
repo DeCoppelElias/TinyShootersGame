@@ -9,7 +9,7 @@ public class PauseUI : UIElement
     private UITransition uiTransition;
 
     private Button resumeButton;
-    private Button quitButton;
+    protected Button quitButton;
     private UITransition UiTransition { 
         get
         {
@@ -28,9 +28,14 @@ public class PauseUI : UIElement
         resumeButton.onClick.AddListener(Disable);
 
         quitButton = this.transform.Find("MainMenuButton").GetComponent<Button>();
-        quitButton.onClick.AddListener(GameStateManager.Instance.QuitToMainMenu);
+        SetupQuitAction();
 
         InstantDisableActions();
+    }
+
+    protected virtual void SetupQuitAction()
+    {
+        quitButton.onClick.AddListener(GameStateManager.Instance.QuitToMainMenu);
     }
 
     protected override void EnableActions()

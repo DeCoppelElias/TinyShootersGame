@@ -39,6 +39,13 @@ public abstract class UIManager : MonoBehaviour
     {
         if (uiElements.TryGetValue(typeof(T), out var go))
             return go.GetComponent<T>();
+
+        foreach (var pair in uiElements)
+        {
+            if (pair.Key.IsSubclassOf(typeof(T)))
+                return pair.Value.GetComponent<T>();
+        }
+
         return null;
     }
 
@@ -46,6 +53,13 @@ public abstract class UIManager : MonoBehaviour
     {
         if (uiElements.TryGetValue(typeof(T), out var go))
             return go.GetComponent<T>();
+
+        foreach (var pair in uiElements)
+        {
+            if (pair.Key.IsSubclassOf(typeof(T)))
+                return pair.Value.GetComponent<T>();
+        }
+
         return null;
     }
 
