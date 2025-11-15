@@ -1,6 +1,5 @@
 # Tiny Shooters
-<img src="Media/NewScreenshots/Title%20Screen.jpg" width="100">
-![Tiny Shooters Title Screen](Media/NewScreenshots/Title%20Screen.jpg)
+<img src="Media/NewScreenshots/Title%20Screen.jpg" width="500">
 **Tiny Shooters** is a top-down survival shooter where you must:
 
 - Survive multiple waves of enemies.  
