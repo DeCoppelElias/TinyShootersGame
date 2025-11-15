@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1448f9d733075704eb4bf66001722ac7, type: 3}
+  m_Name: BaseEnemyRegistry
+  m_EditorClassIdentifier: 
+  enemies:
+  - enemyName: Spider
+    prefab: {fileID: 8242213477927556755, guid: 78f19a6b8ec19bc4797907e3a2658557, type: 3}
+  - enemyName: Plus
+    prefab: {fileID: 1642511522402942177, guid: 29827f34e151c1542870e43f5194310a, type: 3}
+  - enemyName: MeleeEnemy
+    prefab: {fileID: 7427509855293966748, guid: ad326b1056a21854b82a5619b91431aa, type: 3}
+  - enemyName: RangedEnemy
+    prefab: {fileID: 258903064125615812, guid: 4f6b4cff79e97024ea9bda176065b086, type: 3}
+  - enemyName: FastEnemy
+    prefab: {fileID: 7577107269600286194, guid: 3a712a1bb8e12a948853330148f98903, type: 3}
+  - enemyName: ShotgunEnemy
+    prefab: {fileID: 8883517242114259773, guid: f1ae8d3799605f046acfb085f9774d89, type: 3}
+  - enemyName: GunnerEnemy
+    prefab: {fileID: 7814358394465386018, guid: ee295aeada5cb9a44b7dd99d2e57d311, type: 3}
+  - enemyName: TripleEnemy
+    prefab: {fileID: 4055091232730144764, guid: 62c723058fe9da849ae281d4c46c7f4e, type: 3}
+  - enemyName: HeavyEnemy
+    prefab: {fileID: 4097153857087342715, guid: d28645403cec7724083f682e78d4d0b4, type: 3}
+  - enemyName: SniperEnemy
+    prefab: {fileID: 4527807734206093066, guid: 56329d53554b9b445af24648a6a91e10, type: 3}
+  - enemyName: DodgeMeleeEnemy
+    prefab: {fileID: 3907941987175580995, guid: f831119b79476b4409e0f01b57d4c3cf, type: 3}
+  - enemyName: DodgeRangedEnemy
+    prefab: {fileID: 7472709641440399871, guid: 6b086e4c15d678a48a2b9f3022b2d9f3, type: 3}
+  - enemyName: ReflectMeleeEnemy
+    prefab: {fileID: 7692973938748457739, guid: 0974d7399227b4f4bacdf34ba233d8e9, type: 3}
+  - enemyName: ChargeMeleeEnemy
+    prefab: {fileID: 7528510141806377970, guid: 0cb71667a8837b94d9a570ecbc59afa1, type: 3}
+  - enemyName: SplitBoss
+    prefab: {fileID: 7786780218830473604, guid: c02086bcf992db742bd51ab9f2345544, type: 3}
+  - enemyName: DashBoss
+    prefab: {fileID: 6431907754560271758, guid: 23774e101045b7c45a77f5e5500f769f, type: 3}
+  - enemyName: RangedBoss
+    prefab: {fileID: 4618751346984361700, guid: ed3420830fcd704458ea82274cb9d804, type: 3}
+  - enemyName: Mother
+    prefab: {fileID: 4451696334520911088, guid: e314f7f6da11e484690d33addd72d2bf, type: 3}

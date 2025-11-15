@@ -14,9 +14,17 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Look",
+                    "name": "LookGamepad",
                     "type": "Value",
                     "id": "a3e7ddef-89ba-427e-9365-adb3604c118a",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "LookMouse",
+                    "type": "Value",
+                    "id": "aca76ecc-3da3-4a56-bdcf-8e5027e09844",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
@@ -57,6 +65,14 @@
                     "name": "ClassAbility",
                     "type": "Button",
                     "id": "acc0bc59-cbb1-401e-8be1-c0751b0c7f29",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Ready",
+                    "type": "Button",
+                    "id": "ea5a73ce-50a4-45f0-b6d5-aeb8979923e5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -180,7 +196,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "Look",
+                    "action": "LookGamepad",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -304,6 +320,39 @@
                     "action": "ClassAbility",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "43c55a9b-67dd-4d2d-a0cf-777d4d45e702",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Ready",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ef3429a5-231f-480f-9fd8-24813cb5c925",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Ready",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a361366e-6314-47c5-8472-e8643bd36278",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "LookMouse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -313,7 +362,7 @@
             "actions": [
                 {
                     "name": "Navigate",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "70be4e90-d13f-4c18-8a8a-7959af625b50",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -321,7 +370,7 @@
                 },
                 {
                     "name": "Submit",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "e8c9a079-cf86-4ca8-95c5-a310ee5650f0",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -329,7 +378,7 @@
                 },
                 {
                     "name": "Cancel",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "82e73d90-021d-4aa0-9a39-5c96935136db",
                     "expectedControlType": "Button",
                     "processors": "",

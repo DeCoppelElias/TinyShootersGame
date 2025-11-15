@@ -16,6 +16,8 @@ public class ChargePlayerEnemyBehaviour : MonoBehaviour
         dashAbility = GetComponent<DashAbility>();
         pathFinding = GetComponent<PathFinding>();
         movementBehaviour = GetComponent<MovementBehaviour>();
+
+        dashAbility.SetDashColor(new Color(239 / 255f, 125 / 255f, 87 / 255f));
     }
 
     private void Update()

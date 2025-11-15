@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Enemy : Entity
 {
@@ -14,7 +15,7 @@ public class Enemy : Entity
     protected float size = 0;
 
     [Header("On-Death Body Settings")]
-    [SerializeField] private float bodyDuration = 1;
+    [SerializeField] private float bodyDuration = 0.25f;
     [SerializeField] protected bool spawnBody = true;
 
     [Header("Debug Settings")]
@@ -79,29 +80,32 @@ public class Enemy : Entity
         // Give on death score to last damage source
         if (lastDamageSourceTag == "Player")
         {
-            GameObject scoreManagerObj = GameObject.Find("ScoreManager");
-            if (scoreManagerObj != null)
-            {
-                ScoreManager scoreManager = scoreManagerObj.GetComponent<ScoreManager>();
-                scoreManager.AddScore(ScoreManager.ScoreReason.EnemyKill, this.onDeathScore);
-                if (lastDamageType == DamageType.Melee) scoreManager.AddScore(ScoreManager.ScoreReason.MeleeKill, this.onDeathScore * 2);
-            }
+            ScoreManager.Instance.AddScore(ScoreManager.ScoreReason.EnemyKill, this.onDeathScore);
+            if (lastDamageType == DamageType.Melee) ScoreManager.Instance.AddScore(ScoreManager.ScoreReason.MeleeKill, this.onDeathScore * 2);
         }
 
-        // Play death sound
-        audioManager.PlayDieSound();
+        // Display score
+        // DisplayScore();
 
         // Spawn Body
         if (spawnBody)
         {
             Transform spriteTransform = transform.Find("Sprite");
-            spriteRenderer.color = this.originalColor;
+            if (this.color != new Color(0,0,0,0)) spriteRenderer.color = this.color;
             spriteRenderer.sortingOrder = -1;
             spriteTransform.SetParent(transform.parent);
             DeadBodyBehaviour deadBody = spriteTransform.gameObject.AddComponent<DeadBodyBehaviour>();
-            deadBody.Initialise(bodyDuration);
+            deadBody.Initialise(bodyDuration, lastDamageDirection);
         }
 
         Destroy(this.gameObject);
     }
+
+    /*private void DisplayScore()
+    {
+        if (particleManager == null || particleManager.scoreTextPrefab == null) return;
+
+        var scoreDisplay = Instantiate(particleManager.scoreTextPrefab, transform.position, Quaternion.identity, particleManager.particleParent);
+        scoreDisplay.GetComponent<ScoreDisplay>().Initialise(1f, this.onDeathScore);
+    }*/
 }

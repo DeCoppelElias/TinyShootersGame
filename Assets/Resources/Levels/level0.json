@@ -1,6 +1,6 @@
 {
     "roomLocation": {
-            "x": 0,
+            "x": -26,
             "y": 0,
             "z": 0
     },
@@ -14,7 +14,7 @@
         "y": 0,
         "z": 0
     },
-    "roomWidth":  9.5,
+    "roomWidth":  11.5,
     "roomHeight": 5.5,
     "spawnLocations": [
         { "x": 7.5, "y": 3.5, "z": 0 }, { "x": 7.5, "y": 2.5, "z": 0 }, { "x": 6.5, "y": 3.5, "z": 0 }, { "x": 6.5, "y": 2.5, "z": 0 },
@@ -27,8 +27,8 @@
             "waveNumber": 1,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 1
+                    "type": "Spider",
+                    "amount": 2
                 }
             ]
         },
@@ -36,8 +36,8 @@
             "waveNumber": 2,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 2
+                    "type": "Spider",
+                    "amount": 3
                 }
             ]
         },
@@ -45,8 +45,12 @@
             "waveNumber": 3,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 3
+                    "type": "Spider",
+                    "amount": 2
+                },
+                {
+                    "type": "Plus",
+                    "amount": 1
                 }
             ]
         },
@@ -54,11 +58,11 @@
             "waveNumber": 4,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 3
+                    "type": "Spider",
+                    "amount": 4
                 },
                 {
-                    "type": "RangedEnemy",
+                    "type": "MeleeEnemy",
                     "amount": 1
                 }
             ]
@@ -67,11 +71,11 @@
             "waveNumber": 5,
             "enemies": [
                 {
-                    "type": "MeleeEnemy",
-                    "amount": 3
+                    "type": "Plus",
+                    "amount": 2
                 },
                 {
-                    "type": "RangedEnemy",
+                    "type": "MeleeEnemy",
                     "amount": 2
                 }
             ]
@@ -81,7 +85,7 @@
             "enemies": [
                 {
                     "type": "RangedEnemy",
-                    "amount": 4
+                    "amount": 1
                 }
             ]
         },
@@ -89,8 +93,12 @@
             "waveNumber": 7,
             "enemies": [
                 {
-                    "type": "FastEnemy",
-                    "amount": 3
+                    "type": "MeleeEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "RangedEnemy",
+                    "amount": 1
                 }
             ]
         },
@@ -98,16 +106,12 @@
             "waveNumber": 8,
             "enemies": [
                 {
-                    "type": "FastEnemy",
-                    "amount": 1
-                },
-                {
-                    "type": "RangedEnemy",
+                    "type": "Plus",
                     "amount": 2
                 },
                 {
                     "type": "MeleeEnemy",
-                    "amount": 1
+                    "amount": 3
                 }
             ]
         },
@@ -115,15 +119,11 @@
             "waveNumber": 9,
             "enemies": [
                 {
-                    "type": "FastEnemy",
-                    "amount": 2
+                    "type": "Spider",
+                    "amount": 4
                 },
                 {
                     "type": "RangedEnemy",
-                    "amount": 2
-                },
-                {
-                    "type": "MeleeEnemy",
                     "amount": 2
                 }
             ]
@@ -132,8 +132,12 @@
             "waveNumber": 10,
             "enemies": [
                 {
-                    "type": "SplitBoss",
+                    "type": "Mother",
                     "amount": 1
+                },
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 2
                 }
             ],
             "boss": true

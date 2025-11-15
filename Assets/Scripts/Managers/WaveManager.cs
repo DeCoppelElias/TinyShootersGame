@@ -5,36 +5,28 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Sherbert.Framework.Generic;
+using UnityEngine.Events;
 
+[RequireComponent(typeof(EnemyWaveSpawner))]
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager Instance;
+
     [Header("Level Settings")]
     [SerializeField] private int waveIndex = 0;
     [SerializeField] private int levelIndex = 0;
     [SerializeField] private int totalLevels = 3;
     [SerializeField] private int waveCooldown = 5;
+    [SerializeField] private int levelCooldown = 5;
+    [SerializeField] private int initialCooldown = 5;
 
     private Dictionary<int,Level> levels = new Dictionary<int,Level>();
 
     [Header("Enemy Prefabs")]
-    [SerializeField] private GameObject baseMeleeEnemyEasy;
-    [SerializeField] private GameObject baseRangedEnemyEasy;
-    [SerializeField] private GameObject fastEnemyEasy;
-    [SerializeField] private GameObject shotgunEnemyMedium;
-    [SerializeField] private GameObject gunnerEnemyMedium;
-    [SerializeField] private GameObject tripleEnemyMedium;
-    [SerializeField] private GameObject heavyEnemyMedium;
-    [SerializeField] private GameObject sniperEnemyMedium;
-    [SerializeField] private GameObject chargeMeleeEnemyHard;
-    [SerializeField] private GameObject dodgeMeleeEnemyHard;
-    [SerializeField] private GameObject dodgeRangedEnemyHard;
-    [SerializeField] private GameObject reflectMeleeEnemyHard;
-
-    [Header("Boss Prefabs")]
-    [SerializeField] private GameObject dashBoss;
-    [SerializeField] private GameObject splitBoss;
-    [SerializeField] private GameObject rangedBoss;
-
+    private Dictionary<string, GameObject> enemyDict = new Dictionary<string, GameObject>();
+    [SerializeField] private List<string> enemyNames = new List<string>();
+    [SerializeField] private List<GameObject> enemyPrefabs = new List<GameObject>();
 
     [Header("Tilemaps")]
     [SerializeField] private Tilemap groundTilemap;
@@ -42,31 +34,72 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private Tilemap warningTilemap;
     [SerializeField] private Tile warningTile;
 
-    private enum WaveState { Fighting, Ready, Cooldown, Done }
+    private enum WaveState { Initial, Fighting, Ready, Spawning, WaveCooldown, LevelCooldown, Done }
     [Header("State")]
-    [SerializeField] private WaveState waveState = WaveState.Cooldown;
+    [SerializeField] private WaveState waveState = WaveState.Initial;
     [SerializeField] private GameObject enemies;
 
-    private UIManager uiManager;
-    private GameStateManager gameStateManager;
-    private ScoreManager scoreManager;
     private Player player;
+    private PlayerUIManager playerUIManager;
 
+    private float startTime = 0;
     private float lastWaveTime = 0;
-    private float minFightingDuration = 3f;
-    private float fightingStart = 0;
     private float playerHealthBeforeWave = 0;
+    private float betweenEnemySpawnDelay = 0.2f;
+    private float enemySpawnDelay = 1;
 
+    private float classUpgradeCooldown = 10;
+    private float classUpgradeCounter = 0;
+
+    private float powerupCooldown = 10;
+    private float powerupCounter = 5;
+
+    private EnemyWaveSpawner enemySpawner;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void SelectLevel()
+    {
+        if (SceneTransitionManager.Instance != null)
+        {
+            levelIndex = SceneTransitionManager.Instance.Level - 1;
+        }
+
+        StartCoroutine(ShowLevelUps(levelIndex));
+    }
+
+    private IEnumerator ShowLevelUps(int levelIndex)
+    {
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < levelIndex; i++)
+        {
+            // 1. Show Powerup first
+            playerUIManager.Enable<PowerupUI>();
+            yield return new WaitForSeconds(0.2f);
+
+            // 2. Show Upgrade if available, else Powerup
+            if (player.GetUpgrades().Count > 0)
+                playerUIManager.Enable<UpgradeUI>();
+            else
+                playerUIManager.Enable<PowerupUI>();
+
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
 
     private void Start()
     {
-        lastWaveTime = Time.time;
+        enemySpawner = GetComponent<EnemyWaveSpawner>();
+        startTime = Time.time;
 
-        uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
-        scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
+        playerUIManager = player.GetComponentInChildren<PlayerUIManager>();
 
+        InitializeDict();
+        SelectLevel();
         SetupCurrentLevel();
     }
 
@@ -74,65 +107,115 @@ public class WaveManager : MonoBehaviour
     {
         if (waveIndex >= 0)
         {
-            if (waveState == WaveState.Ready)
+            if (waveState == WaveState.Initial)
             {
-                playerHealthBeforeWave = player.health;
+                if (Time.time - startTime > initialCooldown)
+                {
+                    waveState = WaveState.Ready;
+                }
+            }
+            else if (waveState == WaveState.Ready)
+            {
                 SpawnWave(this.levelIndex, this.waveIndex);
-                waveState = WaveState.Fighting;
-                fightingStart = Time.time;
             }
             else if (waveState == WaveState.Fighting)
             {
-                if (enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
+                if (enemies.transform.childCount == 0)
                 {
-                    // Give Score if player did not lose health
-                    if (player.health == playerHealthBeforeWave)
-                    {
-                        scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
-                    }
-
-                    if (CheckLastWave())
-                    {
-                        waveState = WaveState.Done;
-                        uiManager.EnableLevelCompletedText(levelIndex + 1);
-                        if (CheckLastLevel())
-                        {
-                            StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
-                        }
-                        else
-                        {
-                            StartCoroutine(PerformAfterDelay(5, NextLevel));
-                        }
-                    }
-                    else
-                    {
-                        waveIndex++;
-
-                        waveState = WaveState.Cooldown;
-                        lastWaveTime = Time.time;
-
-                        Level level = GetLevel(this.levelIndex);
-                        Wave wave = level.GetWave(waveIndex);
-                        uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
-
-                        if (waveIndex == 4)
-                        {
-                            uiManager.EnableUpgradeUI();
-                        }
-                    }
+                    EndWave();
                 }
             }
-            else if (waveState == WaveState.Cooldown)
+            else if (waveState == WaveState.WaveCooldown)
             {
-                if (Time.time > lastWaveTime + waveCooldown)
+                if (Time.time - lastWaveTime > waveCooldown)
                 {
                     waveState = WaveState.Ready;
-                    uiManager.DisableWaveUI();
+                }
+            }
+            else if (waveState == WaveState.LevelCooldown)
+            {
+                if (Time.time - lastWaveTime > levelCooldown)
+                {
+                    waveState = WaveState.Ready;
+                    NextLevel();
                 }
             }
         }
     }
 
+    private void EndWave()
+    {
+        // Give Score if player did not lose health
+        if (player.Health == playerHealthBeforeWave)
+        {
+            ScoreManager.Instance.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
+        }
+
+        WaveStatusUI waveStatusUI = SharedUIManager.Instance.GetUIElement<WaveStatusUI>();
+
+        if (CheckLastLevel() && CheckLastWave())
+        {
+            waveState = WaveState.Done;
+            waveStatusUI.EnableLevelCompletedText(levelIndex + 1);
+            StartCoroutine(PerformAfterDelay(5, () => GameStateManager.Instance.GameWon()));
+        }
+        else if (!CheckLastLevel() && CheckLastWave())
+        {
+            waveState = WaveState.LevelCooldown;
+            waveStatusUI.EnableLevelCompletedText(levelIndex + 1);
+            lastWaveTime = Time.time;
+
+            string levelString = $"Level {levelIndex + 1}";
+            if (!PlayerPrefs.HasKey(levelString))
+            {
+                PlayerPrefs.SetString(levelString, "true");
+            }
+
+            RewardPlayer();
+        }
+        else if (!CheckLastWave())
+        {
+            waveIndex++;
+
+            waveState = WaveState.WaveCooldown;
+            lastWaveTime = Time.time;
+
+            Level level = GetLevel(this.levelIndex);
+            Wave wave = level.GetWave(waveIndex);
+            waveStatusUI.PerformWaveCountdown(waveCooldown, wave.boss, levelIndex, waveIndex);
+
+            RewardPlayer();
+        }
+    }
+
+    private void RewardPlayer()
+    {
+        classUpgradeCounter++;
+        if (classUpgradeCounter == classUpgradeCooldown)
+        {
+            classUpgradeCounter = 0;
+
+            if (player.GetUpgrades().Count > 0) playerUIManager.Enable<UpgradeUI>();
+            else playerUIManager.Enable<PowerupUI>();
+        }
+
+        powerupCounter++;
+        if (powerupCounter == powerupCooldown)
+        {
+            powerupCounter = 0;
+            playerUIManager.Enable<PowerupUI>();
+        }
+    }
+
+    private void InitializeDict()
+    {
+        this.enemyDict.Clear();
+
+        for (int i = 0; i < this.enemyPrefabs.Count; i++)
+        {
+            this.enemyDict.Add(this.enemyNames[i], this.enemyPrefabs[i]);
+        }
+    }
     private void LoadLevel(int levelIndex)
     {
         string path = $"Levels/level{levelIndex}";
@@ -161,7 +244,7 @@ public class WaveManager : MonoBehaviour
     {
         Level level = GetLevel(this.levelIndex);
 
-        Camera.main.transform.position = level.GetCameraLocation();
+        CameraManager.Instance.TransitionCamera(level.GetCameraLocation());
         player.transform.position = level.GetPlayerSpawnLocation();
     }
 
@@ -177,6 +260,12 @@ public class WaveManager : MonoBehaviour
 
     private void SpawnWave(int levelIndex, int waveIndex)
     {
+        if (waveState != WaveState.Ready) return;
+
+        waveState = WaveState.Spawning;
+
+        playerHealthBeforeWave = player.Health;
+
         Level level = GetLevel(levelIndex);
         Wave wave = level.GetWave(waveIndex);
         List<EnemyCount> enemies = wave.enemies;
@@ -186,42 +275,44 @@ public class WaveManager : MonoBehaviour
         {
             if (!enemyCount.customSpawn) totalCount += enemyCount.amount;
         }
-        List<Vector3> spawnLocations = FindSpawnLocations(totalCount);
 
-        int count = 0;
+        List<string> enemiesToSpawn = new List<string>();
+        List<(string, Vector3)> customEnemySpawns = new List<(string, Vector3)>();
         foreach (EnemyCount enemyCount in enemies)
         {
-            GameObject prefab = StringToPrefab(enemyCount.type);
-            for (int i = 0; i < enemyCount.amount; i++)
+            if (enemyCount.customSpawn)
             {
-                if (!enemyCount.customSpawn)
-                {
-                    CreateEnemy(prefab, spawnLocations[count]);
-                    count += 1;
-                }
-                else
-                {
-                    CreateEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3());
-                }
+                customEnemySpawns.Add((enemyCount.type, enemyCount.customSpawnLocation.ToVector3()));
+            }
+            else
+            {
+                for (int i = 0; i < enemyCount.amount; i++) enemiesToSpawn.Add(enemyCount.type);
             }
         }
+
+        List<Vector3> spawnLocations = new List<Vector3>(level.GetSpawnLocations());
+        StartCoroutine(enemySpawner.SpawnEnemiesSequentially(enemiesToSpawn, spawnLocations, customEnemySpawns));
+
+        StartCoroutine(PerformAfterDelay((this.betweenEnemySpawnDelay * totalCount) + this.enemySpawnDelay, () => waveState = WaveState.Fighting));
     }
 
     public void NextLevel()
     {
-        waveState = WaveState.Cooldown;
+        waveState = WaveState.WaveCooldown;
         lastWaveTime = Time.time;
 
-        waveIndex = 0;
-        levelIndex++;
+        this.waveIndex = 0;
+        this.levelIndex++;
 
         Level level = GetLevel(levelIndex);
         Wave wave = level.GetWave(waveIndex);
 
-        uiManager.DisableWaveUI();
-        uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
-
         SetupCurrentLevel();
+
+        WaveStatusUI waveStatusUI = SharedUIManager.Instance.GetUIElement<WaveStatusUI>();
+        waveStatusUI.PerformWaveCountdown(waveCooldown, wave.boss, waveIndex, levelIndex);
+
+        player.Health = player.MaxHealth;
     }
 
     public Vector3 GetSafePosition()
@@ -247,100 +338,6 @@ public class WaveManager : MonoBehaviour
     private bool CheckLastLevel()
     {
         return (levelIndex == totalLevels - 1);
-    }
-
-    private List<Vector3> FindSpawnLocations(int amount)
-    {
-        Level level = GetLevel(levelIndex);
-        List<Vector3> spawnLocations = new List<Vector3>(level.GetSpawnLocations());
-        if (spawnLocations.Count < amount) throw new Exception("Cannot spawn enemies, number of spawn locations is too small");
-
-        return spawnLocations.OrderBy(x => UnityEngine.Random.Range(0, spawnLocations.Count)).Take(amount).ToList();
-    }
-
-    private void CreateEnemy(GameObject prefab, Vector3 spawnLocation)
-    {
-        warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), warningTile);
-        StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation, 1));
-    }
-
-    private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation, int delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
-        enemy.transform.SetParent(enemies.transform);
-
-        warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), null);
-    }
-
-    public GameObject StringToPrefab(string s)
-    {
-        if (s == "MeleeEnemy")
-        {
-            return baseMeleeEnemyEasy;
-        }
-        else if (s == "RangedEnemy")
-        {
-            return baseRangedEnemyEasy;
-        }
-        else if (s == "FastEnemy")
-        {
-            return fastEnemyEasy;
-        }
-
-        else if (s == "ShotgunEnemy")
-        {
-            return shotgunEnemyMedium;
-        }
-        else if (s == "GunnerEnemy")
-        {
-            return gunnerEnemyMedium;
-        }
-        else if (s == "SniperEnemy")
-        {
-            return sniperEnemyMedium;
-        }
-        else if (s == "HeavyEnemy")
-        {
-            return heavyEnemyMedium;
-        }
-        else if (s == "TripleEnemy")
-        {
-            return tripleEnemyMedium;
-        }
-
-        else if (s == "DodgeMeleeEnemy")
-        {
-            return dodgeMeleeEnemyHard;
-        }
-        else if (s == "DodgeRangedEnemy")
-        {
-            return dodgeRangedEnemyHard;
-        }
-        else if (s == "ChargeMeleeEnemy")
-        {
-            return chargeMeleeEnemyHard;
-        }
-        else if (s == "ReflectMeleeEnemy")
-        {
-            return reflectMeleeEnemyHard;
-        }
-
-        else if (s == "SplitBoss")
-        {
-            return splitBoss;
-        }
-        else if (s == "DashBoss")
-        {
-            return dashBoss;
-        }
-        else if (s == "RangedBoss")
-        {
-            return rangedBoss;
-        }
-
-        return baseMeleeEnemyEasy;
     }
 
     private IEnumerator PerformAfterDelay(float delay, Action action)

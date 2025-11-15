@@ -29,8 +29,6 @@ public class TutorialUIManager : MonoBehaviour
     private Player player;
     private PlayerInput playerInput;
 
-    private GameStateManager gameStateManager;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -52,8 +50,6 @@ public class TutorialUIManager : MonoBehaviour
 
         player = GameObject.Find("Player").GetComponent<Player>();
         playerInput = player.GetComponent<PlayerInput>();
-
-        gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
     }
 
     public void EnableAbilityUI()
@@ -70,10 +66,10 @@ public class TutorialUIManager : MonoBehaviour
     {
         LowerMusicVolume();
 
-        Class playerClass = player.playerClass;
+        PlayerClass playerClass = player.playerClass;
         if (playerClass.upgrades.Count == 0) return;
 
-        gameStateManager.ToPaused();
+        GameStateManager.Instance.ToPaused();
 
         Transform buttons = upgradeUI.transform.Find("Buttons");
 
@@ -99,7 +95,7 @@ public class TutorialUIManager : MonoBehaviour
         for (int i = 0; i < buttons.childCount; i++)
         {
             Transform buttonTransform = buttons.GetChild(i);
-            Class currentPlayerClass = playerClass.upgrades[i];
+            PlayerClass currentPlayerClass = playerClass.upgrades[i];
 
             Text text = buttonTransform.GetComponentInChildren<Text>();
             text.text = currentPlayerClass.className;
@@ -123,7 +119,7 @@ public class TutorialUIManager : MonoBehaviour
     {
         ReturnMusicVolume();
 
-        gameStateManager.ToRunning();
+        GameStateManager.Instance.ToRunning();
         upgradeUI.SetActive(false);
         RemoveFirstSelected();
     }
@@ -170,7 +166,7 @@ public class TutorialUIManager : MonoBehaviour
         dashAbilityEnabled = false;
 
         DashAbility dashAbility = player.GetComponent<DashAbility>();
-        int cooldown = dashAbility.GetDashCooldown();
+        int cooldown = Mathf.RoundToInt(dashAbility.GetDashCooldown());
 
         Image image = dashAbilityUI.GetComponent<Image>();
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
@@ -244,7 +240,7 @@ public class TutorialUIManager : MonoBehaviour
 
         LowerMusicVolume();
 
-        gameStateManager.ToPaused();
+        GameStateManager.Instance.ToPaused();
         pauseUI.SetActive(true);
         SetFirstSelectedIfGamepad(pauseUI.transform.Find("ResumeButton").gameObject);
     }
@@ -253,7 +249,7 @@ public class TutorialUIManager : MonoBehaviour
     {
         ReturnMusicVolume();
 
-        gameStateManager.ToRunning();
+        GameStateManager.Instance.ToRunning();
         pauseUI.SetActive(false);
         RemoveFirstSelected();
     }

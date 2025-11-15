@@ -127,7 +127,7 @@ public class PVPUIManager : MonoBehaviour
         SetDashAbilityEnabled(player, false);
 
         DashAbility dashAbility = player.GetComponent<DashAbility>();
-        int cooldown = dashAbility.GetDashCooldown();
+        int cooldown = Mathf.RoundToInt(dashAbility.GetDashCooldown());
 
         Image image = ui.GetComponent<Image>();
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);

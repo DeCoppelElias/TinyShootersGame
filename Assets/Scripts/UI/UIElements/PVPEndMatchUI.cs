@@ -1,0 +1,64 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public struct PVPEndMatchUIData
+{
+    public string winningPlayerName;
+
+    public PVPEndMatchUIData(string winningPlayerName)
+    {
+        this.winningPlayerName = winningPlayerName;
+    }
+}
+
+public class PVPEndMatchUI : UIElement<PVPEndMatchUIData>
+{
+    [SerializeField] private Text winningPlayerText;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button mainMenuButton;
+
+    protected override void Start()
+    {
+        base.Start();
+
+        restartButton.onClick.AddListener(PVPBattleManager.Instance.Restart);
+        mainMenuButton.onClick.AddListener(PVPBattleManager.Instance.QuitToMainMenu);
+
+        InstantDisable();
+    }
+
+    public override bool IsEnabled()
+    {
+        return this.gameObject.activeSelf;
+    }
+    public override bool IsDisabled()
+    {
+        return !IsEnabled();
+    }
+
+    protected override void DisableActions()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+    protected override void EnableActions()
+    {
+        EnableActions(new PVPEndMatchUIData("ERROR"));
+    }
+
+    protected override void EnableActions(PVPEndMatchUIData data)
+    {
+        winningPlayerText.text = data.winningPlayerName;
+
+        firstSelected = restartButton.gameObject;
+
+        this.gameObject.SetActive(true);
+    }
+
+    protected override void InstantDisableActions()
+    {
+        this.gameObject.SetActive(false);
+    }
+}

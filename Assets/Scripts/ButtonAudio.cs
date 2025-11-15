@@ -8,7 +8,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class ButtonAudio : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 {
-    private AudioManager audioManager;
     private PlayerInput playerInput;
     public bool canPlaySound = false;
 
@@ -25,22 +24,20 @@ public class ButtonAudio : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 
     private void Start()
     {
-        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         GetComponent<Button>().onClick.AddListener(PlayClickSound);
-        playerInput = GetComponentInParent<UIInfo>().owner;
     }
     public void OnSelect(BaseEventData eventData)
     {
-        if (canPlaySound && audioManager != null) audioManager.PlayNavigateSound(playerInput);
+        if (canPlaySound && AudioManager.Instance != null) AudioManager.Instance.PlayNavigateSound();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (canPlaySound && audioManager != null) audioManager.PlayHoverSound(playerInput);
+        if (canPlaySound && AudioManager.Instance != null) AudioManager.Instance.PlayHoverSound();
     }
 
     private void PlayClickSound()
     {
-        if (audioManager != null) audioManager.PlayClickSound();
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayClickSound();
     }
 }

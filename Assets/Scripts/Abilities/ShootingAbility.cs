@@ -5,83 +5,145 @@ using UnityEngine.Events;
 
 public class ShootingAbility : MonoBehaviour
 {
-    public GameObject bullets;
+    [Header("Shooting Stats")]
+    [SerializeField] private BaseShootingStats baseStats;
+    [SerializeField] private RuntimeShootingStats runtimeStats;
+    public RuntimeShootingStats RuntimeStats { get => runtimeStats.GetStats(); }
 
-    public float damage;
-    public float attackCooldown = 0.5f;
     private float lastAttack;
     private float lastAttackRealTime;
 
-    public float range = 1;
-    public float pierce = 1;
-    public float totalSplit = 1;
-    public float totalFan = 1;
-    public float bulletSize = 1;
-    public float bulletSpeed = 6;
-
-    public bool splitOnHit = false;
-    public float splitAmount = 0;
-    public float splitRange = 1;
-    public float splitBulletSize = 0.5f;
-    public float splitBulletSpeed = 6;
-    public float splitDamagePercentage = 0.5f;
-
-    public float shootingMoveSpeed = 2;
-
-    public bool shooting = false;
+    [Header("ShootAbility Parameters")]
+    [SerializeField] private bool shooting = false;
 
     public bool workWithRealTime = false;
 
-    public GameObject bulletPrefab;
-    public Transform firePoint;
+    [SerializeField] private Color bulletColor = Color.white;
+    public List<Transform> firepoints = new List<Transform>();
+    private List<ParticleSystem> muzzleFlashes = new List<ParticleSystem>();
 
-    public Entity owner;
+    [SerializeField] private Entity owner;
 
-    public UnityEvent onShoot;
+    public UnityAction OnShootStart;
+    public UnityAction OnShootEnd;
+
+    public UnityAction onShoot;
 
     private void Start()
     {
-        bullets = GameObject.Find("Bullets");
-        owner = GetComponent<Entity>();
+        Initialize();
+    }
+
+    private void OnEnable()
+    {
+        Owner?.onDeath.AddListener(OnOwnerDeath);
+    }
+
+    private void OnDisable()
+    {
+        Owner?.onDeath.RemoveListener(OnOwnerDeath);
+    }
+
+    private void OnOwnerDeath()
+    {
+        this.Shooting = false;
+    }
+
+    public void Initialize()
+    {
+        if (this.baseStats != null) this.runtimeStats = new RuntimeShootingStats(this.baseStats);
+
+        InitializeFirepoints();
+        InitializeMuzzleFlashes();
+    }
+
+    private void InitializeFirepoints()
+    {
+        Transform spriteTransform = this.transform.Find("Sprite");
+        if (spriteTransform == null) return;
+
+        this.firepoints.Clear();
+        for (int i = 0; i < spriteTransform.childCount; i++)
+        {
+            Transform firepointTransform = spriteTransform.GetChild(i);
+            this.firepoints.Add(firepointTransform);
+        }
+    }
+
+    private void InitializeMuzzleFlashes()
+    {
+        this.muzzleFlashes.Clear();
+        foreach (Transform firepoint in this.firepoints)
+        {
+            ParticleSystem muzzleFlash = firepoint.GetComponentInChildren<ParticleSystem>();
+            this.muzzleFlashes.Add(muzzleFlash);
+        }
     }
 
     private void Update()
     {
-        if (shooting)
+        if (Shooting)
         {
             TryShootOnce();
         }
     }
-
     public void StartShooting()
     {
-        shooting = true;
+        Shooting = true;
+        if (OnShootStart != null) OnShootStart.Invoke();
     }
 
     public void StopShooting()
     {
-        shooting = false;
+        Shooting = false;
+        if (OnShootEnd != null) OnShootEnd.Invoke();
     }
 
     public void TryShootOnce()
     {
-        if (!workWithRealTime && Time.time - lastAttack <= attackCooldown) return;
-        else if (workWithRealTime && Time.realtimeSinceStartup - lastAttackRealTime <= attackCooldown) return;
+        if (!workWithRealTime && Time.time - lastAttack <= this.runtimeStats.AttackCooldown) return;
+        else if (workWithRealTime && Time.realtimeSinceStartup - lastAttackRealTime <= this.runtimeStats.AttackCooldown) return;
 
         lastAttack = Time.time;
         lastAttackRealTime = Time.realtimeSinceStartup;
 
-        float fan = totalFan;
-        float split = totalSplit;
+        Shoot();
+
+        if (onShoot != null) onShoot.Invoke();
+    }
+
+    private void Shoot()
+    {
+        for (int i = 0; i < this.firepoints.Count; i++)
+        {
+            Transform firepoint = this.firepoints[i];
+            ShootFromFirepoint(firepoint);
+
+            // Trigger animation
+            PlayShootAnimation();
+
+            // Play muzzle flash effect
+            ParticleSystem muzzleFlash = this.muzzleFlashes[i];
+            if (muzzleFlash != null) muzzleFlash.Play();
+        }
+
+        // Play sound effect
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayShootSound();
+    }
+
+    private void ShootFromFirepoint(Transform firepoint, float knockbackMultiplier=1)
+    {
+        float fan = this.runtimeStats.Fan;
+        float split = this.runtimeStats.Split;
         if (fan % 2 == 1)
         {
-            CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, 0);
+            CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 0, knockbackMultiplier);
             fan--;
             while (fan > 0)
             {
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, 45);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 45, knockbackMultiplier);
                 fan--;
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, -45);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, -45, knockbackMultiplier);
                 fan--;
             }
         }
@@ -89,31 +151,28 @@ public class ShootingAbility : MonoBehaviour
         {
             while (fan > 0)
             {
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, 22.5f);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, 22.5f, knockbackMultiplier);
                 fan--;
-                CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, -22.5f);
+                CreateBulletGroup(firepoint, split, this.runtimeStats.Range / this.runtimeStats.BulletVelocity, this.runtimeStats.BulletVelocity, this.runtimeStats.BulletSize, this.runtimeStats.Pierce, this.runtimeStats.Damage, -22.5f, knockbackMultiplier);
                 fan--;
             }
         }
-
-        PlayShootAnimation();
-
-        if (onShoot != null) onShoot.Invoke();
     }
-    public void CreateBulletGroup(float split, float airTime, float bulletSpeed, float bulletSize, float pierce, float damage, float rotation)
+
+    private void CreateBulletGroup(Transform firepoint, float split, float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, float rotation, float knockbackMultiplier=1)
     {
         if (split % 2 != 0)
         {
-            CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position, rotation);
+            CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position, rotation, knockbackMultiplier);
             split--;
             int counter = 1;
             while (split != 0)
             {
-                CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation, knockbackMultiplier);
                 split--;
                 if (split != 0)
                 {
-                    CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(-firePoint.up.y, firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                    CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(-firepoint.up.y, firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation, knockbackMultiplier);
                     split--;
                 }
                 counter++;
@@ -124,69 +183,76 @@ public class ShootingAbility : MonoBehaviour
             int counter = 0;
             while (split != 0)
             {
-                CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.25f + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.25f + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation, knockbackMultiplier);
                 split--;
                 if (split != 0)
                 {
-                    CreateBullet(airTime, bulletSpeed, bulletSize, pierce, damage, firePoint.position + new Vector3(-firePoint.up.y, firePoint.up.x, 0) * 0.25f + new Vector3(firePoint.up.y, -firePoint.up.x, 0) * 0.5f * counter * bulletSize, rotation);
+                    CreateBullet(firepoint, airTime, bulletSpeed, bulletSize, pierce, damage, firepoint.position + new Vector3(-firepoint.up.y, firepoint.up.x, 0) * 0.25f + new Vector3(firepoint.up.y, -firepoint.up.x, 0) * 0.5f * counter * bulletSize, rotation, knockbackMultiplier);
                     split--;
                 }
                 counter++;
             }
         }
     }
-    public void CreateBullet(float airTime, float bulletSpeed, float bulletSize, float pierce, float damage, Vector3 position, float rotation)
+
+    private void CreateBullet(Transform firepoint, float airTime, float bulletSpeed, float bulletSize, int pierce, float damage, Vector3 position, float rotation, float knockbackMultiplier=1)
     {
-        GameObject bullet = Instantiate(bulletPrefab, position, firePoint.rotation,bullets.transform);
-        bullet.transform.localScale = new Vector3(bulletSize, bulletSize, 1);
+        Bullet bullet = BulletManager.Instance.TryGetBullet();
+        if (bullet == null) return;
+        bullet.AssignOnComplete(() => BulletManager.Instance.ReturnBullet(bullet));
 
-        bullet.GetComponent<Bullet>().pierce = pierce;
-        bullet.GetComponent<Bullet>().damage = damage;
-        bullet.GetComponent<Bullet>().ownerTag = owner.tag;
-        bullet.GetComponent<Bullet>().airTime = airTime;
+        Quaternion finalRotation = Quaternion.Euler(0, 0, firepoint.eulerAngles.z + rotation);
+        bullet.Initialize(Owner.tag, Owner.gameObject, position, finalRotation, new Vector3(bulletSize, bulletSize, 1), damage, airTime, bulletSpeed, pierce, bulletColor);
+        if (this.runtimeStats.Explode) bullet.InitializeSplitting(this.runtimeStats.ExplodeBulletAmount, this.runtimeStats.ExplodeBulletRange, this.runtimeStats.ExplodeBulletSize, this.runtimeStats.ExplodeBulletVelocity, this.runtimeStats.ExplodeDamagePercentage);
+        bullet.Shoot();
 
-        bullet.GetComponent<Bullet>().splitOnHit = splitOnHit;
-        bullet.GetComponent<Bullet>().splitAmount = splitAmount;
-        bullet.GetComponent<Bullet>().splitRange = splitRange;
-        bullet.GetComponent<Bullet>().splitBulletSize = splitBulletSize;
-        bullet.GetComponent<Bullet>().splitBulletSpeed = splitBulletSpeed;
-        bullet.GetComponent<Bullet>().splitDamagePercentage = splitDamagePercentage;
+        // Give Knockback to self
+        Vector2 direction = -(Vector2)(finalRotation * Vector3.up).normalized;
+        float baseKnockbackForce = 20;
+        float velocity = bulletSpeed;
 
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
-        Vector3 vector = Quaternion.AngleAxis(rotation, new Vector3(0, 0, 1)) * firePoint.up;
-
-        rb.AddForce(vector * bulletSpeed, ForceMode2D.Impulse);
+        Vector2 knockbackForce = direction.normalized * knockbackMultiplier * (
+            baseKnockbackForce +
+            0.4f * damage +
+            0.4f * velocity
+        );
+        this.Owner?.AddKnockback(knockbackForce);
     }
 
-    public void ShootBullet(float range, float bulletSpeed, float bulletSize, float pierce, float damage)
+    public void ShootBullet(float range, float bulletSpeed, float bulletSize, int pierce, float damage, float knockbackMultiplier)
     {
-        CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
+        for (int i = 0; i < this.firepoints.Count; i++)
+        {
+            Transform firepoint = this.firepoints[i];
+            CreateBullet(firepoint, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firepoint.position, 0, knockbackMultiplier);
+
+            // Trigger animation
+            PlayShootAnimation();
+
+            // Play muzzle flash effect
+            ParticleSystem muzzleFlash = this.muzzleFlashes[i];
+            if (muzzleFlash != null) muzzleFlash.Play();
+        }
     }
 
-    public void ApplyClass(Class playerClass)
+    public void ApplyPlayerStats(PlayerStats playerStats)
     {
-        if (playerClass == null) return;
-        if (!playerClass.hasShootAbility) return;
+        this.runtimeStats.ApplyStats(playerStats);
+    }
 
-        damage = playerClass.damage;
-        attackCooldown = playerClass.attackCooldown;
+    public void ApplyShootingStats(RuntimeShootingStats stats)
+    {
+        this.runtimeStats.ApplyStats(stats);
+    }
 
-        range = playerClass.range;
-        pierce = playerClass.pierce;
-        totalSplit = playerClass.totalSplit;
-        totalFan = playerClass.totalFan;
-        bulletSize = playerClass.bulletSize;
-        bulletSpeed = playerClass.bulletSpeed;
+    public void ApplyClass(PlayerClass playerClass)
+    {
+        this.runtimeStats.ApplyClass(playerClass);
+    }
 
-        splitOnHit = playerClass.splitOnHit;
-        splitAmount = playerClass.splitAmount;
-        splitRange = playerClass.splitRange;
-        splitBulletSize = playerClass.splitBulletSize;
-        splitBulletSpeed = playerClass.splitBulletSpeed;
-        splitDamagePercentage = playerClass.splitDamagePercentage;
-
-        shootingMoveSpeed = playerClass.shootingMoveSpeed;
+    public void ApplyPowerup(Powerup powerup)
+    {
+        this.runtimeStats.ApplyPowerup(powerup);
     }
 
     private void PlayShootAnimation()
@@ -194,10 +260,10 @@ public class ShootingAbility : MonoBehaviour
         Animator animator = GetComponentInChildren<Animator>();
         if (animator == null) return;
 
-        animator.speed = 1 / attackCooldown;
+        animator.speed = 1 / this.runtimeStats.AttackCooldown;
         animator.SetBool("Shooting", true);
 
-        StartCoroutine(ResetShootingAnimation(animator, 0.2f * attackCooldown));
+        StartCoroutine(ResetShootingAnimation(animator, 0.2f * this.runtimeStats.AttackCooldown));
     }
 
     private IEnumerator ResetShootingAnimation(Animator animator, float delay)
@@ -208,4 +274,74 @@ public class ShootingAbility : MonoBehaviour
             animator.SetBool("Shooting", false);
         }
     }
+
+    public void SetBulletColor(Color color)
+    {
+        this.bulletColor = color;
+    }
+
+    public Color GetBulletColor()
+    {
+        return this.bulletColor;
+    }
+
+    public float GetShootingMoveSpeed()
+    {
+        return this.runtimeStats.ShootingMoveSpeed;
+    }
+
+    public float GetDamage()
+    {
+        return this.runtimeStats.Damage;
+    }
+
+    public float GetRange()
+    {
+        return this.runtimeStats.Range;
+    }
+
+    public bool IsShootable(Vector3 from, Vector3 to)
+    {
+        float distance = Vector3.Distance(from, to);
+        if (distance > this.runtimeStats.Range) return false;
+
+        Vector3 direction = (to - from).normalized;
+        float radius = (this.runtimeStats.BulletSize / 2.66f) / 2; // A bullet is 6 pixels, which means that 2.66 bullets is 1 in game distance unit, then devide to get radius.
+        LayerMask obstacleLayerMask = LayerMask.GetMask("Wall");
+        RaycastHit2D hit = Physics2D.CircleCast(from, radius, direction, distance, obstacleLayerMask);
+        return hit.collider == null;
+    }
+
+    protected bool RaycastContainsWall(RaycastHit2D[] rays)
+    {
+        foreach (RaycastHit2D ray in rays)
+        {
+            if (ray.transform.CompareTag("Wall"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    #region Properties
+    public bool Shooting { get => shooting; 
+        set 
+        {
+            if (shooting == value) return;
+            shooting = value;
+            if (shooting) OnShootStart?.Invoke();
+            else OnShootEnd?.Invoke();
+        } 
+    }
+
+    public Entity Owner {
+        get
+        {
+            if (owner == null) return GetComponent<Entity>();
+            return owner;
+        } 
+        set => owner = value; 
+    }
+    #endregion
 }

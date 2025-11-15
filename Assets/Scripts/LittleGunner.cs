@@ -5,25 +5,32 @@ using UnityEngine;
 [RequireComponent(typeof(ShootingAbility))]
 public class LittleGunner : MonoBehaviour
 {
-    private ShootingAbility shootingAbility;
-    private Entity target;
+    private ShootingAbility gunnerShootingAbility;
+    [SerializeField] private Entity target;
 
-    public Entity owner;
+    [SerializeField] private Entity owner;
     private float lastRefresh = 0;
     private float refreshCooldown = 1;
 
     // Start is called before the first frame update
     void Start()
     {
-        shootingAbility = this.GetComponent<ShootingAbility>();
+        gunnerShootingAbility = this.GetComponent<ShootingAbility>();
     }
 
     public void SetOwner(Entity entity)
     {
-        owner = entity;
-        shootingAbility = this.GetComponent<ShootingAbility>();
-        shootingAbility.damage = entity.GetComponent<ShootingAbility>().damage / 2;
-        shootingAbility.owner = owner;
+        this.owner = entity;
+
+        gunnerShootingAbility = this.GetComponent<ShootingAbility>();
+        ShootingAbility ownerShootingAbility = entity.GetComponent<ShootingAbility>();
+
+        RuntimeShootingStats ownerShootingStats = ownerShootingAbility.RuntimeStats;
+        ownerShootingStats.Damage /= 2f;
+        gunnerShootingAbility.ApplyShootingStats(ownerShootingStats);
+        gunnerShootingAbility.Owner = entity;
+
+        this.tag = entity.tag;
     }
 
     // Update is called once per frame
@@ -35,7 +42,7 @@ public class LittleGunner : MonoBehaviour
         {
             Vector2 lookDir = (target.transform.position - gameObject.transform.position).normalized;
             this.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDir);
-            shootingAbility.shooting = true;
+            gunnerShootingAbility.Shooting = true;
 
             if (Time.time - lastRefresh > refreshCooldown)
             {
@@ -45,29 +52,35 @@ public class LittleGunner : MonoBehaviour
         }
         else
         {
-            shootingAbility.shooting = false;
-            lastRefresh = Time.time;
-            target = FindTarget();
+            gunnerShootingAbility.Shooting = false;
+            if (Time.time - lastRefresh > refreshCooldown)
+            {
+                lastRefresh = Time.time;
+                target = FindTarget();
+            }
         }
     }
 
     private Entity FindTarget()
     {
-        Entity[] entities = Object.FindObjectsOfType<Entity>();
+        Collider2D[] hits = Physics2D.OverlapCircleAll(this.transform.position, gunnerShootingAbility.GetRange() + 1);
 
-        Entity closestPlayer = null;
+        Entity closestEntity = null;
         float closestDistance = float.MaxValue;
 
-        foreach (Entity entity in entities)
+        foreach (Collider2D hit in hits)
         {
+            Entity entity = hit.GetComponent<Entity>();
+            if (entity == null) continue;
+
             float distance = Vector3.Distance(this.transform.position, entity.transform.position);
-            if (distance < closestDistance && entity.tag != this.tag)
+            if (distance < closestDistance && entity.EntityID != this.owner.EntityID)
             {
                 closestDistance = distance;
-                closestPlayer = entity;
+                closestEntity = entity;
             }
         }
 
-        return closestPlayer;
+        return closestEntity;
     }
 }

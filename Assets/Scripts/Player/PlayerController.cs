@@ -1,117 +1,159 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
     private Player player;
     private Rigidbody2D playerRB;
 
-    private PlayerMovement playerMovement;
+    public bool collectInput = true;
 
+    private PlayerMovement playerMovement;
     private DashAbility dashAbility;
     private ShootingAbility shootAbility;
     private ReflectShieldAbility reflectAbility;
+    [SerializeField] private PlayerInput playerInput;
 
-    private GameStateManager gameStateManager;
+    public UnityEvent onPause;
+    private Action onMove;
+    public Action<Player> onClassAbility;
 
-    public bool collectInput = true;
-
-    public Action<Player> classAbility;
-
-    private void Start()
+    private void Awake()
     {
-        this.player = this.GetComponent<Player>();
-        this.playerRB = this.GetComponent<Rigidbody2D>();
+        player = GetComponent<Player>();
+        playerRB = GetComponent<Rigidbody2D>();
+        playerMovement = GetComponent<PlayerMovement>();
+        dashAbility = GetComponent<DashAbility>();
+        shootAbility = GetComponent<ShootingAbility>();
+        reflectAbility = GetComponent<ReflectShieldAbility>();
 
-        this.playerMovement = this.GetComponent<PlayerMovement>();
-
-        this.dashAbility = this.GetComponent<DashAbility>();
-        this.shootAbility = this.GetComponent<ShootingAbility>();
-        this.reflectAbility = this.GetComponent<ReflectShieldAbility>();
-
-        this.gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
+        if (playerInput == null) playerInput = GetComponent<PlayerInput>();
     }
 
-    public void Dash(InputAction.CallbackContext context)
+    public void SetPlayerInput(PlayerInput newPlayerInput)
     {
-        if (gameStateManager.IsPaused()) return;
+        playerInput.onActionTriggered -= OnActionTriggered;
+        playerInput = newPlayerInput;
+        playerInput.onActionTriggered += OnActionTriggered;
+    }
+
+    private void OnEnable()
+    {
+        if (playerInput != null)
+        {
+            playerInput.onActionTriggered += OnActionTriggered;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (playerInput != null)
+        {
+            playerInput.onActionTriggered -= OnActionTriggered;
+        }
+    }
+
+    private void OnActionTriggered(InputAction.CallbackContext context)
+    {
         if (!collectInput) return;
-        if (dashAbility == null) return;
 
-        if (context.performed)
+        switch (context.action.name)
         {
-            Vector3 moveDir = playerRB.velocity.normalized;
-            dashAbility.Dash(moveDir);
+            case "Dash":
+                if (IsPaused()) return;
+
+                if (dashAbility != null && context.performed)
+                {
+                    Vector3 moveDir = playerRB.velocity.normalized;
+                    dashAbility.Dash(moveDir);
+                }
+                break;
+
+            case "Fire":
+                if (IsPaused()) return;
+
+                if (shootAbility != null)
+                {
+                    if (context.performed)
+                        shootAbility.StartShooting();
+                    else if (context.canceled)
+                        shootAbility.StopShooting();
+                }
+                break;
+
+            case "LookGamepad":
+                if (IsPaused()) return;
+
+                if (playerMovement != null)
+                {
+                    Vector2 lookInput = context.ReadValue<Vector2>();
+                    playerMovement.SetLookInput(lookInput);
+                }
+                break;
+
+            case "LookMouse":
+                if (IsPaused()) return;
+
+                if (playerMovement != null && Camera.main != null)
+                {
+                    Vector2 mouseInput = context.ReadValue<Vector2>();
+                    Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(mouseInput);
+                    playerMovement.SetLookPoint(worldMousePos);
+                }
+                break;
+
+            case "Reflect":
+                if (IsPaused()) return;
+
+                if (reflectAbility != null && context.performed)
+                {
+                    reflectAbility.EnableReflectShield();
+                }
+                break;
+
+            case "Move":
+                if (playerMovement != null)
+                {
+                    playerMovement.SetMoveDirection(Vector2.zero);
+                    if (IsPaused()) return;
+
+                    if (context.performed)
+                    {
+                        playerMovement.SetMoveDirection(context.ReadValue<Vector2>());
+                    }
+
+                    onMove?.Invoke();
+                }
+                break;
+
+            case "ClassAbility":
+                if (IsPaused()) return;
+
+                if (onClassAbility != null && context.performed)
+                {
+                    onClassAbility(player);
+                }
+                break;
+            case "Pause":
+                if (context.performed) onPause.Invoke();
+                break;
         }
     }
 
-    public void Shoot(InputAction.CallbackContext context)
+    public void AddOnMoveCallback(Action action)
     {
-        if (shootAbility == null) return;
-
-        if (context.performed)
-        {
-            if (gameStateManager.IsPaused()) return;
-            if (!collectInput) return;
-            shootAbility.StartShooting();
-        }
-
-        if (context.canceled)
-        {
-            shootAbility.StopShooting();
-        }
+        onMove += action;
     }
 
-    public void Look(InputAction.CallbackContext context)
+    public void RemoveOnMoveCallback(Action action)
     {
-        if (playerMovement == null) return;
-
-        Vector2 lookInput = context.ReadValue<Vector2>();
-        playerMovement.SetLookInput(lookInput);
+        onMove -= action;
     }
 
-    public void Reflect(InputAction.CallbackContext context)
+    private bool IsPaused()
     {
-        if (gameStateManager.IsPaused()) return;
-        if (!collectInput) return;
-        if (reflectAbility == null) return;
-
-        if (context.performed)
-        {
-            reflectAbility.EnableReflectShield();
-        }
-    }
-
-    public void Move(InputAction.CallbackContext context)
-    {
-        if (playerMovement == null) return;
-
-        Vector2 movementInput = Vector2.zero;
-        if (context.performed)
-        {
-            if (gameStateManager.IsPaused()) return;
-            if (!collectInput) return;
-            movementInput = context.ReadValue<Vector2>();
-        }
-        else if (context.canceled)
-        {
-            movementInput = Vector2.zero;
-        }
-
-        playerMovement.SetMoveDirection(movementInput);
-    }
-
-    public void ClassAbility(InputAction.CallbackContext context)
-    {
-        if (gameStateManager.IsPaused()) return;
-        if (!collectInput) return;
-        if (classAbility == null) return;
-
-        classAbility(player);
+        return GameStateManager.Instance != null && GameStateManager.Instance.IsPaused();
     }
 }

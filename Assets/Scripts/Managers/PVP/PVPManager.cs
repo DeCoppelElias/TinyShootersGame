@@ -31,8 +31,6 @@ public class PVPManager : MonoBehaviour
     private GameObject debugUI;
     private Text debugText;
 
-    private GameStateManager gameStateManager;
-
     private bool deviceLost = false;
 
     public GameObject upgradeButtonPrefab;
@@ -92,8 +90,6 @@ public class PVPManager : MonoBehaviour
         debugUI = sharedCanvas.transform.Find("DebugUI").gameObject;
         debugText = debugUI.transform.Find("Title").GetComponent<Text>();
 
-        gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
-
         InputSystem.onDeviceChange += OnDeviceChange;
 
         Initialise();
@@ -125,7 +121,7 @@ public class PVPManager : MonoBehaviour
                 if (pvpState == PVPState.PVP || pvpState == PVPState.CountDown)
                 {
                     EnablePlayerMovement(false);
-                    gameStateManager.ToPaused();
+                    GameStateManager.Instance.ToPaused();
                 }
             }
         }
@@ -156,7 +152,7 @@ public class PVPManager : MonoBehaviour
             if (pvpState == PVPState.PVP || pvpState == PVPState.CountDown)
             {
                 EnablePlayerMovement(true);
-                gameStateManager.ToRunning();
+                GameStateManager.Instance.ToRunning();
             }
         }
 
@@ -251,7 +247,7 @@ public class PVPManager : MonoBehaviour
 
     public void EnableUpgradeUI(Player player)
     {
-        Class playerClass = player.playerClass;
+        PlayerClass playerClass = player.playerClass;
         if (playerClass.upgrades.Count == 0) return;
 
         (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
@@ -279,7 +275,7 @@ public class PVPManager : MonoBehaviour
         for (int i = 0; i < buttons.childCount; i++)
         {
             Transform buttonTransform = buttons.GetChild(i);
-            Class currentPlayerClass = playerClass.upgrades[i];
+            PlayerClass currentPlayerClass = playerClass.upgrades[i];
 
             Text text = buttonTransform.GetComponentInChildren<Text>();
             text.text = currentPlayerClass.className;
@@ -332,8 +328,8 @@ public class PVPManager : MonoBehaviour
         player2.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
 
         // Reset player health
-        player1.health = player1.maxHealth;
-        player2.health = player2.maxHealth;
+        player1.Health = player1.MaxHealth;
+        player2.Health = player2.MaxHealth;
 
         // Clean up all enemies
         Transform enemiesParent = GameObject.Find("Enemies").transform;
@@ -392,7 +388,7 @@ public class PVPManager : MonoBehaviour
             player2.transform.position = new Vector3(1, 0, 0);
             DisplayNotification("It's a tie! Quitting to main menu...", 5);
         }
-        StartCoroutine(PerformAfterDelay(() => this.gameStateManager.QuitToMainMenu(), 5));
+        StartCoroutine(PerformAfterDelay(() => GameStateManager.Instance.QuitToMainMenu(), 5));
     }
 
     public void EnablePauseUI(Player player)
@@ -401,7 +397,7 @@ public class PVPManager : MonoBehaviour
 
         LowerMusicVolume();
 
-        gameStateManager.ToPaused();
+        GameStateManager.Instance.ToPaused();
 
         (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
         pauseUI.SetActive(true);
@@ -425,7 +421,7 @@ public class PVPManager : MonoBehaviour
 
         (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
         pauseUI.SetActive(false);
-        gameStateManager.ToRunning();
+        GameStateManager.Instance.ToRunning();
 
         // Enable controls of other player
         PlayerInput otherPlayerInput = GetOtherInput(player);

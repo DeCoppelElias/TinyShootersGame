@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f2d49ebe426fd944a40794e4560e288, type: 3}
+  m_Name: Base
+  m_EditorClassIdentifier: 
+  className: Base
+  animatorController: {fileID: 9100000, guid: e0a729f45a778f44f9703b2abee46df7, type: 2}
+  UISprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
+  maxHealth: 100
+  pvpMaxHealth: 100
+  health: 100
+  damage: 10
+  normalMoveSpeed: 5
+  shootingMoveSpeed: 2
+  invulnerableDuration: 0.5
+  contactDamage: 10
+  contactHitCooldown: 1
+  classAbility: {fileID: 0}
+  hasShootAbility: 1
+  attackCooldown: 0.5
+  range: 5
+  pierce: 1
+  totalSplit: 1
+  totalFan: 1
+  bulletSize: 1
+  bulletSpeed: 6
+  splitOnHit: 0
+  splitAmount: 0
+  splitRange: 1
+  splitBulletSize: 0.5
+  splitBulletSpeed: 6
+  splitDamagePercentage: 0.5
+  hasDashAbility: 1
+  dashCooldown: 2
+  dashDuration: 0.1
+  chargeDuration: 0
+  dashSpeed: 20
+  upgrades:
+  - {fileID: 11400000, guid: 3b1d03bfd8af72f4fa3747bfa1e70a57, type: 2}
+  - {fileID: 11400000, guid: 59aaf2b940ad0414c9b408ad39e96984, type: 2}
+  - {fileID: 11400000, guid: 1330e20879df1824a9d14e4529c7da13, type: 2}

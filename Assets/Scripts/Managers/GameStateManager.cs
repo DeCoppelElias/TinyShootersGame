@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -9,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameStateManager : MonoBehaviour
 {
+    public static GameStateManager Instance { get; private set; }
     private enum State {RUNNING, SLOWINGDOWN, SLOWMO, SPEEDUP, PAUSED}
 
     [SerializeField]
@@ -22,10 +20,17 @@ public class GameStateManager : MonoBehaviour
     private Volume volume;
     private ColorAdjustments colorAdjustments;
 
-    public UnityEvent<bool, float, bool, float> onWin;
+    public UnityEvent<bool, float> onWin;
     public UnityEvent<bool, float> onLose;
 
     private float startTime;
+
+    private int pauseRequests = 0;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -85,6 +90,8 @@ public class GameStateManager : MonoBehaviour
     }
     public void ToPaused()
     {
+        if (this.state == State.PAUSED) return;
+
         this.state = State.PAUSED;
         Time.timeScale = 0;
         Time.fixedDeltaTime = Time.timeScale * 0.02f;
@@ -114,6 +121,8 @@ public class GameStateManager : MonoBehaviour
 
     public void ToRunning()
     {
+        if (this.state == State.RUNNING) return;
+
         this.state = State.RUNNING;
         Time.timeScale = 1;
         Time.fixedDeltaTime = Time.timeScale * 0.02f;
@@ -174,22 +183,23 @@ public class GameStateManager : MonoBehaviour
         ToPaused();
 
         bool beatHighScore = SaveHighScore();
-        int currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
+        
+        ScoreManager.Instance.CommitAll();
+        int currentScore = ScoreManager.Instance.GetTotalScoreIncludingActive();
 
-        onLose.Invoke(beatHighScore, currentScore);
+        onLose?.Invoke(beatHighScore, currentScore);
     }
 
     public void GameWon()
     {
         ToPaused();
 
-        bool beatBestTime = SaveBestTime();
-        float currentTime = Time.time - startTime;
-
         bool beatHighScore = SaveHighScore();
-        float currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
 
-        onWin.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
+        ScoreManager.Instance.CommitAll();
+        int currentScore = ScoreManager.Instance.GetTotalScoreIncludingActive();
+
+        onWin?.Invoke(beatHighScore, currentScore);
     }
 
     /// <summary>
@@ -198,7 +208,7 @@ public class GameStateManager : MonoBehaviour
     /// <returns></returns>
     private bool SaveHighScore()
     {
-        float currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
+        int currentScore = ScoreManager.Instance.GetTotalScoreIncludingActive();
         if (PlayerPrefs.HasKey("HighScore"))
         {
             float highScore = PlayerPrefs.GetFloat("HighScore");
@@ -218,29 +228,21 @@ public class GameStateManager : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// This methods checks if a best time is reached and updates the PlayerPrefs accordingly.
-    /// </summary>
-    /// <returns></returns>
-    private bool SaveBestTime()
+    public void RequestPause()
     {
-        float currentTime = Time.time - startTime;
-        if (PlayerPrefs.HasKey("BestTime"))
-        {
-            float bestTime = PlayerPrefs.GetFloat("BestTime");
-            if (currentTime < bestTime)
-            {
-                PlayerPrefs.SetFloat("OldBestTime", bestTime);
-                PlayerPrefs.SetFloat("BestTime", currentTime);
-                return true;
-            }
-        }
-        else
-        {
-            PlayerPrefs.SetFloat("BestTime", currentTime);
-            return true;
-        }
+        pauseRequests++;
+        UpdatePauseState();
+    }
 
-        return false;
+    public void ReleasePause()
+    {
+        pauseRequests = Mathf.Max(0, pauseRequests - 1);
+        UpdatePauseState();
+    }
+
+    private void UpdatePauseState()
+    {
+        if (pauseRequests == 0) ToRunning();
+        else if (pauseRequests > 0) ToPaused();
     }
 }

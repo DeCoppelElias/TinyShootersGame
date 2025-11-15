@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 
-[CustomEditor(typeof(Class))]
+[CustomEditor(typeof(PlayerStats))]
 public class ClassEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         // Get a reference to the Class scriptable object
-        Class playerClass = (Class)target;
+        PlayerStats playerClass = (PlayerStats)target;
 
         serializedObject.Update();
 
@@ -20,7 +20,6 @@ public class ClassEditor : Editor
         playerClass.animatorController = (AnimatorController)EditorGUILayout.ObjectField("Animation Controller", playerClass.animatorController, typeof(AnimatorController), false);
         playerClass.UISprite = (Sprite)EditorGUILayout.ObjectField("UI sprite", playerClass.UISprite, typeof(Sprite), false);
         playerClass.maxHealth = EditorGUILayout.FloatField("Max Health", playerClass.maxHealth);
-        playerClass.pvpMaxHealth = EditorGUILayout.FloatField("PVP Max Health", playerClass.pvpMaxHealth);
         playerClass.health = EditorGUILayout.FloatField("Health", playerClass.health);
         playerClass.damage = EditorGUILayout.FloatField("Damage", playerClass.damage);
         playerClass.normalMoveSpeed = EditorGUILayout.FloatField("Normal Move Speed", playerClass.normalMoveSpeed);
@@ -40,13 +39,13 @@ public class ClassEditor : Editor
         {
             playerClass.attackCooldown = EditorGUILayout.FloatField("Attack Cooldown", playerClass.attackCooldown);
             playerClass.range = EditorGUILayout.FloatField("Range", playerClass.range);
-            playerClass.pierce = EditorGUILayout.FloatField("Pierce", playerClass.pierce);
+            playerClass.pierce = EditorGUILayout.IntField("Pierce", playerClass.pierce);
             playerClass.totalSplit = EditorGUILayout.FloatField("Total Split", playerClass.totalSplit);
             playerClass.totalFan = EditorGUILayout.FloatField("Total Fan", playerClass.totalFan);
             playerClass.bulletSize = EditorGUILayout.FloatField("Bullet Size", playerClass.bulletSize);
             playerClass.bulletSpeed = EditorGUILayout.FloatField("Bullet Speed", playerClass.bulletSpeed);
             playerClass.splitOnHit = EditorGUILayout.Toggle("Split On Hit", playerClass.splitOnHit);
-            playerClass.splitAmount = EditorGUILayout.FloatField("Split Amount", playerClass.splitAmount);
+            playerClass.splitAmount = EditorGUILayout.IntField("Split Amount", playerClass.splitAmount);
             playerClass.splitRange = EditorGUILayout.FloatField("Split Range", playerClass.splitRange);
             playerClass.splitBulletSize = EditorGUILayout.FloatField("Split Bullet Size", playerClass.splitBulletSize);
             playerClass.splitBulletSpeed = EditorGUILayout.FloatField("Split Bullet Speed", playerClass.splitBulletSpeed);

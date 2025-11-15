@@ -8,14 +8,16 @@ public class PathFinding : MonoBehaviour
 {
     [Header("Size of the entity")]
     [SerializeField] private bool customSize = false;
-    [SerializeField] private float size = 0;
+    [SerializeField] private float diameter = 0;
 
     [Header("Pathfinding settings")]
     [SerializeField] private float stepSize = 0.25f;
-    [SerializeField] private int maxIterations = 1000;
+    [SerializeField] private int maxIterations = 10000;
 
     [Header("Display settings")]
     [SerializeField] private LineRenderer displayLineRenderer;
+
+    private WaveManager waveManager;
 
     private void Start()
     {
@@ -24,8 +26,14 @@ public class PathFinding : MonoBehaviour
         {
             Collider2D collider = GetComponent<Collider2D>();
             if (collider == null) throw new Exception("Cannot find size because collider is missing");
-            size = collider.bounds.size.x;
+            diameter = collider.bounds.size.x;
         }
+
+        // Initial Pathfinding settings
+        this.stepSize = 0.25f;
+        this.maxIterations = 10000;
+
+        waveManager = GameObject.Find("WaveManager")?.GetComponent<WaveManager>();
     }
 
     /// <summary>
@@ -35,20 +43,20 @@ public class PathFinding : MonoBehaviour
     {
         public GridTile previous;
         public Vector3 location;
+        public float gCost;
         public float priority;
 
-        public GridTile(Vector3 location, GridTile previous, float priority)
+        public GridTile(Vector3 location, GridTile previous, float gCost, float priority)
         {
             this.previous = previous;
             this.location = location;
+            this.gCost = gCost;
             this.priority = priority;
         }
 
         public int CompareTo(GridTile other)
         {
-            if (this.priority < other.priority) return -1;
-            else if (this.priority > other.priority) return 1;
-            else return 0;
+            return this.priority.CompareTo(other.priority);
         }
     }
 
@@ -118,64 +126,108 @@ public class PathFinding : MonoBehaviour
         }
     }
 
+    private float GetTileCost(Vector3 position)
+    {
+        float radius = 0.5f * diameter;
+
+        LayerMask combinedLayerMask = LayerMask.GetMask("Wall", "Pit", "Pushable");
+        Collider2D hit = Physics2D.OverlapCircle(position, radius, combinedLayerMask);
+        if (hit != null)
+        {
+            int layerIndex = hit.gameObject.layer;
+            string layerName = LayerMask.LayerToName(layerIndex);
+
+            if (layerName == "Wall" || layerName == "Pit")
+            {
+                return Mathf.Infinity;
+            }
+            else if (layerName == "Pushable")
+            {
+                return 5;
+            }
+        }
+
+        // Add random noise to make paths more random
+        float noise = UnityEngine.Random.Range(0,1f) * 0.2f;
+        return 1f + noise;
+    }
+
     /// <summary>
     /// This method finds the shortest path between two positions with A*. Written by Chatgtp.
     /// </summary>
     /// <param name="start"></param>
     /// <param name="target"></param>
     /// <returns></returns>
-    public List<Vector3> FindShortestPath(Vector3 start, Vector3 target)
+    public List<Vector3> FindPath(Vector3 start, Vector3 target)
     {
-        // Initialize the open and closed sets
         PriorityQueue<GridTile> openSet = new PriorityQueue<GridTile>();
-        HashSet<Vector3> visited = new HashSet<Vector3>();
-        openSet.Enqueue(new GridTile(start, null, 0));
+        HashSet<Vector3> closedSet = new HashSet<Vector3>();
+        Dictionary<Vector3, float> gCosts = new Dictionary<Vector3, float>();
+
+        float initialGCost = 0;
+        float initialHCost = Vector3.Distance(start, target);
+        openSet.Enqueue(new GridTile(start, null, initialGCost, initialGCost + initialHCost));
+        gCosts[start] = 0;
 
         int iteration = 0;
-        while (openSet.Count > 0 && iteration < this.maxIterations)
+        while (openSet.Count > 0 && iteration < maxIterations)
         {
             GridTile current = openSet.Dequeue();
 
-            // If we've reached the target, reconstruct the path
-            if (Vector3.Distance(current.location, target) < size)
+            if (Vector3.Distance(current.location, target) < diameter)
             {
                 return ReconstructPath(current);
             }
 
-            if (visited.Contains(current.location))
+            if (closedSet.Contains(current.location))
                 continue;
 
-            visited.Add(current.location);
+            closedSet.Add(current.location);
 
-            // Explore neighbors
             foreach (Vector3 neighbor in GetNeighbors(current.location))
             {
-                if (visited.Contains(neighbor) || InvalidPosition(neighbor))
+                if (closedSet.Contains(neighbor) || InvalidPosition(neighbor))
                     continue;
 
-                float newPriority = Vector3.Distance(neighbor, target);
-                openSet.Enqueue(new GridTile(neighbor, current, newPriority));
+                float tileCost = GetTileCost(neighbor);
+                if (tileCost == Mathf.Infinity)
+                    continue;
+
+                float tentativeGCost = current.gCost + Vector3.Distance(current.location, neighbor) * tileCost;
+
+                if (!gCosts.ContainsKey(neighbor) || tentativeGCost < gCosts[neighbor])
+                {
+                    gCosts[neighbor] = tentativeGCost;
+                    float hCost = Vector3.Distance(neighbor, target);
+                    float fCost = tentativeGCost + hCost;
+                    openSet.Enqueue(new GridTile(neighbor, current, tentativeGCost, fCost));
+                }
             }
 
             iteration++;
         }
 
-        // Return an empty path if no path is found
+        // No path found
         return new List<Vector3>();
     }
 
     /// <summary>
-    /// Checks wether a certain position is valid by checking if it isn't too close to some obstacle. 
+    /// Checks wether a certain position is valid by checking if it isn't too close to some obstacle and by checking if the position is inside the level.
     /// </summary>
     /// <param name="location"></param>
     /// <returns></returns>
     public bool InvalidPosition(Vector3 location)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(location, 0.5f * size);
-        foreach (Collider2D collider in colliders)
-        {
-            if (collider.CompareTag("Wall") || collider.CompareTag("Pit")) return true;
-        }
+        float radius = 0.5f * diameter;
+
+        LayerMask obstacleLayerMask = LayerMask.GetMask("Wall", "Pit");
+        Collider2D collider = Physics2D.OverlapCircle(location, radius, obstacleLayerMask);
+        if (collider != null)
+            return true;
+
+        if (waveManager != null && !waveManager.InsideLevel(location))
+            return true;
+
         return false;
     }
 
@@ -211,6 +263,15 @@ public class PathFinding : MonoBehaviour
             position + new Vector3(0, -stepSize, 0)
         };
 
+        // Shuffle neighbors randomly
+        for (int i = neighbors.Count - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            var temp = neighbors[i];
+            neighbors[i] = neighbors[j];
+            neighbors[j] = temp;
+        }
+
         return neighbors;
     }
 
@@ -232,23 +293,30 @@ public class PathFinding : MonoBehaviour
     /// </summary>
     /// <param name="route"></param>
     /// <returns></returns>
-    public List<Vector3> SmoothRoute(List<Vector3> route)
+    public List<Vector3> SmoothRoute(List<Vector3> route, int maxLookahead = 8)
     {
-        List<Vector3> newRoute = new List<Vector3>();
         if (route.Count <= 2) return route;
 
+        List<Vector3> newRoute = new List<Vector3>();
         newRoute.Add(route[0]);
-        int i = 0;
-        while (i < route.Count - 2)
-        {
-            int j = i + 2;
 
-            while (j < route.Count && !IsObstacleInBetween(route[i], route[j]))
+        int i = 0;
+        while (i < route.Count - 1)
+        {
+            int bestJ = i + 1;
+            int maxJ = Mathf.Min(i + maxLookahead, route.Count - 1);
+
+            for (int j = maxJ; j > i + 1; j--)
             {
-                j++;
+                if (!IsObstacleInBetween(route[i], route[j]))
+                {
+                    bestJ = j;
+                    break;
+                }
             }
-            newRoute.Add(route[j - 1]);
-            i = j - 1;
+
+            newRoute.Add(route[bestJ]);
+            i = bestJ;
         }
 
         return newRoute;
@@ -256,6 +324,7 @@ public class PathFinding : MonoBehaviour
 
     /// <summary>
     /// Checks whether there is an obstacle in between two points.
+    /// Try to call this method as little as possible as it has a large performance impact.
     /// </summary>
     /// <param name="from"></param>
     /// <param name="to"></param>
@@ -264,47 +333,17 @@ public class PathFinding : MonoBehaviour
     {
         if (distance <= 0) distance = Vector3.Distance(from, to);
 
-        Vector3 raycastDirection = (to - from).normalized;
-        RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, distance);
-        if (RaycastHitsObstacle(rays)) return true;
+        Vector3 direction = (to - from).normalized;
+        float radius = 0.5f * diameter;
 
-        // Perpendicular vectors
-        Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
-        Vector3 perpendicular2 = new Vector3(raycastDirection.y, -raycastDirection.x, raycastDirection.z);
-
-        Vector3 newFrom1 = from + (size * perpendicular1);
-        raycastDirection = (to - newFrom1).normalized;
-        rays = Physics2D.RaycastAll(newFrom1, raycastDirection, distance);
-        if (RaycastHitsObstacle(rays)) return true;
-
-        Vector3 newFrom2 = from + (size * perpendicular2);
-        raycastDirection = (to - newFrom2).normalized;
-        rays = Physics2D.RaycastAll(newFrom2, raycastDirection, distance);
-        if (RaycastHitsObstacle(rays)) return true;
-
-        return false;
-    }
-
-    /// <summary>
-    /// Checks whether a raycast has hit an obstacle.
-    /// </summary>
-    /// <param name="rays"></param>
-    /// <returns></returns>
-    public bool RaycastHitsObstacle(RaycastHit2D[] rays)
-    {
-        foreach (RaycastHit2D ray in rays)
-        {
-            if (ray.transform.CompareTag("Wall") || ray.transform.CompareTag("Pit"))
-            {
-                return true;
-            }
-        }
-        return false;
+        LayerMask obstacleLayerMask = LayerMask.GetMask("Wall", "Pit", "Pushable");
+        RaycastHit2D hit = Physics2D.CircleCast(from, radius, direction, distance, obstacleLayerMask);
+        return hit.collider != null;
     }
 
     public float GetSize()
     {
-        return this.size;
+        return this.diameter;
     }
 
     public float GetPathDistance(List<Vector3> path)

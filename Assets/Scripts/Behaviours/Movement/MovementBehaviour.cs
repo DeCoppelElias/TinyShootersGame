@@ -6,19 +6,26 @@ using UnityEngine;
 public abstract class MovementBehaviour : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 2;
+    [SerializeField] protected float moveSpeed = 2;
     [SerializeField] private float currentMoveSpeed;
     private enum MovementBehaviourState { Enabled, WalkingToPosition, Disabled}
     [SerializeField] private MovementBehaviourState movementBehaviourState = MovementBehaviourState.Enabled;
 
     [Header("Walking To Position State")]
     [SerializeField] private Vector3 targetPosition;
+    [SerializeField] private bool canSeeTargetPosition = true;
+    [SerializeField] private float targetPositionVisionCooldown = 0.5f;
+    private float lastTargetPositionVisionCheck;
     private enum WalkToPositionState { Normal, DodgingObstacle, NoPathToPosition }
     [SerializeField] private WalkToPositionState walkToPositionState = WalkToPositionState.Normal;
-    private PathFinding pathFinder;
+    protected PathFinding pathFinder;
     private List<Vector3> currentPath;
     private float lastPathFindingRefresh = 0;
-    private float pathFindingRefreshCooldown = 3f;
+    [SerializeField] private float pathFindingRefreshCooldown = 3f;
+    
+    /*[Header("Avoidance Settings")]
+    [SerializeField] private float avoidanceRadius = 1;
+    [SerializeField] private float avoidanceStrength = 0.1f;*/
 
     [Header("Debug Settings")]
     [SerializeField] private bool debug = false;
@@ -37,7 +44,12 @@ public abstract class MovementBehaviour : MonoBehaviour
     {
         if (movementBehaviourState == MovementBehaviourState.WalkingToPosition)
         {
-            WalkToPositionUpdate(targetPosition);
+            WalkToTargetPosition();
+        }
+        if (Time.time - lastTargetPositionVisionCheck > targetPositionVisionCooldown)
+        {
+            lastTargetPositionVisionCheck = Time.time;
+            canSeeTargetPosition = !pathFinder.IsObstacleInBetween(transform.position, targetPosition);
         }
     }
 
@@ -80,18 +92,26 @@ public abstract class MovementBehaviour : MonoBehaviour
         else movementBehaviourState = MovementBehaviourState.Enabled;
     }
 
-    private void WalkToPositionUpdate(Vector3 position)
+    private void WalkToTargetPosition()
     {
         float step = currentMoveSpeed * Time.deltaTime;
+
         // If there are no obstacles between enemy and player, move towards player
         if (walkToPositionState == WalkToPositionState.Normal)
         {
-            transform.position = Vector2.MoveTowards(transform.position, position, step);
+            Vector2 direction = (targetPosition - transform.position).normalized;
+
+            /*// Avoid other entities
+            Vector2 avoidance = CalculateAvoidanceForce();
+            Vector2 finalDirection = (direction + avoidance).normalized;
+            transform.position += (Vector3)(finalDirection * step);*/
+
+            transform.position += (Vector3)(direction * step);
 
             // If there is an obstacle blocking the way, try to find a path to player and change state
-            if (pathFinder.IsObstacleInBetween(transform.position, position, 1))
+            if (!canSeeTargetPosition)
             {
-                currentPath = pathFinder.FindShortestPath(transform.position, position);
+                currentPath = pathFinder.FindPath(transform.position, targetPosition);
                 lastPathFindingRefresh = Time.time;
 
                 // There is an existing path
@@ -111,7 +131,7 @@ public abstract class MovementBehaviour : MonoBehaviour
         else if (walkToPositionState == WalkToPositionState.DodgingObstacle)
         {
             // If path is empty or there are no obstacles to the player, then return no normal state
-            if (currentPath.Count == 0 || !pathFinder.IsObstacleInBetween(transform.position, position))
+            if (currentPath.Count == 0 || canSeeTargetPosition)
             {
                 currentPath.Clear();
                 walkToPositionState = WalkToPositionState.Normal;
@@ -119,7 +139,15 @@ public abstract class MovementBehaviour : MonoBehaviour
             // Otherwise, move to next point in route
             else
             {
-                transform.position = Vector2.MoveTowards(transform.position, currentPath[0], step);
+                Vector2 direction = ((Vector2)currentPath[0] - (Vector2)transform.position).normalized;
+
+                /*// Avoid other entities
+                Vector2 avoidance = CalculateAvoidanceForce();
+                Vector2 finalDirection = (direction + avoidance).normalized;
+                transform.position += (Vector3)(finalDirection * step);*/
+
+                transform.position += (Vector3)(direction * step);
+
                 if (Vector3.Distance(transform.position, currentPath[0]) <= 0.1f * pathFinder.GetSize())
                 {
                     currentPath.RemoveAt(0);
@@ -128,7 +156,7 @@ public abstract class MovementBehaviour : MonoBehaviour
                 // Refresh route every few seconds
                 if (Time.time - lastPathFindingRefresh > pathFindingRefreshCooldown)
                 {
-                    currentPath = pathFinder.FindShortestPath(transform.position, position);
+                    currentPath = pathFinder.FindPath(transform.position, targetPosition);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path
@@ -147,16 +175,19 @@ public abstract class MovementBehaviour : MonoBehaviour
         }
         else if (walkToPositionState == WalkToPositionState.NoPathToPosition)
         {
+            // Do nothing
+
+            // Try to find path
             if (Time.time - lastPathFindingRefresh > pathFindingRefreshCooldown)
             {
-                if (!pathFinder.IsObstacleInBetween(transform.position, position))
+                if (canSeeTargetPosition)
                 {
                     currentPath.Clear();
                     walkToPositionState = WalkToPositionState.Normal;
                 }
                 else
                 {
-                    currentPath = pathFinder.FindShortestPath(transform.position, position);
+                    currentPath = pathFinder.FindPath(transform.position, targetPosition);
                     lastPathFindingRefresh = Time.time;
 
                     // There is an existing path
@@ -171,4 +202,26 @@ public abstract class MovementBehaviour : MonoBehaviour
             }
         }
     }
+
+    /*private Vector2 CalculateAvoidanceForce()
+    {
+        Vector2 avoidance = Vector2.zero;
+
+        LayerMask enemyLayerMask = LayerMask.GetMask("Entity");
+        Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, avoidanceRadius, enemyLayerMask);
+        foreach (Collider2D col in nearby)
+        {
+            if (col.gameObject != gameObject)
+            {
+                Vector2 diff = (transform.position - col.transform.position);
+                float distance = diff.magnitude;
+                if (distance > 0)
+                {
+                    avoidance += diff.normalized / distance;
+                }
+            }
+        }
+
+        return avoidance * avoidanceStrength;
+    }*/
 }

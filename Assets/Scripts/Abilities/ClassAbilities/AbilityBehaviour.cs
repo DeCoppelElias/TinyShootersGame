@@ -23,16 +23,21 @@ public class AbilityBehaviour : MonoBehaviour
         initialised = false;
         lastUseTime = 0;
 
-        onLinkAbility.Invoke();
+        onLinkAbility?.Invoke();
+    }
+
+    public void SetReady()
+    {
+        state = AbilityState.Ready;
+
+        onReady?.Invoke();
     }
 
     private void Update()
     {
         if (state == AbilityState.Cooldown && Time.time - lastUseTime > ability.cooldown)
         {
-            state = AbilityState.Ready;
-
-            onReady.Invoke();
+            SetReady();
         }
     }
 
@@ -49,7 +54,7 @@ public class AbilityBehaviour : MonoBehaviour
             state = AbilityState.Cooldown;
             ability.PerformAbility(player);
 
-            onPerformed.Invoke();
+            onPerformed?.Invoke();
         }
     }
 

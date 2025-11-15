@@ -6,37 +6,41 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public class Player : Entity
 {
-    public Class playerClass;
-    [SerializeField]
-    private Class defaultPlayerClass = null;
+    [Header("Player Settings")]
+    public PlayerClass playerClass;
+    public PlayerStats baseStats = null;
 
-    [SerializeField]
-    private float invulnerableDuration = 0.5f;
+    public int playerIndex;
+
+    [SerializeField] private bool invulnerable = false;
+    [SerializeField] private float invulnerableDuration = 0.5f;
     private float invulnerableStart;
 
     private ShootingAbility shootingAbility;
     private DashAbility dashAbility;
 
     public UnityEvent onHitEvent;
-    public UnityEvent onDeath;
-
-    public bool isPVP = false;
 
     private PlayerController playerController;
 
     [SerializeField] private List<Sprite> alternativeSprites = new List<Sprite>();
     private int alternativeSpriteIndex = 0;
 
+    private PlayerMovement playerMovement;
+
     public override void StartEntity()
     {
+        base.StartEntity();
+
         shootingAbility = GetComponent<ShootingAbility>();
         dashAbility = GetComponent<DashAbility>();
-        playerController = GetComponent<PlayerController>();
+        dashAbility.onStartDash.AddListener(() => invulnerable = true);
+        dashAbility.onLateComplete.AddListener(() => invulnerable = false);
 
-        if (playerClass == null)
-        {
-            playerClass = defaultPlayerClass;
-        }
+        playerController = GetComponent<PlayerController>();
+        playerMovement = GetComponent<PlayerMovement>();
+
+        ApplyStats(baseStats);
         ApplyClass(playerClass);
     }
 
@@ -44,18 +48,15 @@ public class Player : Entity
     {
         base.UpdateEntity();
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        // TODO reimplement this with new input system
+        /*if (Input.GetKeyDown(KeyCode.Tab))
         {
-            Debug.Log("lol1");
             alternativeSpriteIndex++;
             SpriteRenderer renderer = transform.Find("Sprite").GetComponent<SpriteRenderer>();
             if (renderer != null)
             {
-                Debug.Log("lol2");
                 if (alternativeSpriteIndex == alternativeSprites.Count + 1)
                 {
-
-                    Debug.Log("lol3");
                     alternativeSpriteIndex = 0;
 
                     Animator animator = transform.Find("Sprite").GetComponent<Animator>();
@@ -63,7 +64,6 @@ public class Player : Entity
                 }
                 else
                 {
-                    Debug.Log("lol4");
                     if (alternativeSpriteIndex == 1)
                     {
                         Animator animator = transform.Find("Sprite").GetComponent<Animator>();
@@ -72,10 +72,26 @@ public class Player : Entity
                     renderer.sprite = alternativeSprites[alternativeSpriteIndex - 1];
                 }
             }
-        }
+        }*/
     }
 
-    public void ApplyClass(Class playerClass)
+    public List<PlayerClass> GetUpgrades()
+    {
+        List<PlayerClass> upgrades = new List<PlayerClass>();
+        if (this.playerClass == null)
+        {
+            if (this.baseStats == null) return upgrades;
+
+            upgrades = this.baseStats.upgrades;
+        }
+        else
+        {
+            upgrades = this.playerClass.upgrades;
+        }
+        return upgrades;
+    }
+
+    public void ApplyClass(PlayerClass playerClass)
     {
         if (playerClass == null) return;
         this.playerClass = playerClass;
@@ -86,24 +102,23 @@ public class Player : Entity
             animator.runtimeAnimatorController = playerClass.animatorController;
         }
 
-        if (!isPVP) this.maxHealth = playerClass.maxHealth;
-        else this.maxHealth = playerClass.pvpMaxHealth;
+        this.MaxHealth += playerClass.healthDelta;
 
         Transform healthbar = this.transform.Find("EmptyHealthBar");
-        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+        healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
 
-        this.health = this.maxHealth;
+        this.Health = this.MaxHealth;
 
-        if (!isPVP) this.invulnerableDuration = playerClass.invulnerableDuration;
+        this.invulnerableDuration += playerClass.invulnerableDurationDelta;
 
-        this.contactDamage = playerClass.contactDamage;
-        this.contactHitCooldown = playerClass.contactHitCooldown;
+        this.ContactDamage += playerClass.contactDamageDelta;
+        this.ContactHitCooldown += playerClass.contactHitCooldownDelta;
 
         AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
         if (abilityBehaviour != null && playerClass.classAbility != null && playerController != null)
         {
             abilityBehaviour.LinkAbility(playerClass.classAbility);
-            playerController.classAbility = abilityBehaviour.UseAbility;
+            playerController.onClassAbility = abilityBehaviour.UseAbility;
         }
 
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();
@@ -112,26 +127,116 @@ public class Player : Entity
         if (dashAbility != null) dashAbility.ApplyClass(playerClass);
     }
 
-    public override void TakeDamage(float amount, string sourceTag, DamageType damageType)
+    public void ApplyStats(PlayerStats playerStats)
+    {
+        if (playerStats == null) return;
+
+        Animator animator = transform.Find("Sprite").GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.runtimeAnimatorController = playerStats.animatorController;
+        }
+
+        this.MaxHealth = playerStats.maxHealth;
+
+        Transform healthbar = this.transform.Find("EmptyHealthBar");
+        healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
+
+        this.Health = this.MaxHealth;
+
+        this.invulnerableDuration = playerStats.invulnerableDuration;
+
+        this.ContactDamage = playerStats.contactDamage;
+        this.ContactHitCooldown = playerStats.contactHitCooldown;
+
+        AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
+        if (abilityBehaviour != null && playerStats.classAbility != null && playerController != null)
+        {
+            abilityBehaviour.LinkAbility(playerStats.classAbility);
+            playerController.onClassAbility = abilityBehaviour.UseAbility;
+        }
+
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null) playerMovement.ApplyStats(playerStats);
+        if (shootingAbility != null) shootingAbility.ApplyPlayerStats(playerStats);
+        if (dashAbility != null) dashAbility.ApplyStats(playerStats);
+    }
+
+    public void ApplyPowerup(Powerup powerup)
+    {
+        if (powerup == null) return;
+
+        this.MaxHealth += powerup.healthDelta;
+        this.Health += powerup.healthDelta;
+
+        if (powerup.recoverHealth) this.Health = this.MaxHealth;
+
+        Transform healthbar = this.transform.Find("EmptyHealthBar");
+        healthbar.localScale = new Vector3(1 + ((this.MaxHealth - 100) / 500f), 1, 1);
+
+        this.invulnerableDuration += powerup.invulnerableDurationDelta;
+
+        this.ContactDamage += powerup.contactDamageDelta;
+        this.ContactHitCooldown += powerup.contactHitCooldownDelta;
+
+        this.HealOnMeleeKill += powerup.healOnMeleeKillDelta;
+
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null) playerMovement.ApplyPowerup(powerup);
+        if (shootingAbility != null) shootingAbility.ApplyPowerup(powerup);
+        if (dashAbility != null) dashAbility.ApplyPowerup(powerup);
+    }
+
+    public override void TakeDamage(float amount, string sourceTag, DamageType damageType, Vector2 direction)
     {
         if (amount <= 0) return;
+        if (invulnerable) return;
         if (Time.time - invulnerableStart < invulnerableDuration) return;
-        if (dashAbility != null && dashAbility.Dashing()) return;
-
-        this.health -= amount;
-
-        StartColorChange();
-
         invulnerableStart = Time.time;
+
+        base.TakeDamage(amount, sourceTag, damageType, direction);
 
         if (onHitEvent != null) onHitEvent.Invoke();
     }
 
-    public override void OnDeath()
+    public override void AddKnockback(Vector2 force)
     {
-        base.OnDeath();
+        if (knockbackImmune) return;
+        if (this.playerMovement != null) this.playerMovement.ApplyKnockBack(force);
+    }
 
-        audioManager.PlayDieSound();
-        onDeath.Invoke();
+    protected override void OnColorChange(Color newColor)
+    {
+        base.OnColorChange(newColor);
+
+        this.spriteRenderer.color = newColor;
+        Color damageColor = new Color(0.5f * newColor.r, 0.5f * newColor.g, 0.5f * newColor.b);
+        this.damageColor = damageColor;
+
+        if (shootingAbility != null) shootingAbility.SetBulletColor(newColor);
+        if (dashAbility != null) dashAbility.SetDashColor(newColor);
+    }
+
+    public void Reset()
+    {
+        ApplyStats(baseStats);
+        ResetAbilities();
+    }
+
+    public override void Revive()
+    {
+        base.Revive();
+        ResetAbilities();
+    }
+
+    private void ResetAbilities()
+    {
+        if (dashAbility != null) dashAbility.SetReady();
+
+        ReflectShieldAbility reflectShieldAbility = GetComponent<ReflectShieldAbility>();
+        if (reflectShieldAbility != null) reflectShieldAbility.SetReady();
+
+        AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
+        if (abilityBehaviour != null) abilityBehaviour.SetReady();
     }
 }

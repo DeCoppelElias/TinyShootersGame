@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SplitMeleeEnemy : MeleeEnemy
 {
-    public float splitAmount = 0;
+    public int splitAmount = 0;
     public override void OnDeath()
     {
         bool split = GetComponent<SplitAbility>().Split((targetPlayer.transform.position - transform.position).normalized);
