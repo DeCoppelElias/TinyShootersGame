@@ -19,6 +19,8 @@ public abstract class Entity : MonoBehaviour
 
     [SerializeField] private float contactDamage = 10;
     [SerializeField] private float contactHitCooldown = 1f;
+
+    [SerializeField] private int healOnMeleeKill = 0;
     private Dictionary<System.Guid, float> contactHits = new Dictionary<System.Guid, float>();
 
     public bool knockbackImmune = false;
@@ -122,7 +124,7 @@ public abstract class Entity : MonoBehaviour
                 health = 0;
                 if (entityState == EntityState.Alive) OnDeath();
             }
-            else health = value;
+            else health = Mathf.Min(value, MaxHealth);
         }
     }
 
@@ -151,6 +153,15 @@ public abstract class Entity : MonoBehaviour
         {
             color = value;
             OnColorChange(value);
+        }
+    }
+
+    public int HealOnMeleeKill
+    {
+        get => healOnMeleeKill;
+        set
+        {
+            healOnMeleeKill = Mathf.Max(0, value);
         }
     }
     #endregion
@@ -241,6 +252,9 @@ public abstract class Entity : MonoBehaviour
             );
 
             other.TakeDamage(contactDamage, this.tag, DamageType.Melee, knockbackForce);
+
+            // Possibly heal when entity is killed
+            if (other.entityState == EntityState.Dead) this.Health += healOnMeleeKill;
         }
     }
 

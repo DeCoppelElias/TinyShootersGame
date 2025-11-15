@@ -48,6 +48,9 @@ public class Powerup : ScriptableObject
     public float dashSpeedDelta = 0;
     public float contactDamageIncreaseDelta = 0;
 
+    [Header("Special Upgrade")]
+    public int healOnMeleeKillDelta = 0;
+
     public string GenerateUIDescription()
     {
         StringBuilder sb = new StringBuilder();
@@ -176,6 +179,10 @@ public class Powerup : ScriptableObject
 
             case nameof(contactDamageIncreaseDelta):
                 return EffectText("Increased Dash Damage", "Reduced Dash Damage", (float)value);
+
+            // --- Special Upgrade ---
+            case nameof(healOnMeleeKillDelta):
+                return EffectText("Heal on Melee Kill", "Take damage on Melee Kill", (int)value);
 
             default:
                 if (value is float floatVal && Mathf.Abs(floatVal) > 0)

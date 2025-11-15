@@ -179,6 +179,8 @@ public class Player : Entity
         this.ContactDamage += powerup.contactDamageDelta;
         this.ContactHitCooldown += powerup.contactHitCooldownDelta;
 
+        this.HealOnMeleeKill += powerup.healOnMeleeKillDelta;
+
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();
         if (playerMovement != null) playerMovement.ApplyPowerup(powerup);
         if (shootingAbility != null) shootingAbility.ApplyPowerup(powerup);
