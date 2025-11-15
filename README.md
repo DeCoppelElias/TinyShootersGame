@@ -38,12 +38,12 @@ This project is licensed under the Creative Commons Attribution-NonCommercial 4.
 
 #### Screenshots
 
-<div style="display: flex; gap: 10px;">
+<div align="center" style="display: flex; gap: 10px;">
   <img src="Media/NewScreenshots/Survive.jpg" width="400">
   <img src="Media/NewScreenshots/Upgrade%20Your%20Character.jpg" width="400">
 </div>
 
-<div style="display: flex; gap: 10px; margin-top: 10px;">
+<div align="center" style="display: flex; gap: 10px; margin-top: 10px;">
   <img src="Media/NewScreenshots/Fight%20Bosses.jpg" width="400">
   <img src="Media/NewScreenshots/Local%20PVP.jpg" width="400">
 </div>
