@@ -1,5 +1,5 @@
 # Tiny Shooters
-![Tiny Shooters Title Screen](Media/NewScreenshots/Title%20Screen.png)
+![Tiny Shooters Title Screen](Media/NewScreenshots/Title%20Screen.jpg)
 **Tiny Shooters** is a top-down survival shooter where you must:
 
 - Survive multiple waves of enemies.  
@@ -35,8 +35,8 @@ This project is licensed under the Creative Commons Attribution-NonCommercial 4.
 [Click Here](https://www.youtube.com/watch?v=Tr44kK1eFEw) to view the full video!
 
 #### Screenshots
-![Tiny Shooters Screenshot 1](Media/NewScreenshots/Survive.png)
-![Tiny Shooters Screenshot 2](Media/NewScreenshots/Upgrade%20Your%20Character.png)
-![Tiny Shooters Screenshot 3](Media/NewScreenshots/Fight%20Bosses.png)
-![Tiny Shooters Screenshot 4](Media/NewScreenshots/Local%20PVP.png)
-![Tiny Shooters Screenshot 5](Media/NewScreenshots/Climb%20The%20Leaderboard.png)
+![Tiny Shooters Screenshot 1](Media/NewScreenshots/Survive.jpg)
+![Tiny Shooters Screenshot 2](Media/NewScreenshots/Upgrade%20Your%20Character.jpg)
+![Tiny Shooters Screenshot 3](Media/NewScreenshots/Fight%20Bosses.jpg)
+![Tiny Shooters Screenshot 4](Media/NewScreenshots/Local%20PVP.jpg)
+![Tiny Shooters Screenshot 5](Media/NewScreenshots/Climb%20The%20Leaderboard.jpg)
