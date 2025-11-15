@@ -39,8 +39,8 @@ public class QuitConfirmationUI : UIElement
 
     protected override void EnableActions()
     {
-        firstSelected = noButton.gameObject;
         this.gameObject.SetActive(true);
+        firstSelected = noButton.gameObject;
     }
 
     protected override void InstantDisableActions()
