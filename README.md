@@ -33,7 +33,7 @@ This project is licensed under the Creative Commons Attribution-NonCommercial 4.
 
 ### Media
 #### Video Compilation
-![Tiny Shooters Video Compilation](Media/TinyShootersCompilation.gif)
+![Tiny Shooters Video Compilation](Media/TinyShootersGif.gif)
 
 [Click Here](https://www.youtube.com/watch?v=Tr44kK1eFEw) to view the full video!
 
